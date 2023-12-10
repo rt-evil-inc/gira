@@ -63,7 +63,7 @@ token.subscribe(v => {
 	updateUserInfo();
 	updateStations();
 	if (tokenRefreshTimeout) clearTimeout(tokenRefreshTimeout);
-	tokenRefreshTimeout = setTimeout(refreshToken, (new Date).getMilliseconds() - 1000 + jwt.exp * 1000 - 1000 * 20);
+	tokenRefreshTimeout = setTimeout(refreshToken, jwt.exp * 1000 - Date.now() - 1000 * 30);
 });
 userCredentials.subscribe(async v => {
 	if (v === null) return;
