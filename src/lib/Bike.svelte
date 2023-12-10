@@ -76,7 +76,7 @@
 	{:else}
 		<div class="absolute flex items-center bg-white rounded-2xl h-full w-full px-5 gap-5" style:box-shadow="0px 0px 12px 0px rgba(0, 0, 0, 0.10)" >
 			<div class="w-[36px] h-[36px] -ml-2 -mr-2 bg-gray-200 animate-pulse rounded-lg"></div>
-			<span class="h-6 font-semibold bg-gray-200 rounded-lg w-16"></span>
+			<span class="h-6 font-semibold bg-gray-200 rounded-lg w-16 animate-pulse"></span>
 			<div class="grow" />
 			{#if Math.random() < 0.5}
 				<div class="flex items-center h-6 px-[6px] bg-gray animate-pulse rounded-md gap-1 w-16 bg-gray-200">
