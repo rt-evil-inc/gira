@@ -12,7 +12,7 @@
 				<span class="font-bold text-sm text-[#808080]">Estação {id}</span>
 				<span class="font-medium bg-[#F2F2F2] text-xs text-[#808080] px-1 py-[1px] rounded">{distance}</span>
 			</div>
-			<span class="text-xs font-medium text-[#B0B0B0]">{name}</span>
+			<span class="text-xs font-medium text-[#B0B0B0] leading-none mt-[2px]">{name}</span>
 		</div>
 		<div class="flex flex-col items-center text-[#808080]">
 			<span class="font-bold text-2xl leading-none">{bikes}</span>
@@ -34,5 +34,6 @@
 		<Bike type="electric" id="E1869" battery={70} dock={9} disabled={isScrolling} />
 		<Bike type="electric" id="E0302" battery={80} dock={12} disabled={isScrolling} />
 		<Bike type="classical" id="C0352" dock={14} disabled={isScrolling} />
+		<div class="fixed left-0 w-full h-4 -mt-6" style:box-shadow="0px 6px 6px 0px #FFF" />
 	</div>
 </div>
