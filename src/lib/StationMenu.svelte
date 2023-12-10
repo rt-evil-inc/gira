@@ -59,7 +59,7 @@
 			if (station) {
 				name = station.name.split(' - ')[1];
 				bikes = station.bikes;
-				freeDocks = station.bikes;
+				freeDocks = station.docks - station.bikes;
 				code = station.name.split(' - ')[0];
 				//TODO calc
 				distance = '1.2km';
@@ -118,16 +118,6 @@
 		{#each bikeInfo as bike}
 			<Bike type={bike.type} id={bike.id} battery={bike.battery} dock={bike.dock} disabled={isScrolling} />
 		{/each}
-		<!-- <Bike type="electric" id="E1203" battery={75} dock={2} disabled={isScrolling} />
-		<Bike type="classical" id="C0171" dock={7} disabled={isScrolling} />
-		<Bike type="electric" id="E1869" battery={70} dock={9} disabled={isScrolling} />
-		<Bike type="electric" id="E0302" battery={80} dock={12} disabled={isScrolling} />
-		<Bike type="classical" id="C0352" dock={14} disabled={isScrolling} />
-		<Bike type="electric" id="E1203" battery={75} dock={2} disabled={isScrolling} />
-		<Bike type="classical" id="C0171" dock={7} disabled={isScrolling} />
-		<Bike type="electric" id="E1869" battery={70} dock={9} disabled={isScrolling} />
-		<Bike type="electric" id="E0302" battery={80} dock={12} disabled={isScrolling} />
-		<Bike type="classical" id="C0352" dock={14} disabled={isScrolling} /> -->
 		<div class="fixed left-0 w-full h-4 -mt-6" style:box-shadow="0px 6px 6px 0px #FFF" />
 	</div>
 </div>
