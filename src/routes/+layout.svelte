@@ -9,7 +9,7 @@
 	import { onMount } from 'svelte';
 	import '../app.css';
 	onMount(async () => {
-		loadUserCreds();
+		await loadUserCreds();
 	});
 </script>
 

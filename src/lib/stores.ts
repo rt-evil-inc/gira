@@ -1,6 +1,6 @@
 import { writable, type Writable } from 'svelte/store';
 import { getUserInfo } from './emel-api/emel-api';
-import { login, updateUserInfo } from './auth';
+import { login, refreshToken, updateUserInfo } from './auth';
 import { updateStations } from './gira-api';
 import { Preferences } from '@capacitor/preferences';
 import { onMount } from 'svelte';
@@ -45,21 +45,34 @@ export function removeLoadingTask(id: number) {
 	});
 }
 
+type JWT = {
+	jti: string;
+	sub: string;
+	loginProvider: string;
+	services: string[];
+	nbf: number;
+	exp: number;
+	iat: number;
+	iss: string;
+	aud: string;
+};
+let tokenRefreshTimeout: ReturnType<typeof setTimeout>|null = null;
 token.subscribe(v => {
 	if (v === null) return;
+	const jwt:JWT = JSON.parse(window.atob(v.accessToken.split('.')[1]));
 	updateUserInfo();
 	updateStations();
+	if (tokenRefreshTimeout) clearTimeout(tokenRefreshTimeout);
+	tokenRefreshTimeout = setTimeout(refreshToken, (new Date).getMilliseconds() - 1000 + jwt.exp * 1000 - 1000 * 20);
 });
 userCredentials.subscribe(async v => {
 	if (v === null) return;
-	const success = await login(v.email, v.password);
-	if (!success) {
-		console.log(v.email, v.password);
+	const responseCode = await login(v.email, v.password);
+	if (responseCode !== 0) {
 		console.log('login failed');
 		userCredentials.set(null);
-	} else {
-		console.log('login success');
 	}
+	console.log('login success');
 	Preferences.set({ key: 'email', value: v.email });
 	Preferences.set({ key: 'password', value: v.password });
 });

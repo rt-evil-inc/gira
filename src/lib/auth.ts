@@ -14,15 +14,23 @@ export async function login(email: string, password: string) {
 	return 0;
 }
 
+const msBetweenRefreshAttempts = 2000;
 export async function refreshToken() {
 	const tokens = get(token);
 	if (!tokens) return;
 	const id = addLoadingTask();
-	const response = await getTokensRefresh(tokens);
-	if (response.error.code !== 0) return false;
-	const { accessToken, refreshToken, expiration } = response.data;
-	if (!accessToken || !refreshToken) return false;
-	token.set({ accessToken, refreshToken, expiration });
+	let success = false;
+	while (!success) {
+		console.log('refreshing token');
+		const response = await getTokensRefresh(tokens);
+		if (response.error.code !== 0 || !response.data.accessToken || !response.data.refreshToken) {
+			await new Promise(resolve => setTimeout(resolve, msBetweenRefreshAttempts));
+			continue;
+		}
+		const { accessToken, refreshToken, expiration } = response.data;
+		token.set({ accessToken, refreshToken, expiration });
+		success = true;
+	}
 	removeLoadingTask(id);
 	return true;
 }
