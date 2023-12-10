@@ -1,0 +1,7 @@
+{
+  "name": "gira-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}

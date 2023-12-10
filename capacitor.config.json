@@ -1,0 +1,16 @@
+{
+	"appId": "dev.tteles.gira",
+	"appName": "gira-app",
+	"webDir": "build",
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 0
+		},
+		"CapacitorHttp": {
+			"enabled": true
+		}
+	},
+	"server": {
+		"androidScheme": "https"
+	}
+}

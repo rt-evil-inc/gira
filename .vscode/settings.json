@@ -1,0 +1,16 @@
+{
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"eslint.validate": ["javascript", "svelte"],
+	"eslint.options": {
+		"extensions": [".svelte", ".js"],
+	},
+	"editor.defaultFormatter": "dbaeumer.vscode-eslint",
+	"eslint.format.enable": true,
+	"svelte.plugin.svelte.format.enable": false,
+	"editor.tabSize": 2,
+	"[html]": {
+		"editor.defaultFormatter": "vscode.html-language-features"
+	},
+}
