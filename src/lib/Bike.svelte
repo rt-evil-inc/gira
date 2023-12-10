@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { IconBattery, IconBattery1, IconBattery2, IconBattery3, IconBattery4, IconBolt, IconLockOpen, IconSettings } from '@tabler/icons-svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
@@ -9,15 +9,15 @@
 	let dragging = false;
 	let initPos = 0;
 	let pos = tweened(0, { duration: 100, easing: cubicOut });
-	let timeout;
-	let slider;
+	let timeout:ReturnType<typeof setTimeout> = setTimeout(() => {}, 0);
+	let slider:HTMLDivElement;
 
-	function onTouchStart(event) {
+	function onTouchStart(event: TouchEvent) {
 		dragging = true;
 		initPos = event.touches[0].clientX - $pos;
 		clearTimeout(timeout);
 	}
-	function onTouchMove(event) {
+	function onTouchMove(event: TouchEvent) {
 		if (dragging && !disabled) {
 			pos.set(event.touches[0].clientX - initPos);
 		} else {

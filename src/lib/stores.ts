@@ -1,7 +1,9 @@
 import { writable, type Writable } from 'svelte/store';
 import { getUserInfo } from './emel-api/emel-api';
-import { updateUserInfo } from './auth';
+import { login, updateUserInfo } from './auth';
 import { updateStations } from './gira-api';
+import { Preferences } from '@capacitor/preferences';
+import { onMount } from 'svelte';
 
 export type User = {
 	email: string;
@@ -23,7 +25,9 @@ export type StationInfo ={
 	docks: number;
 	serialNumber: string;
 };
+// const k = await Preferences.get({ key: 'email' });
 
+export const userCredentials: Writable<{email: string, password: string}|null> = writable(null);
 export const token: Writable<Token|null> = writable(null);
 export const user: Writable<User|null> = writable(null);
 export const stations = writable<StationInfo[]>([]);
@@ -46,3 +50,24 @@ token.subscribe(v => {
 	updateUserInfo();
 	updateStations();
 });
+userCredentials.subscribe(async v => {
+	if (v === null) return;
+	const success = await login(v.email, v.password);
+	if (!success) {
+		console.log(v.email, v.password);
+		console.log('login failed');
+		userCredentials.set(null);
+	} else {
+		console.log('login success');
+	}
+	Preferences.set({ key: 'email', value: v.email });
+	Preferences.set({ key: 'password', value: v.password });
+});
+
+export async function loadUserCreds() {
+	const email = (await Preferences.get({ key: 'email' })).value;
+	const password = (await Preferences.get({ key: 'password' })).value;
+	if (email && password) {
+		userCredentials.set({ email, password });
+	}
+}

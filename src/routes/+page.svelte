@@ -6,6 +6,7 @@
 	import Login from '$lib/Login.svelte';
 	import StationMenu from '$lib/StationMenu.svelte';
 	import { getBikes, getDocks } from '$lib/gira-api';
+	import { userCredentials } from '$lib/stores';
 
 	let mapElem: HTMLDivElement;
 
@@ -20,7 +21,7 @@
 	});
 </script>
 
-<div class="h-full w-full relative">
+<div class="h-full w-full relative overflow-hidden">
 	{#if !$token}
 		<div class="absolute w-full h-full z-10 flex items-center justify-center">
 			<!-- login -->

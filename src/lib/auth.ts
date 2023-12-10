@@ -1,17 +1,17 @@
 import { get } from 'svelte/store';
-import { addLoadingTask, removeLoadingTask, token, user, type Token } from './stores';
 import { getTokensLogin, getTokensRefresh, getUserInfo } from './emel-api/emel-api';
+import { addLoadingTask, removeLoadingTask, token, user } from './stores';
 
 export async function login(email: string, password: string) {
 	const id = addLoadingTask();
 	const response = await getTokensLogin(email, password);
 	removeLoadingTask(id);
-	if (response.error.code !== 0) return false;
+	console.log(response.error);
+	if (response.error.code !== 0) return response.error.code;
 	const { accessToken, refreshToken, expiration } = response.data;
-	if (!accessToken || !refreshToken) return false;
+	if (!accessToken || !refreshToken) return response.error.code;
 	token.set({ accessToken, refreshToken, expiration });
-	await updateUserInfo();
-	return response.error.code !== 0;
+	return 0;
 }
 
 export async function refreshToken() {

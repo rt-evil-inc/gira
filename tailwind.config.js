@@ -11,6 +11,9 @@ export default {
 			colors: {
 				'primary': '#79c000',
 			},
+			borderRadius: {
+				'4xl': '2rem',
+			},
 		},
 	},
 	plugins: [require('@tailwindcss/forms')],
