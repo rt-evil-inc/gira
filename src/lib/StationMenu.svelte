@@ -5,6 +5,7 @@
 	import { getStationInfo } from './gira-api';
 	import { onMount } from 'svelte';
 	import { stations } from './stores';
+	import { tick } from 'svelte';
 
 	export let id: string|null = '';
 	let initPos = 0;
@@ -19,6 +20,8 @@
 	let isScrolling = false;
 	let dragging = false;
 	let timeout:ReturnType<typeof setTimeout> = setTimeout(() => {}, 0);
+	let bikeList:HTMLDivElement;
+	let bikeListHeight = 0;
 
 	function onTouchStart(event: TouchEvent) {
 		dragging = true;
@@ -58,8 +61,10 @@
 				distance = '1.2km';
 			}
 		}
+		await tick();
+		bikeListHeight = bikeList.clientHeight;
 		let info = await getStationInfo(stationId);
-		let tmpbikeInfo = info.getBikes?.filter(v => v != null).map<typeof bikeInfo[number]>(bike => {
+		let tmpBikeInfo = info.getBikes?.filter(v => v != null).map<typeof bikeInfo[number]>(bike => {
 			let dock = info.getDocks?.filter(v => v != null).find(d => d!.code == bike!.parent);
 			if (dock == null || !dock.name) console.error('Dock not found', bike, info.getDocks);
 			return {
@@ -69,7 +74,7 @@
 				dock: dock!.name!,
 			};
 		});
-		if (tmpbikeInfo) bikeInfo = tmpbikeInfo;
+		if (tmpBikeInfo) bikeInfo = tmpBikeInfo;
 		//TODO calc
 		distance = '1.2km';
 	}
@@ -102,15 +107,17 @@
 			<span class="font-bold text-[7px] text-center leading-none">DOCAS<br>LIVRES</span>
 		</div>
 	</div>
-	<div class="flex flex-col p-5 pt-2 gap-3 max-h-[50vh] overflow-y-auto" on:scroll={() => isScrolling = true} on:touchend={() => isScrolling = false} style:box-shadow="0px 60px 40px -40px #FFF inset">
-		{#if bikeInfo.length == 0}
-			{#each new Array(bikes) as i}
-				<Bike disabled={true} />
+	<div class="overflow-y-auto transition-all" style:height="calc(min(50vh,{bikeListHeight}px))" on:scroll={() => isScrolling = true} on:touchend={() => isScrolling = false} style:box-shadow="0px 60px 40px -40px #FFF inset">
+		<div bind:this={bikeList} class="flex flex-col p-5 pt-2 gap-3">
+			{#if bikeInfo.length == 0}
+				{#each new Array(bikes) as _}
+					<Bike disabled={true} />
+				{/each}
+			{/if}
+			{#each bikeInfo as bike}
+				<Bike type={bike.type} id={bike.id} battery={bike.battery} dock={bike.dock} disabled={isScrolling} />
 			{/each}
-		{/if}
-		{#each bikeInfo as bike}
-			<Bike type={bike.type} id={bike.id} battery={bike.battery} dock={bike.dock} disabled={isScrolling} />
-		{/each}
-		<div class="fixed left-0 w-full h-4 -mt-6" style:box-shadow="0px 6px 6px 0px #FFF" />
+			<div class="fixed left-0 w-full h-4 -mt-6" style:box-shadow="0px 6px 6px 0px #FFF" />
+		</div>
 	</div>
 </div>
