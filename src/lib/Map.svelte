@@ -41,8 +41,8 @@
 		map = new Map({
 			container: mapElem,
 			style: 'https://tiles2.intermodal.pt/styles/iml/style.json',
-			center: [-9.173, 38.744],
-			zoom: 12,
+			center: [-9.15, 38.744],
+			zoom: 11,
 		});
 		map.on('load', () => {
 			mapLoaded = true;
