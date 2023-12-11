@@ -5,7 +5,7 @@
 	import { token } from '$lib/stores';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 
-	let openStation:string|null = null;
+	let selectedStation:string|null = null;
 
 </script>
 
@@ -16,9 +16,6 @@
 			<Login />
 		</div>
 	{/if}
-	<Map on:station-click={e => {
-		console.log(e);
-		openStation = e.detail;
-	}} blurred={!$token}/>
-	<StationMenu bind:id={openStation} />
+	<Map blurred={!$token} bind:selectedStation/>
+	<StationMenu bind:id={selectedStation} />
 </div>

@@ -5,12 +5,11 @@
 	// import GeoJSON
 	import type { GeoJSON } from 'geojson';
 	export let blurred = true;
+	export let selectedStation:string|null = null;
 	let mapElem: HTMLDivElement;
 	let map : Map;
 	let mapLoaded = false;
-	let dispatch = createEventDispatcher();
 
-	let selected:string|null = null;
 	function setSourceData() {
 		const src = map.getSource('points') as GeoJSONSource|null;
 		// log += 'setSourceData1\n';
@@ -24,7 +23,7 @@
 						serialNumber: station.serialNumber,
 						name: station.name,
 						bikes: station.bikes,
-						active: station.serialNumber == selected,
+						active: station.serialNumber == selectedStation,
 					},
 					geometry: {
 						type: 'Point',
@@ -83,9 +82,7 @@
 						if (e.features === undefined) return;
 						const feature = e.features[0];
 						const props = feature.properties as { serialNumber: string, name: string, bikes: number };
-						selected = props.serialNumber;
-						setSourceData();
-						dispatch('station-click', props.serialNumber);
+						selectedStation = props.serialNumber;
 					});
 				},
 			);
@@ -100,6 +97,7 @@
 		await tick();
 	});
 	$:if ($stations && map) {
+		selectedStation = selectedStation;
 		if (mapLoaded) {
 			setSourceData();
 		}
