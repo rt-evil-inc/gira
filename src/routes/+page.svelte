@@ -6,6 +6,7 @@
 	import 'maplibre-gl/dist/maplibre-gl.css';
 
 	let selectedStation:string|null = null;
+	let menuHeight = 0;
 
 </script>
 
@@ -16,6 +17,6 @@
 			<Login />
 		</div>
 	{/if}
-	<Map blurred={!$token} bind:selectedStation/>
-	<StationMenu bind:id={selectedStation} />
+	<Map blurred={!$token} bind:selectedStation bind:menuHeight={menuHeight}/>
+	<StationMenu bind:id={selectedStation} bind:bikeListHeight={menuHeight} />
 </div>

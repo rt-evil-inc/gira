@@ -7,13 +7,13 @@
 	import { fade } from 'svelte/transition';
 	export let blurred = true;
 	export let selectedStation:string|null = null;
+	export let menuHeight = 0;
 	let mapElem: HTMLDivElement;
 	let map : Map;
 	let mapLoaded = false;
 
 	function setSourceData() {
 		const src = map.getSource('points') as GeoJSONSource|null;
-		// log += 'setSourceData1\n';
 		if (src instanceof GeoJSONSource) {
 			const data:GeoJSON.GeoJSON = {
 				'type': 'FeatureCollection',
@@ -32,9 +32,7 @@
 					},
 				})),
 			};
-			// log += 'setSourceData2\n';
 			src.setData(data);
-		// log += 'setSourceData3\n';
 		}
 	}
 	onMount(async () => {
@@ -78,20 +76,22 @@
 							'text-color': ['case', ['get', 'active'], '#fff', '#79c000'],
 						},
 					});
-					map.on('click', 'points', function (e) {
+					map.on('click', 'points', async function (e) {
 						if (e.features === undefined) return;
-						const feature = e.features[0];
+						const feature = e.features[0] as GeoJSON.Feature<GeoJSON.Point>;
 						const props = feature.properties as { serialNumber: string, name: string, bikes: number };
 						selectedStation = props.serialNumber;
+						await tick();
+						await tick();
+						console.log(menuHeight / 2 - 100);
+						map.flyTo({ center: feature.geometry.coordinates as [number, number], zoom: 13, padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) } });
 					});
 				},
 			);
-			// log += 'before addSource\n';
 			map.addSource('points', {
 				'type': 'geojson',
 				'data': { type: 'FeatureCollection', features: [] },
 			});
-			// log += 'before setSourceData()\n';
 			setSourceData();
 		});
 	});

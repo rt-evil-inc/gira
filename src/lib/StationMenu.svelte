@@ -21,7 +21,7 @@
 	let dragging = false;
 	let timeout:ReturnType<typeof setTimeout> = setTimeout(() => {}, 0);
 	let bikeList:HTMLDivElement;
-	let bikeListHeight = 0;
+	export let bikeListHeight = 0;
 
 	function onTouchStart(event: TouchEvent) {
 		dragging = true;
