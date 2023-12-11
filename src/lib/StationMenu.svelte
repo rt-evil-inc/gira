@@ -50,10 +50,10 @@
 		if ($stations) {
 			let station = $stations.find(s => s.serialNumber == id);
 			if (station) {
-				name = station.name.split(' - ')[1];
+				name = station.name.split('-', 2)[1].trim();
 				bikes = station.bikes;
 				freeDocks = station.docks - station.bikes;
-				code = station.name.split(' - ')[0];
+				code = station.name.split('-', 2)[0].trim();
 				//TODO calc
 				distance = '1.2km';
 			}
