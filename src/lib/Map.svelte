@@ -34,6 +34,8 @@
 		}
 	}
 	onMount(async () => {
+		// fetch('/assets/bike_marker_white.png').then(r => r.blob()).then(console.debug).catch(console.error);
+		// fetch('/assets/bike_marker_white.png').then(r => r.blob()).then(console.debug).catch(console.error);
 		map = new Map({
 			container: mapElem,
 			style: 'https://tiles2.intermodal.pt/styles/iml/style.json',
@@ -42,20 +44,33 @@
 		});
 		map.on('load', () => {
 			mapLoaded = true;
-			let bike_white = new Image;
+			// load bike_marker_white.png
 			let promiseWhite = new Promise((resolve, reject) => {
-				bike_white.onload = resolve;
-				bike_white.onerror = reject;
+				map.loadImage('/assets/bike_marker_white.png', (error, image) => {
+					console.log('loadImage', error, image);
+					if (error) reject(error);
+					if (image === undefined || image === null) {
+						reject('image is undefined or null');
+						return;
+					}
+					map.addImage('bike_white', image);
+					resolve(image);
+				});
 			});
-			let bike_green = new Image;
 			let promiseGreen = new Promise((resolve, reject) => {
-				bike_green.onload = resolve;
-				bike_green.onerror = reject;
+				map.loadImage('/assets/bike_marker_green.png', (error, image) => {
+					console.log('loadImage', error, image);
+					if (error) reject(error);
+					if (image === undefined || image === null) {
+						reject('image is undefined or null');
+						return;
+					}
+					map.addImage('bike_green', image);
+					resolve(image);
+				});
 			});
 			Promise.all([promiseGreen, promiseWhite]).then(
 				() => {
-					map.addImage('bike_white', bike_white);
-					map.addImage('bike_green', bike_green);
 					map.addLayer({
 						'id': 'points',
 						'type': 'symbol',
@@ -63,7 +78,7 @@
 						'layout': {
 							// bike_white if active, bike_green otherwise
 							'icon-image': ['case', ['get', 'active'], 'bike_green', 'bike_white'],
-							'icon-size': 0.5,
+							'icon-size': 0.17,
 							'icon-anchor': 'bottom',
 							'text-field': '{bikes}',
 							'text-size': 20,
@@ -84,8 +99,6 @@
 					});
 				},
 			);
-			bike_white.src = '/bike_marker_white.svg';
-			bike_green.src = '/bike_marker_green.svg';
 			map.addSource('points', {
 				'type': 'geojson',
 				'data': { type: 'FeatureCollection', features: [] },
