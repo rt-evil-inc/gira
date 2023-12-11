@@ -5,3 +5,7 @@
 * {
   user-select: none;
 }
+
+*::selection {
+  @apply bg-neutral-300;
+}
