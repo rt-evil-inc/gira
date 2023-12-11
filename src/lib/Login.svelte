@@ -22,12 +22,12 @@
 			</div>
 			<div class="w-full">
 				<div class="text-sm text-neutral-700 pb-1">Password</div>
-				<input type="password" required bind:value={password} class="w-full px-2 h-12 rounded-md border border-neutral-200 bg-neutral-100 focus:ring-primary focus:border-primary">
+				<input type="password" required bind:value={password} placeholder="••••••••" class="placeholder-neutral-400 w-full px-2 h-12 rounded-md border border-neutral-200 bg-neutral-100 focus:ring-primary focus:border-primary">
 				{#if errorCode !== null && errorCode !== 0}
 					<div class="text-sm text-red-500 pt-1">{errorCodes[errorCode] || 'Erro desconhecido'}</div>
 				{/if}
 			</div>
-			<button class="form-textarea border-0  w-full h-12 rounded-md bg-primary text-white font-bold focus:ring-primary focus:border-primary ">Login</button>
+			<button class="form-textarea border-0 w-full h-12 rounded-md bg-primary text-white font-bold focus:ring-primary focus:border-primary">Login</button>
 		</form>
 	</div>
 </div>

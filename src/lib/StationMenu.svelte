@@ -88,7 +88,7 @@
 
 <div bind:this={dragged} class="absolute w-full bottom-0 bg-white rounded-t-4xl z-10" style:transform="translate(0,{$pos}px)" style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)">
 	<div class="w-full h-6 pt-2" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove}>
-		<div class="mx-auto bg-gray-200 w-16 h-[6px] rounded-full"></div>
+		<div class="mx-auto bg-neutral-200 w-16 h-[6px] rounded-full"></div>
 	</div>
 	<div class="flex p-9 pt-0 pb-2 gap-4" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove}>
 		<div class="flex flex-col grow">
