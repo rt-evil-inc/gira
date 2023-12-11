@@ -4,6 +4,7 @@
 	import { stations } from '$lib/stores';
 	// import GeoJSON
 	import type { GeoJSON } from 'geojson';
+	import { fade } from 'svelte/transition';
 	export let blurred = true;
 	export let selectedStation:string|null = null;
 	let mapElem: HTMLDivElement;
@@ -37,7 +38,6 @@
 		}
 	}
 	onMount(async () => {
-		await tick();
 		map = new Map({
 			container: mapElem,
 			style: 'https://tiles2.intermodal.pt/styles/iml/style.json',
@@ -94,7 +94,6 @@
 			// log += 'before setSourceData()\n';
 			setSourceData();
 		});
-		await tick();
 	});
 	$:if ($stations && map) {
 		selectedStation = selectedStation;
@@ -103,8 +102,7 @@
 		}
 	}
 </script>
-{#if blurred || !mapLoaded}
-	<div class="blur absolute bg-cover bg-no-repeat bg-center w-full h-full bg-[url(/assets/map-preview.jpg)]">
-	</div>
+{#if !mapLoaded || blurred || $stations.length == 0}
+	<div out:fade={{ duration: 1000 }} class="blur absolute bg-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[2000px] h-[2000px] z-10 bg-[url(/assets/map-preview-full.png)]" />
 {/if}
 <div bind:this={mapElem} class="h-full w-full"></div>

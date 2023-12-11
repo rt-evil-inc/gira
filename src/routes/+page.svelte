@@ -11,7 +11,7 @@
 
 <div class="h-full w-full relative overflow-hidden">
 	{#if !$token}
-		<div class="absolute w-full h-full z-10 flex items-center justify-center">
+		<div class="absolute w-full h-full z-20 flex items-center justify-center">
 			<!-- login -->
 			<Login />
 		</div>

@@ -8,6 +8,8 @@
 	import { IconLoader2 } from '@tabler/icons-svelte';
 	import { onMount } from 'svelte';
 	import '../app.css';
+	import { fade } from 'svelte/transition';
+
 	onMount(async () => {
 		await loadUserCreds();
 	});
@@ -16,6 +18,6 @@
 <div class="w-screen h-screen font-sans">
 	<slot />
 	{#if $loadingTasks.size > 0}
-		<div class="absolute left-2 bottom-2 z-10 rounded-full "><IconLoader2 size={48} stroke={3} class="animate-spin text-green-400"/></div>
+		<div transition:fade={{ duration: 150 }} class="absolute left-2 bottom-2 z-10 rounded-full "><IconLoader2 size={48} stroke={3} class="animate-spin text-primary"/></div>
 	{/if}
 </div>
