@@ -12,6 +12,7 @@
 	let pos = tweened(0, { duration: 100, easing: cubicOut });
 	let timeout:ReturnType<typeof setTimeout> = setTimeout(() => {}, 0);
 	let slider:HTMLDivElement;
+	let moved = false;
 
 	function onTouchStart(event: TouchEvent) {
 		dragging = true;
@@ -21,13 +22,14 @@
 	function onTouchMove(event: TouchEvent) {
 		if (dragging && !disabled) {
 			pos.set(event.touches[0].clientX - initPos);
+			moved = true;
 		} else {
 			pos.set(0);
 		}
 	}
 	function onTouchEnd() {
 		dragging = false;
-		if ($pos == 0 && !disabled) {
+		if ($pos == 0 && !moved && !disabled) {
 			pos.set(50);
 			timeout = setTimeout(() => pos.set(0), 150);
 		} else {
