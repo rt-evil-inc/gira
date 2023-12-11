@@ -1,18 +1,34 @@
 import { token, type StationInfo, stations } from '$lib/stores';
 import type { Query } from './types';
 import { get } from 'svelte/store';
+import { CapacitorHttp } from '@capacitor/core';
 type Q<T extends (keyof Query)[]> = {[K in T[number]]:Query[K]};
 
+function recursivePrintObject(obj:any, depth:number = 0) {
+	if (depth > 10) return;
+	if (typeof obj === 'object') {
+		for (const key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				const element = obj[key];
+				console.log(' '.repeat(depth * 2), key, element);
+				recursivePrintObject(element, depth + 1);
+			}
+		}
+	}
+}
+
 async function post<T extends(keyof Query)[]>(body:any): Promise<Q<T>> {
-	return fetch('https://apigira.emel.pt/graphql', {
-		method: 'POST',
+	return CapacitorHttp.post({
+		url: 'https://apigira.emel.pt/graphql',
 		headers: {
 			'User-Agent': 'Gira/3.2.8 (Android 34)',
 			'content-type': 'application/json',
 			'authorization': `Bearer ${get(token)?.accessToken}`,
 		},
-		body: JSON.stringify(body),
-	}).then(res => res.json().then(v => { console.log(v); return v.data; }) as Promise<Q<T>>);
+		data: body,
+	}).then(async res => {
+		return res.data.data as Promise<Q<T>>;
+	});
 }
 
 export async function getStations(): Promise<Q<['getStations']>> {

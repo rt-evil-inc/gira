@@ -7,10 +7,6 @@
 			"launchShowDuration": 0
 		},
 		"CapacitorHttp": {
-			"enabled": true
 		}
-	},
-	"server": {
-		"androidScheme": "https"
 	}
 }

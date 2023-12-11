@@ -1,17 +1,19 @@
  <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
-	import { GeoJSONFeature, GeoJSONSource, Map, Popup, type MapGeoJSONFeature } from 'maplibre-gl';
+	import { createEventDispatcher, onMount, tick } from 'svelte';
+	import { GeoJSONSource, Map } from 'maplibre-gl';
+	import { stations } from '$lib/stores';
+	// import GeoJSON
 	import type { GeoJSON } from 'geojson';
-	import { stations, token } from '$lib/stores';
+	export let blurred = true;
 	let mapElem: HTMLDivElement;
 	let map : Map;
 	let mapLoaded = false;
 	let dispatch = createEventDispatcher();
 
 	let selected:string|null = null;
-
 	function setSourceData() {
 		const src = map.getSource('points') as GeoJSONSource|null;
+		// log += 'setSourceData1\n';
 		if (src instanceof GeoJSONSource) {
 			const data:GeoJSON.GeoJSON = {
 				'type': 'FeatureCollection',
@@ -30,12 +32,13 @@
 					},
 				})),
 			};
+			// log += 'setSourceData2\n';
 			src.setData(data);
+		// log += 'setSourceData3\n';
 		}
 	}
 	onMount(async () => {
-		// fetch('/assets/bike_marker_white.png').then(r => r.blob()).then(console.debug).catch(console.error);
-		// fetch('/assets/bike_marker_white.png').then(r => r.blob()).then(console.debug).catch(console.error);
+		await tick();
 		map = new Map({
 			container: mapElem,
 			style: 'https://tiles2.intermodal.pt/styles/iml/style.json',
@@ -44,30 +47,17 @@
 		});
 		map.on('load', () => {
 			mapLoaded = true;
-			// load bike_marker_white.png
+			let bike_white = new Image;
 			let promiseWhite = new Promise((resolve, reject) => {
-				map.loadImage('/assets/bike_marker_white.png', (error, image) => {
-					console.log('loadImage', error, image);
-					if (error) reject(error);
-					if (image === undefined || image === null) {
-						reject('image is undefined or null');
-						return;
-					}
-					map.addImage('bike_white', image);
-					resolve(image);
-				});
+				bike_white.onload = e => { map.addImage('bike_white', bike_white); resolve(e); };
+				bike_white.onerror = reject;
+				bike_white.src = './assets/bike_marker_white.svg';
 			});
+			let bike_green = new Image;
 			let promiseGreen = new Promise((resolve, reject) => {
-				map.loadImage('/assets/bike_marker_green.png', (error, image) => {
-					console.log('loadImage', error, image);
-					if (error) reject(error);
-					if (image === undefined || image === null) {
-						reject('image is undefined or null');
-						return;
-					}
-					map.addImage('bike_green', image);
-					resolve(image);
-				});
+				bike_green.onload = e => { map.addImage('bike_green', bike_green); resolve(e); };
+				bike_green.onerror = reject;
+				bike_green.src = './assets/bike_marker_green.svg';
 			});
 			Promise.all([promiseGreen, promiseWhite]).then(
 				() => {
@@ -78,7 +68,7 @@
 						'layout': {
 							// bike_white if active, bike_green otherwise
 							'icon-image': ['case', ['get', 'active'], 'bike_green', 'bike_white'],
-							'icon-size': 0.17,
+							'icon-size': 0.5,
 							'icon-anchor': 'bottom',
 							'text-field': '{bikes}',
 							'text-size': 20,
@@ -99,12 +89,15 @@
 					});
 				},
 			);
+			// log += 'before addSource\n';
 			map.addSource('points', {
 				'type': 'geojson',
 				'data': { type: 'FeatureCollection', features: [] },
 			});
+			// log += 'before setSourceData()\n';
 			setSourceData();
 		});
+		await tick();
 	});
 	$:if ($stations && map) {
 		if (mapLoaded) {
@@ -112,4 +105,8 @@
 		}
 	}
 </script>
-<div bind:this={mapElem} class="h-full w-full {$token ? '' : 'blur'}"></div>
+{#if blurred || !mapLoaded}
+	<div class="blur absolute bg-cover bg-no-repeat bg-center w-full h-full bg-[url(/assets/map-preview.jpg)]">
+	</div>
+{/if}
+<div bind:this={mapElem} class="h-full w-full"></div>

@@ -2,7 +2,6 @@
 	import { IconBattery, IconBattery1, IconBattery2, IconBattery3, IconBattery4, IconBolt, IconLockOpen, IconSettings } from '@tabler/icons-svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import { fade } from 'svelte/transition';
 
 	export let type:'classic'|'electric'|null = null, id:string|null = null, battery:number|null = null, dock:string|null = null, disabled = false;
 	export let action = () => console.log('unlock');
@@ -21,7 +20,7 @@
 	}
 	function onTouchMove(event: TouchEvent) {
 		if (dragging && !disabled) {
-			pos.set(event.touches[0].clientX - initPos);
+			pos.set(event.touches[0].clientX - initPos, { duration: 0 });
 			moved = true;
 		} else {
 			pos.set(0);

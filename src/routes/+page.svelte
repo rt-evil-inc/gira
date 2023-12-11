@@ -19,6 +19,6 @@
 	<Map on:station-click={e => {
 		console.log(e);
 		openStation = e.detail;
-	}}/>
+	}} blurred={!$token}/>
 	<StationMenu bind:id={openStation} />
 </div>
