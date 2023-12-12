@@ -126,3 +126,53 @@ export async function startTrip() {
 	// });
 	// return req;
 }
+// // returns an int or float of the active trip cost
+// async function get_active_trip_cost(){
+//     response = await make_post_request("https://apigira.emel.pt/graphql", JSON.stringify({
+//         "operationName": "activeTripCost",
+//         "variables": {},
+//         "query": "query activeTripCost {activeTripCost}"
+//     }), user.accessToken)
+//     return response.data.activeTripCost
+// }
+
+export async function getActiveTripCost() {
+	console.log('mock getActiveTripCost');
+	const req = query<['activeTripCost']>({
+		'variables': {},
+		'query': `query { activeTripCost }`,
+	});
+	return req;
+}
+
+export async function getActiveTrip() {
+	const req = query<['activeTrip']>({
+		'variables': {},
+		'query': `query { activeTrip { code, startDate, endDate, cost, client, tripStatus, version } }`,
+	});
+	return req;
+}
+
+export async function rateTrip(tripCode: string, tripRating: number, tripComment: string) {
+	const req = mutate<['rateTrip']>({
+		'variables': { in: { code: tripCode, rating: tripRating, description: '', attachment: { bytes: null, fileName: `img_${tripCode}.png`, mimeType: 'image/png' } } },
+		'query': `mutation ($in: RateTrip_In) { rateTrip(in: $in) }`,
+	});
+	return req;
+}
+
+export async function tripPayWithNoPoints(tripCode: string) {
+	const req = mutate<['tripPayWithNoPoints']>({
+		'variables': { input: tripCode },
+		'query': `mutation ($input: String) { tripPayWithNoPoints(input: $input) }`,
+	});
+	return req;
+}
+
+export async function tripPayWithPoints(tripCode: string) {
+	const req = mutate<['tripPayWithPoints']>({
+		'variables': { input: tripCode },
+		'query': `mutation ($input: String) { tripPayWithPoints(input: $input) }`,
+	});
+	return req;
+}
