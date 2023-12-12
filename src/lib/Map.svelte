@@ -83,8 +83,10 @@
 						selectedStation = props.serialNumber;
 						await tick();
 						await tick();
-						console.log(menuHeight / 2 - 100);
-						map.flyTo({ center: feature.geometry.coordinates as [number, number], zoom: 13, padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) } });
+						map.flyTo({
+							center: feature.geometry.coordinates as [number, number],
+							padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
+						});
 					});
 				},
 			);
@@ -97,6 +99,7 @@
 	});
 	$:if ($stations && map) {
 		selectedStation = selectedStation;
+		console.log('new stations');
 		if (mapLoaded) {
 			setSourceData();
 		}
