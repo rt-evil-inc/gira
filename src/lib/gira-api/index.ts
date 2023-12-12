@@ -1,23 +1,33 @@
 import { token, type StationInfo, stations } from '$lib/stores';
-import type { Query } from './types';
+import type { Mutation, Query } from './types';
 import { get } from 'svelte/store';
-import { CapacitorHttp } from '@capacitor/core';
+import { CapacitorHttp, type HttpResponse } from '@capacitor/core';
 type Q<T extends (keyof Query)[]> = {[K in T[number]]:Query[K]};
+type M<T extends (keyof Mutation)[]> = {[K in T[number]]:Mutation[K]};
 
-function recursivePrintObject(obj:any, depth:number = 0) {
-	if (depth > 10) return;
-	if (typeof obj === 'object') {
-		for (const key in obj) {
-			if (obj.hasOwnProperty(key)) {
-				const element = obj[key];
-				console.log(' '.repeat(depth * 2), key, element);
-				recursivePrintObject(element, depth + 1);
-			}
+const retries = 3;
+
+async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
+	let res: HttpResponse = { status: 0, data: {}, headers: {}, url: '' };
+	for (let tryNum = 0; tryNum < retries; tryNum++) {
+		res = await CapacitorHttp.post({
+			url: 'https://apigira.emel.pt/graphql',
+			headers: {
+				'User-Agent': 'Gira/3.2.8 (Android 34)',
+				'content-type': 'application/json',
+				'authorization': `Bearer ${get(token)?.accessToken}`,
+			},
+			data: body,
+		});
+		console.log(res);
+		if (res.status >= 200 && res.status < 300) {
+			console.log(res.status);
+			return res.data.data as Promise<M<T>>;
 		}
 	}
+	throw new Error(res.data.errors || res.status);
 }
-
-async function post<T extends(keyof Query)[]>(body:any): Promise<Q<T>> {
+async function query<T extends(keyof Query)[]>(body:any): Promise<Q<T>> {
 	return CapacitorHttp.post({
 		url: 'https://apigira.emel.pt/graphql',
 		headers: {
@@ -32,7 +42,7 @@ async function post<T extends(keyof Query)[]>(body:any): Promise<Q<T>> {
 }
 
 export async function getStations(): Promise<Q<['getStations']>> {
-	const req = post<['getStations']>({
+	const req = query<['getStations']>({
 		'operationName': 'getStations',
 		'variables': {},
 		'query': 'query getStations {getStations {code, description, latitude, longitude, name, bikes, docks, serialNumber }}',
@@ -64,8 +74,7 @@ export async function updateStations() {
 }
 
 export async function getStationInfo(stationId: string): Promise<Q<['getBikes', 'getDocks']>> {
-	console.log('getStationInfo', stationId);
-	const req = post<['getBikes', 'getDocks']>({
+	const req = query<['getBikes', 'getDocks']>({
 		'variables': { input: stationId },
 		'query': `query { 
 				getBikes(input: "${stationId}") { battery, code, name, kms, serialNumber, type, parent }
@@ -77,7 +86,7 @@ export async function getStationInfo(stationId: string): Promise<Q<['getBikes', 
 
 export async function getBikes(stationId: string): Promise<Q<['getBikes']>> {
 	console.log('getBikes', stationId);
-	const req = post<['getBikes']>({
+	const req = query<['getBikes']>({
 		'variables': { input: stationId },
 		'query': `query ($input: String) { getBikes(input: $input) { type, kms, battery, serialNumber, assetType, assetStatus, assetCondition, parent, warehouse, zone, location, latitude, longitude, code, name, description, creationDate, createdBy, updateDate, updatedBy, defaultOrder, version }}`,
 	});
@@ -86,9 +95,34 @@ export async function getBikes(stationId: string): Promise<Q<['getBikes']>> {
 
 export async function getDocks(stationId: string): Promise<Q<['getDocks']>> {
 	console.log('getDocks', stationId);
-	const req = post<['getDocks']>({
+	const req = query<['getDocks']>({
 		'variables': { input: stationId },
 		'query': `query ($input: String) { getDocks(input: $input) { ledStatus, lockStatus, serialNumber, assetType, assetStatus, assetCondition, parent, warehouse, zone, location, latitude, longitude, code, name, description, creationDate, createdBy, updateDate, updatedBy, defaultOrder, version }}`,
 	});
 	return req;
+}
+
+export async function reserveBike(serialNumber: string) {
+	const req = mutate<['reserveBike']>({
+		'variables': { input: serialNumber },
+		'query': `mutation ($input: String) { reserveBike(input: $input) }`,
+	});
+	return req;
+}
+
+export async function cancelBikeReserve() {
+	const req = mutate<['cancelBikeReserve']>({
+		'variables': {},
+		'query': `mutation { cancelBikeReserve }`,
+	});
+	return req;
+}
+
+export async function startTrip() {
+	console.log('mock startTrip');
+	// const req = mutate<['startTrip']>({
+	// 	'variables': {},
+	// 	'query': `mutation { startTrip }`,
+	// });
+	// return req;
 }

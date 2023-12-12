@@ -16,7 +16,7 @@
 		id = null;
 	};
 	let name = '', bikes = 0, freeDocks = 0, distance = '', code = '',
-		bikeInfo: {type:'electric'|'classic', id:string, battery:number|null, dock:string}[] = [];
+		bikeInfo: {type:'electric'|'classic', id:string, battery:number|null, dock:string, serial:string}[] = [];
 	let isScrolling = false;
 	let dragging = false;
 	let timeout:ReturnType<typeof setTimeout> = setTimeout(() => {}, 0);
@@ -72,6 +72,7 @@
 				id: bike!.name!,
 				battery: parseInt(bike!.battery!) ?? null,
 				dock: dock!.name!,
+				serial: bike!.serialNumber!,
 			};
 		});
 		if (tmpBikeInfo) bikeInfo = tmpBikeInfo;
@@ -115,7 +116,7 @@
 				{/each}
 			{/if}
 			{#each bikeInfo as bike}
-				<Bike type={bike.type} id={bike.id} battery={bike.battery} dock={bike.dock} disabled={isScrolling} />
+				<Bike type={bike.type} id={bike.id} battery={bike.battery} dock={bike.dock} serial={bike.serial} disabled={isScrolling} />
 			{/each}
 			<div class="fixed left-0 w-full h-4 -mt-6" style:box-shadow="0px 6px 6px 0px #FFF" />
 		</div>

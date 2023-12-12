@@ -2,9 +2,18 @@
 	import { IconBattery, IconBattery1, IconBattery2, IconBattery3, IconBattery4, IconBolt, IconLockOpen, IconSettings } from '@tabler/icons-svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
+	import { cancelBikeReserve, reserveBike, startTrip } from './gira-api';
 
-	export let type:'classic'|'electric'|null = null, id:string|null = null, battery:number|null = null, dock:string|null = null, disabled = false;
-	export let action = () => console.log('unlock');
+	export let type:'classic'|'electric'|null = null, id:string|null = null, battery:number|null = null, dock:string|null = null, disabled = false, serial:string|null = null;
+	export let action = async () => {
+		if (serial == null) return;
+		try {
+			await reserveBike(serial);
+			await startTrip();
+		} catch (e) {
+			console.error(e);
+		}
+	};
 
 	let dragging = false;
 	let initPos = 0;
