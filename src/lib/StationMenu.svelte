@@ -76,6 +76,8 @@
 			};
 		});
 		if (tmpBikeInfo) bikeInfo = tmpBikeInfo;
+		await tick();
+		bikeListHeight = bikeList.clientHeight;
 		//TODO calc
 		distance = '1.2km';
 	}

@@ -4,6 +4,7 @@
 	import StationMenu from '$lib/StationMenu.svelte';
 	import { token } from '$lib/stores';
 	import 'maplibre-gl/dist/maplibre-gl.css';
+	import { fade } from 'svelte/transition';
 
 	let selectedStation:string|null = null;
 	let menuHeight = 0;
@@ -11,8 +12,8 @@
 </script>
 
 <div class="h-full w-full relative overflow-hidden">
-	{#if !$token}
-		<div class="absolute w-full h-full z-20 flex items-center justify-center">
+	{#if !$token == null}
+		<div transition:fade={{ duration: 150 }} class="absolute w-full h-full z-20 flex items-center justify-center">
 			<!-- login -->
 			<Login />
 		</div>

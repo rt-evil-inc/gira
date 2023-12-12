@@ -28,7 +28,7 @@ export type StationInfo ={
 // const k = await Preferences.get({ key: 'email' });
 
 export const userCredentials: Writable<{email: string, password: string}|null> = writable(null);
-export const token: Writable<Token|null> = writable(null);
+export const token: Writable<Token|null|undefined> = writable(undefined);
 export const user: Writable<User|null> = writable(null);
 export const stations = writable<StationInfo[]>([]);
 
@@ -58,7 +58,7 @@ type JWT = {
 };
 let tokenRefreshTimeout: ReturnType<typeof setTimeout>|null = null;
 token.subscribe(v => {
-	if (v === null) return;
+	if (!v) return;
 	const jwt:JWT = JSON.parse(window.atob(v.accessToken.split('.')[1]));
 	updateUserInfo();
 	updateStations();
@@ -66,7 +66,7 @@ token.subscribe(v => {
 	tokenRefreshTimeout = setTimeout(refreshToken, jwt.exp * 1000 - Date.now() - 1000 * 30);
 });
 userCredentials.subscribe(async v => {
-	if (v === null) return;
+	if (!v) return;
 	const responseCode = await login(v.email, v.password);
 	if (responseCode !== 0) {
 		console.log('login failed');
