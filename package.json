@@ -12,7 +12,7 @@
     "dev:cap": "node scripts/syncnetworkconfig.js && vite dev --host",
     "build:cap": "vite build && npx cap sync",
     "ionic:build": "npm run build",
-    "ionic:serve": "npm run dev",
+    "ionic:serve": "npm run dev --",
     "compile": "graphql-codegen"
   },
   "devDependencies": {
