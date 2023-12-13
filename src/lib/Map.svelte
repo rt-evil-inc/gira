@@ -194,6 +194,12 @@
 
 	$:if (following.active) {
 		watchUserLocation();
+		if (pos) {
+			map.flyTo({
+				center: [pos.coords.longitude, pos.coords.latitude],
+				padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
+			});
+		}
 	}
 </script>
 
