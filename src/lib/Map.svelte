@@ -1,5 +1,5 @@
  <script lang="ts">
-	import { onMount, tick } from 'svelte';
+	import { onDestroy, onMount, tick } from 'svelte';
 	import { AttributionControl, GeoJSONSource, Map } from 'maplibre-gl';
 	import type { GeoJSON } from 'geojson';
 
@@ -105,6 +105,10 @@
 				padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
 			});
 		});
+		// on dragging map, remove user tracking
+		map.on('dragstart', function () {
+			following.active = false;
+		});
 	}
 	function loadImages() {
 		const imgs = [['bike_white', './assets/bike_marker_white.svg'], ['bike_green', './assets/bike_marker_green.svg']];
@@ -120,13 +124,12 @@
 		addLayers();
 		addEventListeners();
 	}
-	let isWatching = false;
+	let isWatching:string|null = null;
 	async function watchUserLocation() {
 		if (isWatching) return;
 		let perms = await Geolocation.requestPermissions();
 		console.log('perms', perms);
-		isWatching = true;
-		let k = Geolocation.watchPosition({
+		isWatching = await Geolocation.watchPosition({
 			enableHighAccuracy: true,
 			timeout: 10000,
 		}, pos => {
@@ -148,6 +151,12 @@
 					};
 					following.status = pos.coords.accuracy < 50 ? 'fix' : 'approx';
 					src.setData(data);
+					if (following.active) {
+						map.flyTo({
+							center: [pos.coords.longitude, pos.coords.latitude],
+							padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
+						});
+					}
 				} else {
 					following.status = null;
 					map.addSource('user-location', {
@@ -157,7 +166,6 @@
 				}
 			}
 		});
-		console.log('watching', k);
 	}
 
 	onMount(async () => {
@@ -178,6 +186,12 @@
 			setSourceData();
 		}
 	}
+	onDestroy(() => {
+		map.remove();
+		if (isWatching) {
+			Geolocation.clearWatch({ id: isWatching });
+		}
+	});
 
 	$:if (following.active) {
 		watchUserLocation();
