@@ -13,7 +13,7 @@
     "build:cap": "vite build && npx cap sync",
     "ionic:build": "npm run build",
     "ionic:serve": "npm run dev --",
-    "compile": "graphql-codegen"
+    "compile": "vite build && npx cap sync && cd android && ((CALL .\\gradlew build --info) || (./gradlew build --info))"
   },
   "devDependencies": {
     "@fontsource/poppins": "^5.0.8",
