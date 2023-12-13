@@ -5,7 +5,7 @@
 	import '@fontsource/inter/600.css';
 	import '@fontsource/inter/700.css';
 	import '@fontsource/roboto-mono';
-	import { IconLoader2 } from '@tabler/icons-svelte';
+	import IconLoader2 from '@tabler/icons-svelte/dist/svelte/icons/IconLoader2.svelte';
 	import { onMount } from 'svelte';
 	import '../app.css';
 	import { fade } from 'svelte/transition';

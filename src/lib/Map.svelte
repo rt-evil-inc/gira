@@ -187,7 +187,7 @@
 		}
 	}
 	onDestroy(() => {
-		map.remove();
+		if (map) map.remove();
 		if (isWatching) {
 			Geolocation.clearWatch({ id: isWatching });
 		}

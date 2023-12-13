@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { IconBattery, IconBattery1, IconBattery2, IconBattery3, IconBattery4, IconBolt, IconLockOpen, IconSettings } from '@tabler/icons-svelte';
+	import IconBattery from '@tabler/icons-svelte/dist/svelte/icons/IconBattery.svelte';
+	import IconBattery1 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery1.svelte';
+	import IconBattery2 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery2.svelte';
+	import IconBattery3 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery3.svelte';
+	import IconBattery4 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery4.svelte';
+	import IconBolt from '@tabler/icons-svelte/dist/svelte/icons/IconBolt.svelte';
+	import IconLockOpen from '@tabler/icons-svelte/dist/svelte/icons/IconLockOpen.svelte';
+	import IconSettings from '@tabler/icons-svelte/dist/svelte/icons/IconSettings.svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { cancelBikeReserve, reserveBike, startTrip } from './gira-api';
