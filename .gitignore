@@ -11,5 +11,6 @@ vite.config.ts.timestamp-*
 
 # Capacitor
 /android
+!/android/app/src/main/AndroidManifest.xml
 /ios
 capacitor.config.json.timestamp-*
