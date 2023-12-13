@@ -185,6 +185,6 @@
 </script>
 
 {#if !mapLoaded || blurred || $stations.length == 0}
-	<div out:fade={{ duration: 1000 }} class="blur absolute bg-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[2000px] h-[2000px] z-10 bg-[url(/assets/map-preview-full.png)]" />
+	<div out:fade={{ duration: 500 }} class="blur absolute bg-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[2000px] h-[2000px] z-10 bg-[url(/assets/map-preview-full.png)]" />
 {/if}
 <div bind:this={mapElem} class="h-full w-full"></div>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { draw } from 'svelte/transition';
 	export let following = { active: false, status: null };
-	const duration = 500;
+	const duration = 150;
 
 	function inverseCubicInOut(y:number) {
 		// Check which part of the original function's definition applies
