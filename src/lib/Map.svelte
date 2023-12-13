@@ -4,8 +4,9 @@
 	import type { GeoJSON } from 'geojson';
 
 	import { stations } from '$lib/stores';
-	import { Geolocation } from '@capacitor/geolocation';
+	import { Geolocation, type Position } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
+	import { pulsingDot } from './pulsing-dot';
 	export let blurred = true;
 	export let selectedStation:string|null = null;
 	export let following:{active:boolean, status:'fix'|'approx'|null} = { active: false, status: null };
@@ -13,6 +14,7 @@
 	let mapElem: HTMLDivElement;
 	let map : Map;
 	let mapLoaded = false;
+	let pos: Position|null = null;
 
 	function setSourceData() {
 		const src = map.getSource('points') as GeoJSONSource|null;
@@ -79,15 +81,10 @@
 		});
 		map.addLayer({
 			'id': 'user-location',
-			'type': 'circle',
+			'type': 'symbol',
 			'source': 'user-location',
-			'layout': {},
-
-			paint: {
-				'circle-radius': 10,
-				'circle-color': '#79c000',
-				'circle-stroke-color': '#fff',
-				'circle-stroke-width': 4,
+			'layout': {
+				'icon-image': 'pulsing-dot',
 			},
 		});
 	}
@@ -111,6 +108,7 @@
 		});
 	}
 	function loadImages() {
+		map.addImage('pulsing-dot', pulsingDot(map), { pixelRatio: 2 });
 		const imgs = [['bike_white', './assets/bike_marker_white.svg'], ['bike_green', './assets/bike_marker_green.svg']];
 		return Promise.all(imgs.map(([name, url]) => loadSvg(url).then(img => {
 			map.addImage(name, img);
@@ -132,7 +130,8 @@
 		isWatching = await Geolocation.watchPosition({
 			enableHighAccuracy: true,
 			timeout: 10000,
-		}, pos => {
+		}, position => {
+			pos = position;
 			if (pos && pos.coords) {
 				console.log('pos', pos);
 				const src = map.getSource('user-location') as GeoJSONSource|null;
