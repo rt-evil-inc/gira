@@ -80,7 +80,10 @@ userCredentials.subscribe(async v => {
 export async function loadUserCreds() {
 	const email = (await Preferences.get({ key: 'email' })).value;
 	const password = (await Preferences.get({ key: 'password' })).value;
+	console.log(email, password);
 	if (email && password) {
 		userCredentials.set({ email, password });
+	} else {
+		token.set(null);
 	}
 }

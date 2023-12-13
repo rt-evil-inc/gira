@@ -1,12 +1,14 @@
  <script lang="ts">
-	import { createEventDispatcher, onMount, tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { AttributionControl, GeoJSONSource, Map } from 'maplibre-gl';
-	import { stations } from '$lib/stores';
-	// import GeoJSON
 	import type { GeoJSON } from 'geojson';
+
+	import { stations } from '$lib/stores';
+	import { Geolocation } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
 	export let blurred = true;
 	export let selectedStation:string|null = null;
+	export let following:{active:boolean, status:'fix'|'approx'|null} = { active: false, status: null };
 	export let menuHeight = 0;
 	let mapElem: HTMLDivElement;
 	let map : Map;
@@ -35,6 +37,13 @@
 			src.setData(data);
 		} else {
 			map.addSource('points', {
+				'type': 'geojson',
+				'data': { type: 'FeatureCollection', features: [] },
+			});
+		}
+		const userSrc = map.getSource('user-location') as GeoJSONSource|null;
+		if (!(userSrc instanceof GeoJSONSource)) {
+			map.addSource('user-location', {
 				'type': 'geojson',
 				'data': { type: 'FeatureCollection', features: [] },
 			});
@@ -68,6 +77,19 @@
 				'text-color': ['case', ['get', 'active'], '#fff', '#79c000'],
 			},
 		});
+		map.addLayer({
+			'id': 'user-location',
+			'type': 'circle',
+			'source': 'user-location',
+			'layout': {},
+
+			paint: {
+				'circle-radius': 10,
+				'circle-color': '#79c000',
+				'circle-stroke-color': '#fff',
+				'circle-stroke-width': 4,
+			},
+		});
 	}
 
 	function addEventListeners() {
@@ -94,9 +116,48 @@
 	async function onMapLoad() {
 		mapLoaded = true;
 		await loadImages();
+		setSourceData();
 		addLayers();
 		addEventListeners();
-		setSourceData();
+	}
+	let isWatching = false;
+	async function watchUserLocation() {
+		if (isWatching) return;
+		let perms = await Geolocation.requestPermissions();
+		console.log('perms', perms);
+		isWatching = true;
+		let k = Geolocation.watchPosition({
+			enableHighAccuracy: true,
+			timeout: 10000,
+		}, pos => {
+			if (pos && pos.coords) {
+				console.log('pos', pos);
+				const src = map.getSource('user-location') as GeoJSONSource|null;
+				// dont change to GeoJSONSource as building breaks for no apparent reason
+				if (src !== null) {
+					const data:GeoJSON.GeoJSON = {
+						'type': 'FeatureCollection',
+						'features': [{
+							type: 'Feature',
+							properties: {},
+							geometry: {
+								type: 'Point',
+								coordinates: [pos.coords.longitude, pos.coords.latitude],
+							},
+						}],
+					};
+					following.status = pos.coords.accuracy < 50 ? 'fix' : 'approx';
+					src.setData(data);
+				} else {
+					following.status = null;
+					map.addSource('user-location', {
+						'type': 'geojson',
+						'data': { type: 'FeatureCollection', features: [] },
+					});
+				}
+			}
+		});
+		console.log('watching', k);
 	}
 
 	onMount(async () => {
@@ -117,7 +178,12 @@
 			setSourceData();
 		}
 	}
+
+	$:if (following.active) {
+		watchUserLocation();
+	}
 </script>
+
 {#if !mapLoaded || blurred || $stations.length == 0}
 	<div out:fade={{ duration: 1000 }} class="blur absolute bg-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[2000px] h-[2000px] z-10 bg-[url(/assets/map-preview-full.png)]" />
 {/if}

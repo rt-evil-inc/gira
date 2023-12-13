@@ -9,3 +9,11 @@
 *::selection {
   @apply bg-neutral-300;
 }
+
+input,
+textarea,
+button,
+select,
+a {
+    -webkit-tap-highlight-color: transparent;
+}

@@ -45,10 +45,6 @@
 		}
 	}
 
-	onMount(async () => {
-		if (id == null) return;
-		updateInfo(id);
-	});
 	async function updateInfo(stationId:string) {
 		if ($stations) {
 			let station = $stations.find(s => s.serialNumber == id);
@@ -82,45 +78,54 @@
 		distance = '1.2km';
 	}
 
+	onMount(() => {
+		pos.set(dragged.clientHeight, { duration: 0 });
+		if (id == null) return;
+		updateInfo(id);
+	});
+
 	$: if (id != null) {
-		pos.set(0);
+		$pos = 0;
 		updateInfo(id);
 		bikeInfo = [];
 	}
 </script>
 
-<div bind:this={dragged} class="absolute w-full bottom-0 bg-white rounded-t-4xl z-10" style:transform="translate(0,{$pos}px)" style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)">
-	<div class="w-full h-6 pt-2" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove}>
-		<div class="mx-auto bg-neutral-200 w-16 h-[6px] rounded-full"></div>
-	</div>
-	<div class="flex p-9 pt-0 pb-2 gap-4" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove}>
-		<div class="flex flex-col grow">
-			<div class="flex items-center gap-2">
-				<span class="font-bold text-sm text-neutral-500">Estação {code}</span>
-				<span class="font-medium bg-neutral-100 text-xs text-neutral-500 px-1 py-[1px] rounded">{distance}</span>
+<div class="absolute w-full bottom-0 z-10" style:transform="translate(0,{$pos}px)" >
+	<slot></slot>
+	<div bind:this={dragged} class="bg-white rounded-t-4xl" style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)">
+		<div class="w-full h-6 pt-2" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove}>
+			<div class="mx-auto bg-neutral-200 w-16 h-[6px] rounded-full"></div>
+		</div>
+		<div class="flex p-9 pt-0 pb-2 gap-4" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove}>
+			<div class="flex flex-col grow">
+				<div class="flex items-center gap-2">
+					<span class="font-bold text-sm text-neutral-500">Estação {code}</span>
+					<span class="font-medium bg-neutral-100 text-xs text-neutral-500 px-1 py-[1px] rounded">{distance}</span>
+				</div>
+				<span class="text-xs font-medium text-neutral-400 leading-none mt-[2px]">{name}</span>
 			</div>
-			<span class="text-xs font-medium text-neutral-400 leading-none mt-[2px]">{name}</span>
+			<div class="flex flex-col items-center text-neutral-500">
+				<span class="font-bold text-2xl leading-none">{bikes}</span>
+				<span class="font-bold text-[7px] leading-none">BICICLETAS</span>
+			</div>
+			<div class="flex flex-col items-center text-neutral-500">
+				<span class="font-bold text-2xl leading-none">{freeDocks}</span>
+				<span class="font-bold text-[7px] text-center leading-none">DOCAS<br>LIVRES</span>
+			</div>
 		</div>
-		<div class="flex flex-col items-center text-neutral-500">
-			<span class="font-bold text-2xl leading-none">{bikes}</span>
-			<span class="font-bold text-[7px] leading-none">BICICLETAS</span>
-		</div>
-		<div class="flex flex-col items-center text-neutral-500">
-			<span class="font-bold text-2xl leading-none">{freeDocks}</span>
-			<span class="font-bold text-[7px] text-center leading-none">DOCAS<br>LIVRES</span>
-		</div>
-	</div>
-	<div class="overflow-y-auto transition-all" style:height="calc(min(50vh,{bikeListHeight}px))" on:scroll={() => isScrolling = true} on:touchend={() => isScrolling = false} style:box-shadow="0px 60px 40px -40px #FFF inset">
-		<div bind:this={bikeList} class="flex flex-col p-5 pt-2 gap-3">
-			{#if bikeInfo.length == 0}
-				{#each new Array(bikes) as _}
-					<Bike disabled={true} />
+		<div class="overflow-y-auto transition-all" style:height="calc(min(50vh,{bikeListHeight}px))" on:scroll={() => isScrolling = true} on:touchend={() => isScrolling = false} style:box-shadow="0px 60px 40px -40px #FFF inset">
+			<div bind:this={bikeList} class="flex flex-col p-5 pt-2 gap-3">
+				{#if bikeInfo.length == 0}
+					{#each new Array(bikes) as _}
+						<Bike disabled={true} />
+					{/each}
+				{/if}
+				{#each bikeInfo as bike}
+					<Bike type={bike.type} id={bike.id} battery={bike.battery} dock={bike.dock} serial={bike.serial} disabled={isScrolling} />
 				{/each}
-			{/if}
-			{#each bikeInfo as bike}
-				<Bike type={bike.type} id={bike.id} battery={bike.battery} dock={bike.dock} serial={bike.serial} disabled={isScrolling} />
-			{/each}
-			<div class="fixed left-0 w-full h-4 -mt-6" style:box-shadow="0px 6px 6px 0px #FFF" />
+				<div class="fixed left-0 w-full h-4 -mt-6" style:box-shadow="0px 6px 6px 0px #FFF" />
+			</div>
 		</div>
 	</div>
 </div>
