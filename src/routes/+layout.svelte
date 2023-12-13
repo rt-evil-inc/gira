@@ -1,10 +1,10 @@
 <script>
 	import { loadUserCreds, loadingTasks } from '$lib/stores';
-	import '@fontsource/inter';
-	import '@fontsource/inter/500.css';
-	import '@fontsource/inter/600.css';
-	import '@fontsource/inter/700.css';
-	import '@fontsource/roboto-mono';
+	import '@fontsource/inter/latin-400.css';
+	import '@fontsource/inter/latin-500.css';
+	import '@fontsource/inter/latin-600.css';
+	import '@fontsource/inter/latin-700.css';
+	import '@fontsource/roboto-mono/latin-400.css';
 	import IconLoader2 from '@tabler/icons-svelte/dist/svelte/icons/IconLoader2.svelte';
 	import { onMount } from 'svelte';
 	import '../app.css';
