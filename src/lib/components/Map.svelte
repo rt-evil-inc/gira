@@ -6,7 +6,7 @@
 	import { stations } from '$lib/stores';
 	import { Geolocation, type Position } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
-	import { pulsingDot } from './pulsing-dot';
+	import { pulsingDot } from '$lib/pulsing-dot';
 	export let blurred = true;
 	export let selectedStation:string|null = null;
 	export let following:{active:boolean, status:'fix'|'approx'|null} = { active: false, status: null };

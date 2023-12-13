@@ -124,7 +124,9 @@ export async function startTrip() {
 	// 	'variables': {},
 	// 	'query': `mutation { startTrip }`,
 	// });
-	// return req;
+	const req = { startTrip: true };
+
+	return req;
 }
 // // returns an int or float of the active trip cost
 // async function get_active_trip_cost(){

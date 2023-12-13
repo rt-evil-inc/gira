@@ -9,18 +9,26 @@
 	import IconSettings from '@tabler/icons-svelte/dist/svelte/icons/IconSettings.svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import { cancelBikeReserve, reserveBike, startTrip } from './gira-api';
+	import { cancelBikeReserve, reserveBike, startTrip } from '../gira-api';
+	import { createEventDispatcher } from 'svelte';
 
 	export let type:'classic'|'electric'|null = null, id:string|null = null, battery:number|null = null, dock:string|null = null, disabled = false, serial:string|null = null;
 	export let action = async () => {
 		if (serial == null) return;
 		try {
-			await reserveBike(serial);
-			await startTrip();
+			let reservedBike = (await reserveBike(serial)).reserveBike;
+			if (reservedBike) {
+				let success = (await startTrip()).startTrip;
+				if (success) {
+					dispatch('trip-started', { serial });
+				}
+			}
 		} catch (e) {
 			console.error(e);
 		}
 	};
+
+	const dispatch = createEventDispatcher();
 
 	let dragging = false;
 	let initPos = 0;

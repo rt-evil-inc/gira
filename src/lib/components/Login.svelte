@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { login } from '$lib/auth';
-	import { userCredentials } from './stores';
+	import { userCredentials } from '../stores';
 	let email = '';
 	let password = '';
 	let errorCode:number|null = null;

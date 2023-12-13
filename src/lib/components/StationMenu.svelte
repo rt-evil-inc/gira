@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { tweened } from 'svelte/motion';
-	import Bike from './Bike.svelte';
+	import Bike from '$lib/components/Bike.svelte';
 	import { cubicOut } from 'svelte/easing';
-	import { getStationInfo } from './gira-api';
+	import { getStationInfo } from '$lib/gira-api';
 	import { onMount } from 'svelte';
-	import { stations } from './stores';
+	import { stations } from '$lib/stores';
 	import { tick } from 'svelte';
 
 	export let id: string|null = '';

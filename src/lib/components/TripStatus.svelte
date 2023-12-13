@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fade, fly } from 'svelte/transition';
-	import Metric from './Metric.svelte';
+	import Metric from '$lib/components/Metric.svelte';
 	import { cubicInOut } from 'svelte/easing';
 
 	export let destination:boolean, bike:string, time:string, distance:string, speed:string, distanceLeft:string, timeLeft:string, arrivalTime:string;
