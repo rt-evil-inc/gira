@@ -9,7 +9,7 @@
 
 	export let id: string|null = '';
 	let initPos = 0;
-	let pos = tweened(id != null ? 0 : 9999, { duration: 100, easing: cubicOut });
+	let pos = tweened(id != null ? 0 : 9999, { duration: 150, easing: cubicOut });
 	let dragged:HTMLDivElement;
 	let dismiss = () => {
 		pos.set(dragged.clientHeight);
@@ -19,14 +19,21 @@
 		bikeInfo: {type:'electric'|'classic', id:string, battery:number|null, dock:string, serial:string}[] = [];
 	let isScrolling = false;
 	let dragging = false;
-	let timeout:ReturnType<typeof setTimeout> = setTimeout(() => {}, 0);
+	let timeout:ReturnType<typeof setTimeout>;
 	let bikeList:HTMLDivElement;
 	export let bikeListHeight = 0;
+	let menu:HTMLDivElement;
+	export let posTop:number|undefined = 0;
+	let updating = false;
+	$: if ($pos !== null && !dragging && !updating) {
+		posTop = menu?.getBoundingClientRect().y;
+	} else {
+		posTop = undefined;
+	}
 
 	function onTouchStart(event: TouchEvent) {
 		dragging = true;
 		initPos = event.touches[0].clientY - $pos;
-		clearTimeout(timeout);
 	}
 	function onTouchMove(event: TouchEvent) {
 		if (dragging) {
@@ -46,6 +53,8 @@
 	}
 
 	async function updateInfo(stationId:string) {
+		updating = true;
+		clearTimeout(timeout);
 		if ($stations) {
 			let station = $stations.find(s => s.serialNumber == id);
 			if (station) {
@@ -74,6 +83,8 @@
 		if (tmpBikeInfo) bikeInfo = tmpBikeInfo;
 		await tick();
 		bikeListHeight = bikeList.clientHeight;
+		await tick();
+		timeout = setTimeout(() => updating = false, 150);
 		//TODO calc
 		distance = '1.2km';
 	}
@@ -91,8 +102,7 @@
 	}
 </script>
 
-<div class="absolute w-full bottom-0 z-10" style:transform="translate(0,{$pos}px)" >
-	<slot></slot>
+<div bind:this={menu} class="absolute w-full bottom-0 z-10" style:transform="translate(0,{$pos}px)" >
 	<div bind:this={dragged} class="bg-white rounded-t-4xl" style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)">
 		<div class="w-full h-6 pt-2" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove}>
 			<div class="mx-auto bg-neutral-200 w-16 h-[6px] rounded-full"></div>
