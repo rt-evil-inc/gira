@@ -3,7 +3,7 @@ import type { StyleImageInterface } from 'maplibre-gl';
 // This implements `StyleImageInterface`
 // to draw a pulsing dot icon on the map.
 export function pulsingDot(map: maplibregl.Map, size = 100, animationDuration = 1500) : StyleImageInterface {
-	const context = document.createElement('canvas').getContext('2d')!;
+	const context = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!;
 
 	return {
 		width: size,
