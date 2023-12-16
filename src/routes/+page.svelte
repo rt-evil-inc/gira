@@ -4,11 +4,13 @@
 	import Login from '$lib/components/Login.svelte';
 	import Map from '$lib/components/Map.svelte';
 	import ProfileButton from '$lib/components/ProfileButton.svelte';
+	import Settings from '$lib/components/Settings.svelte';
 	import StationMenu from '$lib/components/StationMenu.svelte';
 	import TripStatus from '$lib/components/TripStatus.svelte';
 	import { token, currentTrip } from '$lib/stores';
+	import { text } from '@sveltejs/kit';
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import { fade } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 
 	let selectedStation:string|null = null;
 	let menuHeight = 0;
@@ -17,6 +19,7 @@
 	let currentMode:'map'|'trip' = 'map';
 	let stationMenuPos:number|undefined = 0;
 	let tripStatusPos:number = 0;
+	let settingsOpen = false;
 </script>
 
 <div class="h-full w-full relative overflow-hidden">
@@ -38,6 +41,10 @@
 	</Floating>
 
 	<Floating right={16} pos={tripStatusPos} offset={16}>
-		<ProfileButton />
+		<ProfileButton on:click={() => settingsOpen = true}/>
 	</Floating>
+	{#if settingsOpen}
+		<Settings on:close={() => settingsOpen = false}/>
+	{/if}
+
 </div>
