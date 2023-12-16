@@ -4,17 +4,18 @@
 	import type { GeoJSON } from 'geojson';
 
 	import { stations } from '$lib/stores';
-	import { Geolocation, type Position } from '@capacitor/geolocation';
+	import type { Position } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
 	import { pulsingDot } from '$lib/pulsing-dot';
+	import { currentPos } from '$lib/location';
+	import type { Unsubscriber } from 'svelte/motion';
 	export let blurred = true;
 	export let selectedStation:string|null = null;
-	export let following:{active:boolean, status:'fix'|'approx'|null} = { active: false, status: null };
+	export let following:{active:boolean} = { active: false };
 	export let menuHeight = 0;
 	let mapElem: HTMLDivElement;
 	let map : Map;
 	let mapLoaded = false;
-	let pos: Position|null = null;
 
 	function setSourceData() {
 		const src = map.getSource('points') as GeoJSONSource|null;
@@ -114,57 +115,49 @@
 			map.addImage(name, img);
 		})));
 	}
-
+	let unsubPos:Unsubscriber;
 	async function onMapLoad() {
 		mapLoaded = true;
 		await loadImages();
 		setSourceData();
 		addLayers();
 		addEventListeners();
+		unsubPos = currentPos.subscribe(handleLocUpdate);
 	}
-	let isWatching:string|null = null;
-	async function watchUserLocation() {
-		if (isWatching) return;
-		let perms = await Geolocation.requestPermissions();
-		console.log('perms', perms);
-		isWatching = await Geolocation.watchPosition({
-			enableHighAccuracy: true,
-			timeout: 10000,
-		}, position => {
-			pos = position;
-			if (pos && pos.coords) {
-				console.log('pos', pos);
-				const src = map.getSource('user-location') as GeoJSONSource|null;
-				// dont change to GeoJSONSource as building breaks for no apparent reason
-				if (src !== null) {
-					const data:GeoJSON.GeoJSON = {
-						'type': 'FeatureCollection',
-						'features': [{
-							type: 'Feature',
-							properties: {},
-							geometry: {
-								type: 'Point',
-								coordinates: [pos.coords.longitude, pos.coords.latitude],
-							},
-						}],
-					};
-					following.status = pos.coords.accuracy < 50 ? 'fix' : 'approx';
-					src.setData(data);
-					if (following.active) {
-						map.flyTo({
-							center: [pos.coords.longitude, pos.coords.latitude],
-							padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
-						});
-					}
-				} else {
-					following.status = null;
-					map.addSource('user-location', {
-						'type': 'geojson',
-						'data': { type: 'FeatureCollection', features: [] },
+	async function handleLocUpdate(pos: Position|null) {
+		if (pos && pos.coords) {
+			if (following.active) map.flyTo({
+				center: [pos.coords.longitude, pos.coords.latitude],
+				padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
+			});
+			const src = map.getSource('user-location') as GeoJSONSource|null;
+			// dont change to GeoJSONSource as building breaks for no apparent reason
+			if (src !== null) {
+				const data:GeoJSON.GeoJSON = {
+					'type': 'FeatureCollection',
+					'features': [{
+						type: 'Feature',
+						properties: {},
+						geometry: {
+							type: 'Point',
+							coordinates: [pos.coords.longitude, pos.coords.latitude],
+						},
+					}],
+				};
+				src.setData(data);
+				if (following.active) {
+					map.flyTo({
+						center: [pos.coords.longitude, pos.coords.latitude],
+						padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
 					});
 				}
+			} else {
+				map.addSource('user-location', {
+					'type': 'geojson',
+					'data': { type: 'FeatureCollection', features: [] },
+				});
 			}
-		});
+		}
 	}
 
 	onMount(async () => {
@@ -187,20 +180,9 @@
 	}
 	onDestroy(() => {
 		if (map) map.remove();
-		if (isWatching) {
-			Geolocation.clearWatch({ id: isWatching });
-		}
+		if (unsubPos) unsubPos();
 	});
 
-	$:if (following.active) {
-		watchUserLocation();
-		if (pos) {
-			map.flyTo({
-				center: [pos.coords.longitude, pos.coords.latitude],
-				padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
-			});
-		}
-	}
 </script>
 
 {#if !mapLoaded || blurred || $stations.length == 0}

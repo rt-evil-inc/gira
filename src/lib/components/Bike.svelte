@@ -9,7 +9,8 @@
 	import IconSettings from '@tabler/icons-svelte/dist/svelte/icons/IconSettings.svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import { cancelBikeReserve, reserveBike, startTrip } from '../gira-api';
+	import { reserveBike, startTrip } from '../gira-api';
+	import { currentTrip } from '$lib/stores';
 	import { createEventDispatcher } from 'svelte';
 
 	export let type:'classic'|'electric'|null = null, id:string|null = null, battery:number|null = null, dock:string|null = null, disabled = false, serial:string|null = null;
@@ -20,7 +21,8 @@
 			if (reservedBike) {
 				let success = (await startTrip()).startTrip;
 				if (success) {
-					dispatch('trip-started', { serial });
+					dispatch('trip-started', { id, serial });
+					$currentTrip = { startPos: following.position, startDate: new Date, bikeId: v.detail.id };
 				}
 			}
 		} catch (e) {

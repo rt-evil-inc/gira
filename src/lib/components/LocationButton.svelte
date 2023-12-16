@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { watchPosition } from '$lib/location';
 	import { draw } from 'svelte/transition';
-	export let following = { active: false, status: null };
+	export let following = { active: false };
 	const duration = 150;
 
 	function inverseCubicInOut(y:number) {
@@ -12,7 +13,11 @@
 		}
 	}
 </script>
-<button class="bg-white p-2 rounded-full grid grid-cols-1 grid-rows-1 w-12 h-12 active:bg-neutral-100 transition-colors" on:click={() => following.active = !following.active}>
+<button class="bg-white p-2 rounded-full grid grid-cols-1 grid-rows-1 w-12 h-12 active:bg-neutral-100 transition-colors"
+	on:click={ () => {
+		following.active = !following.active;
+		if (following.active) watchPosition();
+	}}>
 	{#if following.active}
 		<div style="grid-row: 1;grid-column: 1;" >
 			<svg

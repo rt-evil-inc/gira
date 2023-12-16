@@ -27,10 +27,25 @@ export type StationInfo ={
 };
 // const k = await Preferences.get({ key: 'email' });
 
+// let destination:boolean, bike:string, time:string, distance:string, speed:string, distanceLeft:string, timeLeft:string, arrivalTime:string;
+export type ActiveTrip = {
+	id: string,
+	bikeId: string,
+	startPos: {lat: number, lng: number},
+	destination: {lat: number, lng: number}|null,
+	distance: number|null,
+	distanceLeft: number|null,
+	speed: number|null,
+	startDate: Date,
+	endDate: Date|null,
+	arrivalTime: Date
+}
+
 export const userCredentials: Writable<{email: string, password: string}|null> = writable(null);
 export const token: Writable<Token|null|undefined> = writable(undefined);
 export const user: Writable<User|null> = writable(null);
 export const stations = writable<StationInfo[]>([]);
+export const currentTrip = writable<ActiveTrip|null>(null);
 
 export const loadingTasks:Writable<Set<number>> = writable(new Set);
 export function addLoadingTask() {
