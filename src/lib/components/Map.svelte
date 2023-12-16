@@ -101,6 +101,7 @@
 			map.flyTo({
 				center: feature.geometry.coordinates as [number, number],
 				padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
+				curve: 0,
 			});
 		});
 		// on dragging map, remove user tracking
@@ -129,6 +130,7 @@
 			if (following.active) map.flyTo({
 				center: [pos.coords.longitude, pos.coords.latitude],
 				padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
+				curve: 0,
 			});
 			const src = map.getSource('user-location') as GeoJSONSource|null;
 			// dont change to GeoJSONSource as building breaks for no apparent reason
@@ -149,6 +151,7 @@
 					map.flyTo({
 						center: [pos.coords.longitude, pos.coords.latitude],
 						padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
+						curve: 0,
 					});
 				}
 			} else {
@@ -181,6 +184,7 @@
 		map.flyTo({
 			center: [$currentPos.coords.longitude, $currentPos.coords.latitude],
 			padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
+			curve: 0,
 		});
 	}
 	onDestroy(() => {
