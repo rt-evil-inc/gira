@@ -32,16 +32,12 @@
 	}
 
 	function onTouchStart(event: TouchEvent) {
-		dragging = true;
 		initPos = event.touches[0].clientY - $pos;
 	}
 	function onTouchMove(event: TouchEvent) {
-		if (dragging) {
-			let newPos = Math.max(event.touches[0].clientY - initPos, 0);
-			pos.set(newPos, { duration: 0 });
-		} else {
-			pos.set(0);
-		}
+		dragging = true;
+		let newPos = Math.max(event.touches[0].clientY - initPos, 0);
+		pos.set(newPos, { duration: 0 });
 	}
 	function onTouchEnd() {
 		dragging = false;
