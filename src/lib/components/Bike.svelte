@@ -12,8 +12,9 @@
 	import { reserveBike, startTrip } from '../gira-api';
 	import { currentTrip } from '$lib/stores';
 	import { createEventDispatcher } from 'svelte';
+	import { currentPos } from '$lib/location';
 
-	export let type:'classic'|'electric'|null = null, id:string|null = null, battery:number|null = null, dock:string|null = null, disabled = false, serial:string|null = null;
+	export let type:'classic'|'electric'|null = null, id:string = '', battery:number|null = null, dock:string|null = null, disabled = false, serial:string|null = null;
 	export let action = async () => {
 		if (serial == null) return;
 		try {
@@ -22,7 +23,21 @@
 				let success = (await startTrip()).startTrip;
 				if (success) {
 					dispatch('trip-started', { id, serial });
-					$currentTrip = { startPos: following.position, startDate: new Date, bikeId: v.detail.id };
+					$currentTrip = {
+						id: '',
+						arrivalTime: null,
+						bikeId: id,
+						distance: null,
+						destination: null,
+						distanceLeft: null,
+						speed: null,
+						startDate: new Date,
+						startPos: $currentPos ? {
+							lng: $currentPos?.coords.longitude,
+							lat: $currentPos?.coords.latitude,
+						} : null,
+						predictedEndDate: null,
+					};
 				}
 			}
 		} catch (e) {

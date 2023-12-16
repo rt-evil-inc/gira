@@ -31,14 +31,14 @@ export type StationInfo ={
 export type ActiveTrip = {
 	id: string,
 	bikeId: string,
-	startPos: {lat: number, lng: number},
+	startPos: {lat: number, lng: number}|null,
 	destination: {lat: number, lng: number}|null,
 	distance: number|null,
 	distanceLeft: number|null,
 	speed: number|null,
 	startDate: Date,
-	endDate: Date|null,
-	arrivalTime: Date
+	predictedEndDate: Date|null,
+	arrivalTime: Date|null
 }
 
 export const userCredentials: Writable<{email: string, password: string}|null> = writable(null);
