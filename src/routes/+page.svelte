@@ -16,6 +16,7 @@
 		{ active: false };
 	let currentMode:'map'|'trip' = 'map';
 	let stationMenuPos:number|undefined = 0;
+	let tripStatusPos:number|undefined = 0;
 </script>
 
 <div class="h-full w-full relative overflow-hidden">
@@ -27,7 +28,7 @@
 	<Map blurred={!$token} bind:selectedStation bind:menuHeight={menuHeight} bind:following={following}/>
 
 	{#if $currentTrip !== null}
-		<TripStatus />
+		<TripStatus bind:posBottom={tripStatusPos} />
 	{:else if currentMode == 'map'}
 		<StationMenu bind:posTop={stationMenuPos} bind:id={selectedStation} bind:bikeListHeight={menuHeight} />
 	{/if}
@@ -36,7 +37,7 @@
 		<LocationButton bind:following={following}/>
 	</Floating>
 
-	<Floating right={16} pos={0} offset={16}>
+	<Floating right={16} pos={tripStatusPos} offset={16}>
 		<ProfileButton />
 	</Floating>
 </div>

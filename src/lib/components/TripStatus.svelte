@@ -4,17 +4,25 @@
 	import { cubicInOut } from 'svelte/easing';
 	import { currentTrip as t } from '$lib/stores';
 	import { onDestroy, onMount } from 'svelte';
+
+	let height:number;
+	$: height = $t.destination ? 228 : 172;
+	export { height as posBottom };
+
 	let seconds = 0;
 	let inter: ReturnType<typeof setInterval>;
+
 	onMount(() => {
 		seconds = 0;
 		inter = setInterval(() => {
 			seconds++;
 		}, 1000);
 	});
+
 	onDestroy(() => {
 		clearInterval(inter);
 	});
+
 	function msToMinuteSeconds(ms: number) {
 		let seconds = Math.floor(ms / 1000);
 		let displaySeconds = (seconds % 60).toString().padStart(2, '0');
@@ -23,7 +31,7 @@
 	}
 </script>
 
-<div transition:fly={{ y: -172 }} class="absolute top-0 flex flex-col items-center p-3 gap-2 bg-white w-full transition-all" style:height={$t.destination ? '228px' : '172px'} style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)">
+<div transition:fly={{ y: -172 }} class="absolute top-0 flex flex-col items-center p-3 gap-2 bg-white w-full transition-all" style:height="{height}px" style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)">
 	{#key seconds}
 		{#if $t != null}
 			{@const deltaSeconds = Date.now() - $t.startDate.getTime()}
