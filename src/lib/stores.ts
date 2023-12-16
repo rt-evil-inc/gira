@@ -84,10 +84,9 @@ userCredentials.subscribe(async v => {
 	if (!v) return;
 	const responseCode = await login(v.email, v.password);
 	if (responseCode !== 0) {
-		console.log('login failed');
+		console.log('Login failed!');
 		userCredentials.set(null);
 	}
-	console.log('login success');
 	Preferences.set({ key: 'email', value: v.email });
 	Preferences.set({ key: 'password', value: v.password });
 });
@@ -95,7 +94,6 @@ userCredentials.subscribe(async v => {
 export async function loadUserCreds() {
 	const email = (await Preferences.get({ key: 'email' })).value;
 	const password = (await Preferences.get({ key: 'password' })).value;
-	console.log(email, password);
 	if (email && password) {
 		userCredentials.set({ email, password });
 	} else {

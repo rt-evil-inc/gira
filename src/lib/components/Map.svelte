@@ -173,7 +173,6 @@
 	});
 	$:if ($stations && map) {
 		selectedStation = selectedStation;
-		console.log('new stations');
 		if (mapLoaded) {
 			setSourceData();
 		}

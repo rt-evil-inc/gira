@@ -6,7 +6,6 @@ export async function login(email: string, password: string) {
 	const id = addLoadingTask();
 	const response = await getTokensLogin(email, password);
 	removeLoadingTask(id);
-	console.log(response.error);
 	if (response.error.code !== 0) return response.error.code;
 	const { accessToken, refreshToken, expiration } = response.data;
 	if (!accessToken || !refreshToken) return response.error.code;
@@ -21,7 +20,6 @@ export async function refreshToken() {
 	const id = addLoadingTask();
 	let success = false;
 	while (!success) {
-		console.log('refreshing token');
 		const response = await getTokensRefresh(tokens);
 		if (response.error.code !== 0 || !response.data.accessToken || !response.data.refreshToken) {
 			await new Promise(resolve => setTimeout(resolve, msBetweenRefreshAttempts));
@@ -37,7 +35,6 @@ export async function refreshToken() {
 
 export async function updateUserInfo() {
 	const tokens = get(token);
-	console.log(tokens);
 	if (!tokens) return;
 	const id = addLoadingTask();
 	const response = await getUserInfo(tokens);

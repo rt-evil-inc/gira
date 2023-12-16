@@ -20,7 +20,6 @@ export function startWS() {
 	}
 	ws = new WebSocket('wss://apigira.emel.pt/graphql', 'graphql-ws');
 	ws.onopen = () => {
-		console.log('ws open');
 		ws.send(JSON.stringify({ 'type': 'connection_init' }));
 		ws.send(JSON.stringify({
 			'type': 'start',
@@ -53,7 +52,6 @@ export function startWS() {
 			if (payload && payload.data) {
 				const data = payload.data;
 				if (data.operationalStationsSubscription) {
-					console.log('operationalStationsSubscription', data.operationalStationsSubscription);
 					stations.set(data.operationalStationsSubscription);
 				}
 			}
@@ -64,8 +62,8 @@ export function startWS() {
 		console.log('ws closed');
 		startWS();
 	};
-	ws.onerror = () => {
-		console.log('ws error');
+	ws.onerror = e => {
+		console.log('ws error', e);
 		startWS();
 	};
 	console.log('ws started');

@@ -20,9 +20,7 @@ async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
 			},
 			data: body,
 		});
-		console.log(res);
 		if (res.status >= 200 && res.status < 300) {
-			console.log(res.status);
 			return res.data.data as Promise<M<T>>;
 		}
 	}
@@ -86,7 +84,6 @@ export async function getStationInfo(stationId: string): Promise<Q<['getBikes', 
 }
 
 export async function getBikes(stationId: string): Promise<Q<['getBikes']>> {
-	console.log('getBikes', stationId);
 	const req = query<['getBikes']>({
 		'variables': { input: stationId },
 		'query': `query ($input: String) { getBikes(input: $input) { type, kms, battery, serialNumber, assetType, assetStatus, assetCondition, parent, warehouse, zone, location, latitude, longitude, code, name, description, creationDate, createdBy, updateDate, updatedBy, defaultOrder, version }}`,
@@ -95,7 +92,6 @@ export async function getBikes(stationId: string): Promise<Q<['getBikes']>> {
 }
 
 export async function getDocks(stationId: string): Promise<Q<['getDocks']>> {
-	console.log('getDocks', stationId);
 	const req = query<['getDocks']>({
 		'variables': { input: stationId },
 		'query': `query ($input: String) { getDocks(input: $input) { ledStatus, lockStatus, serialNumber, assetType, assetStatus, assetCondition, parent, warehouse, zone, location, latitude, longitude, code, name, description, creationDate, createdBy, updateDate, updatedBy, defaultOrder, version }}`,
@@ -147,7 +143,6 @@ export async function startTrip() {
 // }
 
 export async function getActiveTripCost() {
-	console.log('mock getActiveTripCost');
 	const req = query<['activeTripCost']>({
 		'variables': {},
 		'query': `query { activeTripCost }`,

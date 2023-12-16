@@ -22,7 +22,6 @@
 			if (reservedBike) {
 				let success = (await startTrip()).startTrip;
 				if (success) {
-					dispatch('trip-started', { id, serial });
 					$currentTrip = {
 						id: '',
 						arrivalTime: null,
@@ -44,8 +43,6 @@
 			console.error(e);
 		}
 	};
-
-	const dispatch = createEventDispatcher();
 
 	let dragging = false;
 	let initPos = 0;
