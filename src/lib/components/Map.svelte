@@ -178,6 +178,12 @@
 			setSourceData();
 		}
 	}
+	$: if (following.active && map && $currentPos) {
+		map.flyTo({
+			center: [$currentPos.coords.longitude, $currentPos.coords.latitude],
+			padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
+		});
+	}
 	onDestroy(() => {
 		if (map) map.remove();
 		if (unsubPos) unsubPos();

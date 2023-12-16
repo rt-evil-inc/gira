@@ -33,9 +33,9 @@ export type ActiveTrip = {
 	bikeId: string,
 	startPos: {lat: number, lng: number}|null,
 	destination: {lat: number, lng: number}|null,
-	distance: number|null,
+	distance: number,
 	distanceLeft: number|null,
-	speed: number|null,
+	speed: number,
 	startDate: Date,
 	predictedEndDate: Date|null,
 	arrivalTime: Date|null

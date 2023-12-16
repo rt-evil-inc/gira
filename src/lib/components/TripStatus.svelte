@@ -15,23 +15,25 @@
 	onDestroy(() => {
 		clearInterval(inter);
 	});
+	function msToMinuteSeconds(ms: number) {
+		let seconds = Math.floor(ms / 1000);
+		let displaySeconds = (seconds % 60).toString().padStart(2, '0');
+		let minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+		return `${minutes}:${displaySeconds}`;
+	}
 </script>
 
 {#key seconds}
 	{#if $t != null}
-		{@const deltaSeconds = Math.floor((Date.now() - $t.startDate.getTime()) / 1000)}
+		{@const deltaSeconds = Date.now() - $t.startDate.getTime()}
 		<div transition:fly={{ y: -172 }} class="absolute top-0 flex flex-col items-center p-3 gap-2 bg-white w-full transition-all" style:height={$t.destination ? '228px' : '172px'} style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)">
 			<span class="font-semibold text-[#B3B3B3] text-lg">{$t.bikeId}</span>
-			<span class="text-5xl text-primary font-bold">{Math.floor(deltaSeconds / 60)}:{Math.floor(deltaSeconds % 60)}</span>
+			<span class="text-5xl text-primary font-bold">{msToMinuteSeconds(deltaSeconds)}</span>
 			<div class="absolute top-[104px] transition-all {$t.destination ? 'left-12' : 'left-20'}">
-				{#if $t.distance}
-					<Metric value={$t.distance} unit="km" label="Distância Percorrida" />
-				{/if}
+				<Metric value={$t.distance} unit="km" label="Distância Percorrida" />
 			</div>
 			<div class="absolute top-[104px] transition-all {$t.destination ? 'right-1/2 translate-x-1/2' : 'right-20 translate-x-0'}">
-				{#if $t.speed}
-					<Metric value={$t.speed} unit="km/h" label="Velocidade Média" />
-				{/if}
+				<Metric value={$t.speed} unit="km/h" label="Velocidade Média" />
 			</div>
 			{#if $t.destination}
 				<div transition:fly={{ x: 64, duration: 150, easing: cubicInOut }} class="absolute top-[104px] transition-all right-12">
@@ -42,8 +44,8 @@
 				<div transition:fade={{ duration: 150 }}>
 					<div class="absolute top-[160px] transition-all left-24">
 						{#if $t.arrivalTime}
-							{@const timeLeft = Math.floor(($t.arrivalTime.getTime() - Date.now()) / 1000)}
-							<Metric value={`${Math.floor(timeLeft / 60)}:${Math.floor(timeLeft % 60)}`} unit="min" label="Tempo em Falta" />
+							{@const timeLeft = $t.arrivalTime.getTime() - Date.now()}
+							<Metric value={msToMinuteSeconds(timeLeft)} unit="min" label="Tempo em Falta" />
 						{/if}
 					</div>
 					<div class="absolute top-[160px] transition-all right-24">

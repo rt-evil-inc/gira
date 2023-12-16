@@ -27,10 +27,10 @@
 						id: '',
 						arrivalTime: null,
 						bikeId: id,
-						distance: null,
+						distance: 0,
 						destination: null,
 						distanceLeft: null,
-						speed: null,
+						speed: 0,
 						startDate: new Date,
 						startPos: $currentPos ? {
 							lng: $currentPos?.coords.longitude,
