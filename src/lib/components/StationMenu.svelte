@@ -25,8 +25,9 @@
 	let bikeList:HTMLDivElement;
 	let menu:HTMLDivElement;
 	let updating = false;
+	let windowHeight:number;
 	$: if ($pos !== null && !dragging && !updating) {
-		posTop = menu?.getBoundingClientRect().y;
+		posTop = Math.min(menu?.getBoundingClientRect().y, windowHeight);
 	} else {
 		posTop = undefined;
 	}
@@ -97,6 +98,8 @@
 		bikeInfo = [];
 	}
 </script>
+
+<svelte:window bind:innerHeight={windowHeight} />
 
 <div bind:this={menu} class="absolute w-full bottom-0 z-10" style:transform="translate(0,{$pos}px)" >
 	<div bind:this={dragged} class="bg-white rounded-t-4xl" style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)">
