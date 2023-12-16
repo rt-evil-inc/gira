@@ -12,7 +12,7 @@
 		}
 	}
 </script>
-<button class="bg-white p-2 rounded-full grid grid-cols-1 grid-rows-1 w-12 h-12 active:bg-neutral-100 transition-colors" on:click={() => following.active = !following.active}>
+<button class="bg-white p-2 rounded-full grid grid-cols-1 grid-rows-1 w-12 h-12 active:bg-neutral-100 transition-colors" on:click={() => following.active = !following.active} style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)">
 	{#if following.active}
 		<div style="grid-row: 1;grid-column: 1;" >
 			<svg
