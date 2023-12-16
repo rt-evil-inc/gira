@@ -6,7 +6,7 @@
 	import { onDestroy, onMount } from 'svelte';
 
 	let height:number;
-	$: height = $t.destination ? 228 : 172;
+	$: height = $t && $t.destination ? 228 : 172;
 	export { height as posBottom };
 
 	let seconds = 0;

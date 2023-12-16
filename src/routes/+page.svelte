@@ -16,7 +16,7 @@
 		{ active: false };
 	let currentMode:'map'|'trip' = 'map';
 	let stationMenuPos:number|undefined = 0;
-	let tripStatusPos:number|undefined = 0;
+	let tripStatusPos:number = 0;
 </script>
 
 <div class="h-full w-full relative overflow-hidden">
