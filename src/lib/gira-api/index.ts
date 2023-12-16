@@ -2,6 +2,7 @@ import { token, type StationInfo, stations } from '$lib/stores';
 import type { Mutation, Query } from './types';
 import { get } from 'svelte/store';
 import { CapacitorHttp, type HttpResponse } from '@capacitor/core';
+import { dev } from '$app/environment';
 type Q<T extends (keyof Query)[]> = {[K in T[number]]:Query[K]};
 type M<T extends (keyof Mutation)[]> = {[K in T[number]]:Mutation[K]};
 
@@ -103,11 +104,16 @@ export async function getDocks(stationId: string): Promise<Q<['getDocks']>> {
 }
 
 export async function reserveBike(serialNumber: string) {
-	const req = mutate<['reserveBike']>({
-		'variables': { input: serialNumber },
-		'query': `mutation ($input: String) { reserveBike(input: $input) }`,
-	});
-	return req;
+	if (dev) {
+		console.log('mock reserveBike');
+		return { reserveBike: true };
+	} else {
+		const req = mutate<['reserveBike']>({
+			'variables': { input: serialNumber },
+			'query': `mutation ($input: String) { reserveBike(input: $input) }`,
+		});
+		return req;
+	}
 }
 
 export async function cancelBikeReserve() {
@@ -119,14 +125,16 @@ export async function cancelBikeReserve() {
 }
 
 export async function startTrip() {
-	console.log('mock startTrip');
-	// const req = mutate<['startTrip']>({
-	// 	'variables': {},
-	// 	'query': `mutation { startTrip }`,
-	// });
-	const req = { startTrip: true };
-
-	return req;
+	if (dev) {
+		console.log('mock startTrip');
+		return { startTrip: true };
+	} else {
+		const req = mutate<['startTrip']>({
+			'variables': {},
+			'query': `mutation { startTrip }`,
+		});
+		return req;
+	}
 }
 // // returns an int or float of the active trip cost
 // async function get_active_trip_cost(){
