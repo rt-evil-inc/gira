@@ -3,6 +3,7 @@
 	import LocationButton from '$lib/components/LocationButton.svelte';
 	import Login from '$lib/components/Login.svelte';
 	import Map from '$lib/components/Map.svelte';
+	import ProfileButton from '$lib/components/ProfileButton.svelte';
 	import StationMenu from '$lib/components/StationMenu.svelte';
 	import TripStatus from '$lib/components/TripStatus.svelte';
 	import { token, currentTrip } from '$lib/stores';
@@ -33,5 +34,9 @@
 
 	<Floating right={16} pos={stationMenuPos} offset={-70}>
 		<LocationButton bind:following={following}/>
+	</Floating>
+
+	<Floating right={16} pos={0} offset={16}>
+		<ProfileButton />
 	</Floating>
 </div>
