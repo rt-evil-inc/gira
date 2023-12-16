@@ -3,7 +3,7 @@
 	import { AttributionControl, GeoJSONSource, Map } from 'maplibre-gl';
 	import type { GeoJSON } from 'geojson';
 
-	import { stations } from '$lib/stores';
+	import { currentTrip, stations } from '$lib/stores';
 	import type { Position } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
 	import { pulsingDot } from '$lib/pulsing-dot';
@@ -181,6 +181,9 @@
 			setSourceData();
 		}
 	}
+	currentTrip.subscribe(trip => {
+		if (trip) following.active = true;
+	});
 	$: if (following.active && map && $currentPos) {
 		map.flyTo({
 			center: [$currentPos.coords.longitude, $currentPos.coords.latitude],
