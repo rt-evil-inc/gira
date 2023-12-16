@@ -23,7 +23,7 @@
 				let success = (await startTrip()).startTrip;
 				if (success) {
 					$currentTrip = {
-						id: '',
+						code: '',
 						arrivalTime: null,
 						bikeId: id,
 						distance: 0,
@@ -36,6 +36,7 @@
 							lat: $currentPos?.coords.latitude,
 						} : null,
 						predictedEndDate: null,
+						finished: false,
 					};
 				}
 			}

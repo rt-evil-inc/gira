@@ -29,7 +29,7 @@ export type StationInfo ={
 
 // let destination:boolean, bike:string, time:string, distance:string, speed:string, distanceLeft:string, timeLeft:string, arrivalTime:string;
 export type ActiveTrip = {
-	id: string,
+	code: string,
 	bikeId: string,
 	startPos: {lat: number, lng: number}|null,
 	destination: {lat: number, lng: number}|null,
@@ -38,7 +38,8 @@ export type ActiveTrip = {
 	speed: number,
 	startDate: Date,
 	predictedEndDate: Date|null,
-	arrivalTime: Date|null
+	arrivalTime: Date|null,
+	finished: boolean,
 }
 
 export const userCredentials: Writable<{email: string, password: string}|null> = writable(null);

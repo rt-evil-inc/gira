@@ -1,6 +1,8 @@
-import { stations, token } from '$lib/stores';
+import { currentTrip, stations, token, type ActiveTrip } from '$lib/stores';
 import { get } from 'svelte/store';
 import type { WSEvent } from './ws-types';
+import { tripPayWithNoPoints } from '.';
+import { currentPos } from '$lib/location';
 let ws: WebSocket;
 
 function randomUUID() {
@@ -53,6 +55,34 @@ export function startWS() {
 				const data = payload.data;
 				if (data.operationalStationsSubscription) {
 					stations.set(data.operationalStationsSubscription);
+				} else if (data.activeTripSubscription) {
+					const activeTripSubscription = data.activeTripSubscription;
+					console.log(data.activeTripSubscription);
+					// UNTESTED, REQUIRE REAL TRIP
+					currentTrip.update(trip => {
+						if (trip) {
+							trip.startDate = new Date(activeTripSubscription.startDate);
+							trip.bikeId = activeTripSubscription.bike;
+							trip.code = activeTripSubscription.code;
+							trip.finished = activeTripSubscription.finished;
+						} else {
+							const pos = get(currentPos);
+							trip = {
+								startDate: new Date(activeTripSubscription.startDate),
+								bikeId: activeTripSubscription.bike,
+								code: activeTripSubscription.code,
+								finished: activeTripSubscription.finished,
+								startPos: pos ? { lat: pos.coords.latitude, lng: pos.coords.longitude } : null,
+								destination: null,
+								distance: 0,
+								distanceLeft: null,
+								speed: pos && pos.coords && pos.coords.speed ? pos.coords.speed : 0,
+								predictedEndDate: null,
+								arrivalTime: null,
+							};
+						}
+						return trip;
+					});
 				}
 			}
 		}
