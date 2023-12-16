@@ -97,11 +97,18 @@
 		updateInfo(id);
 		bikeInfo = [];
 	}
+
+	function transition(_: HTMLElement) {
+		return {
+			duration: 150,
+			tick: (_:number) => dismiss(),
+		};
+	}
 </script>
 
 <svelte:window bind:innerHeight={windowHeight} />
 
-<div bind:this={menu} class="absolute w-full bottom-0 z-10" style:transform="translate(0,{$pos}px)" >
+<div out:transition bind:this={menu} class="absolute w-full bottom-0 z-10" style:transform="translate(0,{$pos}px)" >
 	<div bind:this={dragged} class="bg-white rounded-t-4xl" style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)">
 		<div class="w-full h-6 pt-2" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove}>
 			<div class="mx-auto bg-neutral-200 w-16 h-[6px] rounded-full"></div>
