@@ -8,6 +8,8 @@
 	import { tick } from 'svelte';
 
 	export let id: string|null = '';
+	export let bikeListHeight = 0;
+	export let posTop:number|undefined = 0;
 	let initPos = 0;
 	let pos = tweened(id != null ? 0 : 9999, { duration: 150, easing: cubicOut });
 	let dragged:HTMLDivElement;
@@ -21,9 +23,7 @@
 	let dragging = false;
 	let timeout:ReturnType<typeof setTimeout>;
 	let bikeList:HTMLDivElement;
-	export let bikeListHeight = 0;
 	let menu:HTMLDivElement;
-	export let posTop:number|undefined = 0;
 	let updating = false;
 	$: if ($pos !== null && !dragging && !updating) {
 		posTop = menu?.getBoundingClientRect().y;
@@ -80,7 +80,7 @@
 				serial: bike!.serialNumber!,
 			};
 		});
-		if (tmpBikeInfo) bikeInfo = tmpBikeInfo;
+		if (tmpBikeInfo && stationId === id) bikeInfo = tmpBikeInfo;
 		await tick();
 		bikeListHeight = bikeList.clientHeight;
 		await tick();
