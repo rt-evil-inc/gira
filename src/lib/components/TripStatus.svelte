@@ -23,10 +23,10 @@
 	}
 </script>
 
-{#key seconds}
-	{#if $t != null}
-		{@const deltaSeconds = Date.now() - $t.startDate.getTime()}
-		<div transition:fly={{ y: -172 }} class="absolute top-0 flex flex-col items-center p-3 gap-2 bg-white w-full transition-all" style:height={$t.destination ? '228px' : '172px'} style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)">
+<div transition:fly={{ y: -172 }} class="absolute top-0 flex flex-col items-center p-3 gap-2 bg-white w-full transition-all" style:height={$t.destination ? '228px' : '172px'} style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)">
+	{#key seconds}
+		{#if $t != null}
+			{@const deltaSeconds = Date.now() - $t.startDate.getTime()}
 			<span class="font-semibold text-[#B3B3B3] text-lg">{$t.bikeId}</span>
 			<span class="text-5xl text-primary font-bold">{msToMinuteSeconds(deltaSeconds)}</span>
 			<div class="absolute top-[104px] transition-all {$t.destination ? 'left-12' : 'left-20'}">
@@ -55,6 +55,6 @@
 					</div>
 				</div>
 			{/if}
-		</div>
-	{/if}
-{/key}
+		{/if}
+	{/key}
+</div>
