@@ -93,6 +93,7 @@
 	function addEventListeners() {
 		map.on('click', 'points', async function (e) {
 			if (e.features === undefined) return;
+			following.active = false;
 			const feature = e.features[0] as GeoJSON.Feature<GeoJSON.Point>;
 			const props = feature.properties as { serialNumber: string, name: string, bikes: number };
 			selectedStation = props.serialNumber;
