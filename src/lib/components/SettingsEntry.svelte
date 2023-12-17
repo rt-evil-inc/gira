@@ -5,12 +5,13 @@
 	export let icon: typeof SvelteComponent;
 	export let subtext = '';
 </script>
-<button class="flex text-left gap-2 items-center bg-white p-2 rounded-2xl active:bg-neutral-100 transition-all" on:click>
-	{#if icon}
-		<svelte:component this={icon} class="text-neutral-700" size={24} />
-	{/if}
-	<div class="flex flex-col">
-		<span class="text-md font-semibold text-neutral-700">{text}</span>
-		<span class="text-xs text-neutral-500">{subtext}</span>
+<button class="flex items-center text-left w-full min-h-[70px] rounded-2xl bg-white px-3 gap-3" style:box-shadow="0px 0px 12px 0px rgba(0, 0, 0, 0.10)" on:click >
+	<svelte:component this={icon} class="text-primary" size={32} stroke={2} />
+	<div>
+		<div class="font-bold text-base text-primary">
+			{text}
+		</div>
+		<div class="text-xs text-neutral-400">{subtext}</div>
 	</div>
+
 </button>

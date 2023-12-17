@@ -14,6 +14,9 @@ export default {
 			borderRadius: {
 				'4xl': '2rem',
 			},
+			fontSize: {
+				'xxs': '0.625rem',
+			},
 		},
 	},
 	plugins: [require('@tailwindcss/forms')],
