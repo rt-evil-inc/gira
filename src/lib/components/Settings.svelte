@@ -11,6 +11,9 @@
 	import IconLogout2 from '@tabler/icons-svelte/dist/svelte/icons/IconLogout2.svelte';
 	import SettingsEntry from './SettingsEntry.svelte';
 	import Metric from './Metric.svelte';
+	import History from './settings/History.svelte';
+	import Settings from './settings/Settings.svelte';
+	import Info from './settings/Info.svelte';
 
 	const dispatch = createEventDispatcher();
 	let openPage: 'settings' | 'history' |'info'| null = null;
@@ -79,16 +82,15 @@
 		</div>
 		{#if openPage === 'history'}
 			<div transition:fade={{ duration: 150 }} class="bg-background col-start-1 col-end-2 row-start-1 row-end-2 z-40">
-
-				<!-- <button on:click={() => openPage = null}> go back</button> -->
+				<History />
 			</div>
 		{:else if openPage === 'settings'}
 			<div transition:fade={{ duration: 150 }} class="bg-background col-start-1 col-end-2 row-start-1 row-end-2 z-40">
-				<!-- <button on:click={() => openPage = null}> go back</button> -->
+				<Settings />
 			</div>
 		{:else if openPage === 'info'}
 			<div transition:fade={{ duration: 150 }} class="bg-background col-start-1 col-end-2 row-start-1 row-end-2 z-40">
-				<!-- <button on:click={() => openPage = null}> go back</button> -->
+				<Info />
 			</div>
 		{/if}
 		<div class="absolute top-4 right-4 flex justify-end z-40">
