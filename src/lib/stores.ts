@@ -61,6 +61,7 @@ export const user: Writable<User|null> = writable(null);
 export const stations = writable<StationInfo[]>([]);
 export const currentTrip = writable<ActiveTrip|null>(null);
 export const accountInfo = writable<AccountInfo|null>(null);
+export const selectedStation = writable<string|null>(null);
 
 export const loadingTasks:Writable<Set<number>> = writable(new Set);
 export function addLoadingTask() {
@@ -116,4 +117,13 @@ export async function loadUserCreds() {
 	} else {
 		token.set(null);
 	}
+}
+
+export async function logOut() {
+	token.set(null);
+	userCredentials.set(null);
+	accountInfo.set(null);
+	currentTrip.set(null);
+	user.set(null);
+	selectedStation.set(null);
 }

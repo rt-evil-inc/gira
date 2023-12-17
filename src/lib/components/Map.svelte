@@ -3,14 +3,13 @@
 	import { AttributionControl, GeoJSONSource, Map } from 'maplibre-gl';
 	import type { GeoJSON } from 'geojson';
 
-	import { currentTrip, stations } from '$lib/stores';
+	import { currentTrip, stations, selectedStation } from '$lib/stores';
 	import type { Position } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
 	import { pulsingDot } from '$lib/pulsing-dot';
 	import { currentPos } from '$lib/location';
 	import type { Unsubscriber } from 'svelte/motion';
 	export let blurred = true;
-	export let selectedStation:string|null = null;
 	export let following:{active:boolean} = { active: false };
 	export let menuHeight = 0;
 	let mapElem: HTMLDivElement;
@@ -29,7 +28,7 @@
 						serialNumber: station.serialNumber,
 						name: station.name,
 						bikes: station.bikes,
-						active: station.serialNumber == selectedStation,
+						active: station.serialNumber == $selectedStation,
 					},
 					geometry: {
 						type: 'Point',
@@ -96,7 +95,7 @@
 			following.active = false;
 			const feature = e.features[0] as GeoJSON.Feature<GeoJSON.Point>;
 			const props = feature.properties as { serialNumber: string, name: string, bikes: number };
-			selectedStation = props.serialNumber;
+			$selectedStation = props.serialNumber;
 			await tick();
 			await tick();
 			map.flyTo({
@@ -106,8 +105,14 @@
 			});
 		});
 		// on dragging map, remove user tracking
-		map.on('dragstart', function () {
+		map.on('dragstart', () => {
 			following.active = false;
+		});
+		map.on('click', e => {
+			const features = map.queryRenderedFeatures(e.point, { layers: ['points'] });
+			if (features.length == 0) {
+				$selectedStation = null;
+			}
 		});
 	}
 	function loadImages() {
@@ -176,7 +181,7 @@
 		map.on('load', onMapLoad);
 	});
 	$:if ($stations && map) {
-		selectedStation = selectedStation;
+		$selectedStation = $selectedStation;
 		if (mapLoaded) {
 			setSourceData();
 		}

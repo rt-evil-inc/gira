@@ -12,7 +12,6 @@
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { fade, fly } from 'svelte/transition';
 
-	let selectedStation:string|null = null;
 	let menuHeight = 0;
 	let following:{active:boolean} =
 		{ active: false };
@@ -28,12 +27,12 @@
 			<Login />
 		</div>
 	{/if}
-	<Map blurred={!$token} bind:selectedStation bind:menuHeight={menuHeight} bind:following={following}/>
+	<Map blurred={!$token} bind:menuHeight={menuHeight} bind:following={following}/>
 
 	{#if $currentTrip !== null}
 		<TripStatus bind:posBottom={tripStatusPos} />
 	{:else if currentMode == 'map'}
-		<StationMenu bind:posTop={stationMenuPos} bind:id={selectedStation} bind:bikeListHeight={menuHeight} />
+		<StationMenu bind:posTop={stationMenuPos} bind:bikeListHeight={menuHeight} />
 	{/if}
 
 	<Floating right={16} pos={stationMenuPos} offset={-70}>
