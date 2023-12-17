@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { user } from '$lib/stores';
+	import { accountInfo, user } from '$lib/stores';
 	import IconHistory from '@tabler/icons-svelte/dist/svelte/icons/IconHistory.svelte';
 	import IconX from '@tabler/icons-svelte/dist/svelte/icons/IconX.svelte';
 	import IconTool from '@tabler/icons-svelte/dist/svelte/icons/IconTool.svelte';
@@ -13,6 +13,10 @@
 
 	const dispatch = createEventDispatcher();
 	let openPage: 'settings' | 'history' |'info'| null = null;
+	function formatDate(date:Date) {
+		// 20 de Março de 2024
+		return `${date.getDate()} de ${date.toLocaleString('pt', { month: 'long' })} de ${date.getFullYear()}`;
+	}
 
 </script>
 
@@ -74,15 +78,16 @@
 					</div>
 					<div class="flex flex-col items-center gap-4">
 						<div class="flex gap-16">
-							<Metric value={8.76} unit={'€'} label={'Saldo'} color={'neutral-500'} />
-							<Metric value={21910} unit={''} label={'Bónus'} color={'neutral-500'} />
+							<Metric value={$accountInfo?.balance ?? 0} unit={'€'} label={'Saldo'} color={'neutral-500'} />
+							<Metric value={$accountInfo?.bonus ?? 0} unit={''} label={'Bónus'} color={'neutral-500'} />
 						</div>
 						<div>
 							<div class="flex items-center gap-1 justify-center">
 								<IconTicket size={32} stroke={1.7} class="text-neutral-500 -my-1" />
-								<div class="text-neutral-500 font-bold text-md">Passe Anual</div>
+								<div class="text-neutral-500 font-bold text-md">{$accountInfo?.subscription?.name ?? 'Sem subscrição'}</div>
 							</div>
-							<div class="text-xxs text-[#B3B3B3] font-medium">Válido até 20 de Março de 2024</div>
+							<div class="text-xxs text-[#B3B3B3] font-medium">{$accountInfo?.subscription?.expirationDate ?
+								`Válido até ${formatDate($accountInfo.subscription.expirationDate)}` : ''}</div>
 						</div>
 					</div>
 				</div>
