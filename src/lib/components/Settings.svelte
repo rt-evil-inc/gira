@@ -79,7 +79,7 @@
 								<IconTicket size={32} stroke={1.7} class="text-info -my-1" />
 								<div class="text-info font-bold text-md">{$accountInfo?.subscription?.name ?? 'Sem subscrição'}</div>
 							</div>
-							<div class="text-xxs text-label font-medium">{$accountInfo?.subscription?.expirationDate ?
+							<div class="text-2xs text-label font-medium">{$accountInfo?.subscription?.expirationDate ?
 								`Válido até ${formatDate($accountInfo.subscription.expirationDate)}` : ''}</div>
 						</div>
 					</div>
