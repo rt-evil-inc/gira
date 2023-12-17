@@ -9,7 +9,12 @@ export default {
 				'mono': ['"Roboto Mono"', ...theme.fontFamily.mono],
 			},
 			colors: {
-				'primary': '#79c000',
+				'primary': 'var(--color-primary)',
+				'background': 'var(--color-background)',
+				'background-secondary': 'var(--color-background-secondary)',
+				'background-tertiary': 'var(--color-background-tertiary)',
+				'label': 'var(--color-label)',
+				'info': 'var(--color-info)',
 			},
 			borderRadius: {
 				'4xl': '2rem',

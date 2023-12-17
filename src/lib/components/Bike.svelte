@@ -79,12 +79,12 @@
 	}
 </script>
 
-<div bind:this={slider} class="flex items-center justify-center w-full min-h-[70px] relative overflow-hidden rounded-2xl" style:box-shadow="0px 0px 12px 0px rgba(0, 0, 0, 0.10)" >
+<div bind:this={slider} class="flex items-center justify-center w-full min-h-[70px] relative overflow-hidden rounded-2xl" style:box-shadow="0px 0px 12px 0px var(--color-shadow)" >
 	{#if type && id && dock }
-		<div class="absolute flex {$pos < 0 ? 'flex-row-reverse' : ''} w-[calc(100%-1px)] h-[calc(100%-1px)] items-center p-4 bg-primary rounded-2xl" style:box-shadow="0px 0px 12px 0px rgba(0, 0, 0, 0.10)">
-			<IconLockOpen size={32} stroke={2} class="text-white" />
+		<div class="absolute flex {$pos < 0 ? 'flex-row-reverse' : ''} w-[calc(100%-1px)] h-[calc(100%-1px)] items-center p-4 bg-primary rounded-2xl" style:box-shadow="0px 0px 12px 0px var(--color-shadow)">
+			<IconLockOpen size={32} stroke={2} class="text-background" />
 		</div>
-		<div class="absolute flex items-center bg-white rounded-2xl h-full w-full px-5 gap-5" style:box-shadow="0px 0px 12px 0px rgba(0, 0, 0, 0.10)" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove} style:left="{$pos}px">
+		<div class="absolute flex items-center bg-background rounded-2xl h-full w-full px-5 gap-5" style:box-shadow="0px 0px 12px 0px var(--color-shadow)" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove} style:left="{$pos}px">
 			{#if type === 'electric'}
 				<IconBolt size={42} stroke={1.7} class="text-primary -mx-3" />
 			{:else}
@@ -94,17 +94,17 @@
 			<div class="grow" />
 			{#if type === 'electric' && battery != null}
 				<div class="flex items-center h-6 px-[6px] bg-primary rounded-md gap-1">
-					<span class="text-xs font-semibold text-white">{battery}%</span>
+					<span class="text-xs font-semibold text-background">{battery}%</span>
 					{#if battery <= 20}
-						<IconBattery size={25} stroke={1.7} class="text-white -m-1" />
+						<IconBattery size={25} stroke={1.7} class="text-background -m-1" />
 					{:else if battery <= 40}
-						<IconBattery1 size={25} stroke={1.7} class="text-white -m-1" />
+						<IconBattery1 size={25} stroke={1.7} class="text-background -m-1" />
 					{:else if battery <= 60}
-						<IconBattery2 size={25} stroke={1.7} class="text-white -m-1" />
+						<IconBattery2 size={25} stroke={1.7} class="text-background -m-1" />
 					{:else if battery <= 80}
-						<IconBattery3 size={25} stroke={1.7} class="text-white -m-1" />
+						<IconBattery3 size={25} stroke={1.7} class="text-background -m-1" />
 					{:else}
-						<IconBattery4 size={25} stroke={1.7} class="text-white -m-1" />
+						<IconBattery4 size={25} stroke={1.7} class="text-background -m-1" />
 					{/if}
 				</div>
 			{/if}
@@ -114,7 +114,7 @@
 			</div>
 		</div>
 	{:else}
-		<div class="absolute flex items-center bg-white rounded-2xl h-full w-full px-5 gap-5" style:box-shadow="0px 0px 12px 0px rgba(0, 0, 0, 0.10)" >
+		<div class="absolute flex items-center bg-background rounded-2xl h-full w-full px-5 gap-5" style:box-shadow="0px 0px 12px 0px var(--color-shadow)" >
 			<div class="w-[36px] h-[36px] -ml-2 -mr-2 bg-gray-200 animate-pulse rounded-lg"></div>
 			<span class="h-6 font-semibold bg-gray-200 rounded-lg w-16 animate-pulse"></span>
 			<div class="grow" />

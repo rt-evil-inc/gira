@@ -2,12 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --color-primary: #79c000;
+    --color-background: white;
+    --color-background-secondary: #F5F5F5;
+    --color-background-tertiary: #E5E5E5;
+    --color-label: #B3B3B3;
+    --color-info: #808080;
+    --color-shadow: rgba(0, 0, 0, 0.1);
+    --color-selection: #d4d4d4;
+  }
+}
+
 * {
   user-select: none;
 }
 
 *::selection {
-  @apply bg-neutral-300;
+  background-color: var(--color-selection);
 }
 
 input,

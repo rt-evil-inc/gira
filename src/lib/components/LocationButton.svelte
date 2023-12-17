@@ -13,7 +13,7 @@
 		}
 	}
 </script>
-<button class="bg-white p-2 rounded-full grid grid-cols-1 grid-rows-1 w-12 h-12 active:bg-neutral-100 transition-colors" style:box-shadow="0px 0px 20px 0px rgba(0, 0, 0, 0.10)"
+<button class="bg-background p-2 rounded-full grid grid-cols-1 grid-rows-1 w-12 h-12 active:bg-background transition-colors" style:box-shadow="0px 0px 20px 0px var(--color-shadow)"
 	on:click={ () => {
 		following.active = !following.active;
 		if (following.active) watchPosition();
@@ -45,7 +45,7 @@
 		</div>
 	{:else}
 		<div style="grid-row: 1;grid-column: 1;">
-			<svg xmlns="http://www.w3.org/2000/svg" class="text-neutral-400" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+			<svg xmlns="http://www.w3.org/2000/svg" class="text-label" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
 				<path transition:draw={{ duration: duration }} stroke="none" d="M0 0h24v24H0z" fill="none"/>
 				<path transition:draw={{ duration: duration }} d="M14.685 10.661c-.3 -.6 -.795 -1.086 -1.402 -1.374m-3.397 .584a3 3 0 1 0 4.24 4.245" />
 				<path transition:draw={{ duration: duration }} d="M6.357 6.33a8 8 0 1 0 11.301 11.326m1.642 -2.378a8 8 0 0 0 -10.597 -10.569" />
