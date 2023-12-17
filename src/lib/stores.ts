@@ -1,7 +1,7 @@
 import { writable, type Writable } from 'svelte/store';
 import { getUserInfo } from './emel-api/emel-api';
 import { login, refreshToken, updateUserInfo } from './auth';
-import { updateStations } from './gira-api';
+import { getPointsAndBalance, getSubscriptions, updateAccountInfo, updateStations, updateSubscriptions } from './gira-api';
 import { Preferences } from '@capacitor/preferences';
 import { onMount } from 'svelte';
 
@@ -42,11 +42,26 @@ export type ActiveTrip = {
 	finished: boolean,
 }
 
+export type AccountInfo = {
+	bonus: number;
+	balance: number;
+	subscription: Subscription|null;
+}
+export type Subscription = {
+	active: boolean;
+	expirationDate: Date;
+	name: string;
+	subscriptionStatus: string;
+	type:string
+}
+
 export const userCredentials: Writable<{email: string, password: string}|null> = writable(null);
 export const token: Writable<Token|null|undefined> = writable(undefined);
 export const user: Writable<User|null> = writable(null);
 export const stations = writable<StationInfo[]>([]);
 export const currentTrip = writable<ActiveTrip|null>(null);
+export const accountInfo = writable<AccountInfo|null>(null);
+export const selectedStation = writable<string|null>(null);
 
 export const loadingTasks:Writable<Set<number>> = writable(new Set);
 export function addLoadingTask() {
@@ -78,6 +93,8 @@ token.subscribe(v => {
 	const jwt:JWT = JSON.parse(window.atob(v.accessToken.split('.')[1]));
 	updateUserInfo();
 	updateStations();
+	updateAccountInfo();
+	updateSubscriptions();
 	if (tokenRefreshTimeout) clearTimeout(tokenRefreshTimeout);
 	tokenRefreshTimeout = setTimeout(refreshToken, jwt.exp * 1000 - Date.now() - 1000 * 30);
 });
@@ -100,4 +117,13 @@ export async function loadUserCreds() {
 	} else {
 		token.set(null);
 	}
+}
+
+export async function logOut() {
+	token.set(null);
+	userCredentials.set(null);
+	accountInfo.set(null);
+	currentTrip.set(null);
+	user.set(null);
+	selectedStation.set(null);
 }

@@ -1,4 +1,4 @@
-import { token, type StationInfo, stations } from '$lib/stores';
+import { token, type StationInfo, stations, accountInfo } from '$lib/stores';
 import type { Mutation, Query } from './types';
 import { get } from 'svelte/store';
 import { CapacitorHttp, type HttpResponse } from '@capacitor/core';
@@ -180,4 +180,44 @@ export async function tripPayWithPoints(tripCode: string) {
 		'query': `mutation ($input: String) { tripPayWithPoints(input: $input) }`,
 	});
 	return req;
+}
+export async function getPointsAndBalance() {
+	const req = query<['client']>({
+		'variables': {},
+		'query': `query { client { balance, bonus } }`,
+	});
+	console.log(req);
+	return req;
+}
+
+export async function updateAccountInfo() {
+	getPointsAndBalance().then(maybePointsAndBalance => {
+		if (maybePointsAndBalance.client === null || maybePointsAndBalance.client === undefined || maybePointsAndBalance.client.length <= 0) return;
+		const { balance, bonus } = maybePointsAndBalance.client[0]!;
+		if (balance === null || balance === undefined || bonus === null || bonus === undefined) return;
+		accountInfo.update(ai => (
+			{ subscription: ai?.subscription ?? null, balance, bonus }
+		));
+	});
+	// console.log('client', maybeClient.client);
+}
+
+export async function getSubscriptions() {
+	const req = query<['activeUserSubscriptions']>({
+		'variables': {},
+		'query': `query { activeUserSubscriptions { expirationDate subscriptionStatus name type active } }`,
+	});
+	console.log(req);
+	return req;
+}
+
+export async function updateSubscriptions() {
+	getSubscriptions().then(maybeSubscriptions => {
+		if (maybeSubscriptions.activeUserSubscriptions === null || maybeSubscriptions.activeUserSubscriptions === undefined || maybeSubscriptions.activeUserSubscriptions.length <= 0) return;
+		console.log(maybeSubscriptions.activeUserSubscriptions);
+		const { active, expirationDate, name, subscriptionStatus, type } = maybeSubscriptions.activeUserSubscriptions[0]!;
+		accountInfo.update(ai => (
+			{ balance: ai?.balance ?? 0, bonus: ai?.bonus ?? 0, subscription: { active: active!, expirationDate: new Date(expirationDate), name: name!, subscriptionStatus: subscriptionStatus!, type: type ?? 'unknown' } }
+		));
+	});
 }

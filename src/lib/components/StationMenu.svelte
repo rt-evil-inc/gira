@@ -4,18 +4,17 @@
 	import { cubicOut } from 'svelte/easing';
 	import { getStationInfo } from '$lib/gira-api';
 	import { onMount } from 'svelte';
-	import { stations } from '$lib/stores';
+	import { stations, selectedStation } from '$lib/stores';
 	import { tick } from 'svelte';
 
-	export let id: string|null = '';
 	export let bikeListHeight = 0;
 	export let posTop:number|undefined = 0;
 	let initPos = 0;
-	let pos = tweened(id != null ? 0 : 9999, { duration: 150, easing: cubicOut });
+	let pos = tweened($selectedStation != null ? 0 : 9999, { duration: 150, easing: cubicOut });
 	let dragged:HTMLDivElement;
 	let dismiss = () => {
 		pos.set(dragged.clientHeight);
-		id = null;
+		$selectedStation = null;
 	};
 	let name = '', bikes = 0, freeDocks = 0, distance = '', code = '',
 		bikeInfo: {type:'electric'|'classic', id:string, battery:number|null, dock:string, serial:string}[] = [];
@@ -53,7 +52,7 @@
 		updating = true;
 		clearTimeout(timeout);
 		if ($stations) {
-			let station = $stations.find(s => s.serialNumber == id);
+			let station = $stations.find(s => s.serialNumber == $selectedStation);
 			if (station) {
 				name = station.name.split('-', 2)[1].trim();
 				bikes = station.bikes;
@@ -77,7 +76,7 @@
 				serial: bike!.serialNumber!,
 			};
 		});
-		if (tmpBikeInfo && stationId === id) bikeInfo = tmpBikeInfo;
+		if (tmpBikeInfo && stationId === $selectedStation) bikeInfo = tmpBikeInfo;
 		await tick();
 		bikeListHeight = bikeList.clientHeight;
 		await tick();
@@ -88,14 +87,16 @@
 
 	onMount(() => {
 		pos.set(dragged.clientHeight, { duration: 0 });
-		if (id == null) return;
-		updateInfo(id);
+		if ($selectedStation == null) return;
+		updateInfo($selectedStation);
 	});
 
-	$: if (id != null) {
+	$: if ($selectedStation != null) {
 		$pos = 0;
-		updateInfo(id);
 		bikeInfo = [];
+		updateInfo($selectedStation);
+	} else {
+		$pos = windowHeight ?? 5000;
 	}
 
 	function transition(_: HTMLElement) {
