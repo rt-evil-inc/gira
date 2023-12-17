@@ -15,7 +15,7 @@ export default {
 				'4xl': '2rem',
 			},
 			fontSize: {
-				'xxs': '0.625rem',
+				'2xs': '0.58rem',
 			},
 		},
 	},
