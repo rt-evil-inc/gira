@@ -69,17 +69,17 @@
 							<div class="text-xs font-semibold text-label -mt-[2px]">{$user?.email}</div>
 						</div>
 					</div>
-					<div class="flex flex-col items-center gap-4">
+					<div class="flex flex-col items-center gap-6">
 						<div class="flex gap-16">
 							<Metric value={$accountInfo?.balance ?? 0} unit={'€'} label={'Saldo'} color={'info'} />
 							<Metric value={$accountInfo?.bonus ?? 0} unit={''} label={'Bónus'} color={'info'} />
 						</div>
 						<div>
 							<div class="flex items-center gap-1 justify-center">
-								<IconTicket size={32} stroke={1.7} class="text-info -my-1" />
-								<div class="text-info font-bold text-md">{$accountInfo?.subscription?.name ?? 'Sem subscrição'}</div>
+								<IconTicket size={28} stroke={1.9} class="text-info -my-1" />
+								<div class="text-info font-bold text-lg">{$accountInfo?.subscription?.name ?? 'Sem subscrição'}</div>
 							</div>
-							<div class="text-2xs text-label font-medium">{$accountInfo?.subscription?.expirationDate ?
+							<div class="text-2xs text-label font-medium text-center -mt-[2px]">{$accountInfo?.subscription?.expirationDate ?
 								`Válido até ${formatDate($accountInfo.subscription.expirationDate)}` : ''}</div>
 						</div>
 					</div>
