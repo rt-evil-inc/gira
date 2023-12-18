@@ -142,9 +142,9 @@
 		})));
 	}
 	let unsubPos:Unsubscriber;
-	async function onMapLoad() {
+	async function onMapLoad(loadPromise: Promise<void>) {
+		await loadPromise;
 		mapLoaded = true;
-		await loadImages();
 		setSourceData();
 		addLayers();
 		addEventListeners();
@@ -194,8 +194,10 @@
 			zoom: 11,
 			attributionControl: false,
 		});
+		console.log(map);
 		map.addControl(new AttributionControl, 'bottom-left');
-		map.on('load', onMapLoad);
+		const loadPromise = loadImages();
+		map.on('load', () => onMapLoad(loadPromise));
 	});
 
 	onDestroy(() => {
