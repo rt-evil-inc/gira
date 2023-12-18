@@ -131,13 +131,18 @@
 		addEventListeners();
 		unsubPos = currentPos.subscribe(handleLocUpdate);
 	}
+
+	function centerMap(pos: Position) {
+		map.flyTo({
+			center: [pos.coords.longitude, pos.coords.latitude],
+			padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
+			curve: 0,
+		});
+	}
+
 	async function handleLocUpdate(pos: Position|null) {
 		if (pos && pos.coords) {
-			if (following.active) map.flyTo({
-				center: [pos.coords.longitude, pos.coords.latitude],
-				padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
-				curve: 0,
-			});
+			if (following.active) centerMap(pos);
 			const src = map.getSource('user-location') as GeoJSONSource|null;
 			// dont change to GeoJSONSource as building breaks for no apparent reason
 			if (src !== null) {
@@ -153,13 +158,6 @@
 					}],
 				};
 				src.setData(data);
-				if (following.active) {
-					map.flyTo({
-						center: [pos.coords.longitude, pos.coords.latitude],
-						padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
-						curve: 0,
-					});
-				}
 			} else {
 				map.addSource('user-location', {
 					'type': 'geojson',
@@ -180,27 +178,26 @@
 		map.addControl(new AttributionControl, 'bottom-left');
 		map.on('load', onMapLoad);
 	});
-	$:if ($stations && map) {
-		$selectedStation = $selectedStation;
-		if (mapLoaded) {
-			setSourceData();
-		}
-	}
-	currentTrip.subscribe(trip => {
-		if (trip) following.active = true;
-	});
-	$: if (following.active && map && $currentPos) {
-		map.flyTo({
-			center: [$currentPos.coords.longitude, $currentPos.coords.latitude],
-			padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
-			curve: 0,
-		});
-	}
+
 	onDestroy(() => {
 		if (map) map.remove();
 		if (unsubPos) unsubPos();
 	});
 
+	$: if ($stations && map) {
+		$selectedStation = $selectedStation;
+		if (mapLoaded) {
+			setSourceData();
+		}
+	}
+
+	currentTrip.subscribe(trip => {
+		if (trip) following.active = true;
+	});
+
+	$: if (following.active && map && $currentPos) centerMap($currentPos);
+
+	$: if ($selectedStation == null) menuHeight = 0;
 </script>
 
 {#if !mapLoaded || blurred || $stations.length == 0}
