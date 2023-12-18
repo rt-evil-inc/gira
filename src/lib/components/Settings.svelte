@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { accountInfo, logOut, user } from '$lib/stores';
 	import IconHistory from '@tabler/icons-svelte/dist/svelte/icons/IconHistory.svelte';
@@ -14,6 +14,8 @@
 	import History from './settings/History.svelte';
 	import Settings from './settings/Settings.svelte';
 	import Info from './settings/Info.svelte';
+	import { App } from '@capacitor/app';
+	import type { PluginListenerHandle } from '@capacitor/core';
 
 	const dispatch = createEventDispatcher();
 	let openPage: 'settings' | 'history' |'info'| null = null;
@@ -21,6 +23,17 @@
 		// 20 de Março de 2024
 		return `${date.getDate()} de ${date.toLocaleString('pt', { month: 'long' })} de ${date.getFullYear()}`;
 	}
+	let listener:PluginListenerHandle;
+	onMount(async () => {
+		await App.addListener('backButton', () => {
+			if (openPage !== null) openPage = null;
+			else dispatch('close');
+		});
+	});
+	onDestroy(async () => {
+		listener.remove();
+	});
+
 </script>
 
 <div transition:fade={{ duration: 150 }} class="absolute w-full h-full inset-0 bg-background z-30 grid">

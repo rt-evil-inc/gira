@@ -40,6 +40,7 @@
   "type": "module",
   "dependencies": {
     "@capacitor/android": "^5.5.1",
+    "@capacitor/app": "^5.0.6",
     "@capacitor/cli": "^5.5.1",
     "@capacitor/core": "^5.5.1",
     "@capacitor/geolocation": "^5.0.6",
