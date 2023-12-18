@@ -24,6 +24,7 @@ export type StationInfo ={
 	bikes: number;
 	docks: number;
 	serialNumber: string;
+	assetStatus: string;
 };
 // const k = await Preferences.get({ key: 'email' });
 
