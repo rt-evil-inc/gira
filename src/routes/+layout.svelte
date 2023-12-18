@@ -9,11 +9,9 @@
 	import { onMount } from 'svelte';
 	import '../app.css';
 	import { fade } from 'svelte/transition';
-	import { startWS } from '$lib/gira-api/ws';
 
 	onMount(async () => {
-		await loadUserCreds();
-		startWS();
+		loadUserCreds();
 	});
 </script>
 

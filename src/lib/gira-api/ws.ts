@@ -13,15 +13,18 @@ function randomUUID() {
 }
 
 export function startWS() {
+	console.log('starting ws');
 	const tokens = get(token);
 	const access = tokens?.accessToken;
 	if (!access) return;
+
 	if (ws) {
 		ws.onclose = () => {};
 		ws.close();
 	}
 	ws = new WebSocket('wss://apigira.emel.pt/graphql', 'graphql-ws');
 	ws.onopen = () => {
+		console.log('ws opened');
 		ws.send(JSON.stringify({ 'type': 'connection_init' }));
 		ws.send(JSON.stringify({
 			'type': 'start',
@@ -49,7 +52,7 @@ export function startWS() {
 
 	ws.onmessage = (event:MessageEvent<string>) => {
 		const eventData = JSON.parse(event.data) as WSEvent;
-		if (event.type === 'data') {
+		if (eventData.type === 'data') {
 			const payload = eventData.payload;
 			if (payload && payload.data) {
 				const data = payload.data;
@@ -57,9 +60,9 @@ export function startWS() {
 					stations.set(data.operationalStationsSubscription);
 				} else if (data.activeTripSubscription) {
 					const activeTripSubscription = data.activeTripSubscription;
-					console.log(data.activeTripSubscription);
 					// UNTESTED, REQUIRE REAL TRIP
 					currentTrip.update(trip => {
+						if (activeTripSubscription.code === 'no_trip' || activeTripSubscription.finished === true) return null;
 						if (trip) {
 							trip.startDate = new Date(activeTripSubscription.startDate);
 							trip.bikeId = activeTripSubscription.bike;
@@ -83,6 +86,9 @@ export function startWS() {
 						}
 						return trip;
 					});
+				} else if (data.serverDate) {
+					console.log('serverdate', data.serverDate.date);
+					console.log('serverdate diff', new Date(data.serverDate.date).getTime() - Date.now(), 'ms');
 				}
 			}
 		}
