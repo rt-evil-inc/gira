@@ -58,7 +58,6 @@
 			if (station) {
 				name = station.name.split('-', 2)[1].trim();
 				bikes = station.bikes;
-				console.log('station docks', station.docks);
 				freeDocks = station.docks - station.bikes;
 				code = station.name.split('-', 2)[0].trim();
 				distance = '';
@@ -81,18 +80,17 @@
 				serial: bike!.serialNumber!,
 			};
 		});
+		let tmpDocks = info.getDocks?.filter(v => v != null && v.ledStatus !== 'red')?.length ?? 0;
+		let tmpBikes = tmpBikeInfo?.length ?? 0;
+		let thisStation = $stations.filter(s => s.serialNumber == stationId);
+		if (thisStation[0]) {
+			thisStation[0].bikes = tmpBikes;
+			thisStation[0].docks = tmpDocks;
+		}
 		if (tmpBikeInfo && stationId === $selectedStation) {
 			bikeInfo = tmpBikeInfo;
-			let tmpDocks = info.getDocks?.filter(v => v != null && v.ledStatus !== 'red')?.length ?? 0;
-			console.log('tmpdocks', tmpDocks, info.getDocks);
-			let tmpBikes = tmpBikeInfo?.length ?? 0;
-			bikes = tmpBikes;
 			freeDocks = tmpDocks - tmpBikes;
-			let thisStation = $stations.filter(s => s.serialNumber == stationId);
-			if (thisStation[0]) {
-				thisStation[0].bikes = tmpBikes;
-				thisStation[0].docks = tmpDocks;
-			}
+			bikes = tmpBikes;
 			$stations = $stations;
 		}
 		await tick();
