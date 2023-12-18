@@ -67,16 +67,11 @@
 			'source': 'points',
 			'layout': {
 				// bike_white if active, bike_green otherwise
-				'icon-image': ['case', ['get', 'active'], 'bike_green', 'bike_white'],
-				'icon-size': 0.5,
+				'icon-image': ['case', ['get', 'active'], ['concat', 'bike_green-', ['get', 'bikes']], ['concat', 'bike_white-', ['get', 'bikes']]],
+				'icon-size': ['interpolate', ['linear'], ['zoom'], 12, 0.25, 14, 0.5],
 				'icon-anchor': 'bottom',
-				'text-field': '{bikes}',
-				'text-size': 20,
-				'text-offset': [0, -2],
-				'text-font': ['Noto Sans Bold'],
-			},
-			paint: {
-				'text-color': ['case', ['get', 'active'], '#fff', '#79c000'],
+				'icon-allow-overlap': true,
+				'icon-padding': 0,
 			},
 		});
 		map.addLayer({
@@ -115,11 +110,28 @@
 			}
 		});
 	}
-	function loadImages() {
+	async function loadImages() {
 		map.addImage('pulsing-dot', pulsingDot(map), { pixelRatio: 2 });
-		const imgs = [['bike_white', './assets/bike_marker_white.svg'], ['bike_green', './assets/bike_marker_green.svg']];
-		return Promise.all(imgs.map(([name, url]) => loadSvg(url).then(img => {
-			map.addImage(name, img);
+		const imgs = [['bike_white', './assets/bike_marker_white.svg', '#79c000'], ['bike_green', './assets/bike_marker_green.svg', '#fff']];
+		const canvas = document.createElement('canvas');
+		const context = canvas.getContext('2d', { willReadFrequently: true })!;
+		await Promise.all(imgs.map(([name, url, color]) => loadSvg(url).then(img => {
+			const start = performance.now();
+			context.clearRect(0, 0, img.width, img.height);
+			context.drawImage(img, 0, 0);
+			const imageWithoutNumber = context.getImageData(0, 0, img.width, img.height);
+			canvas.width = img.width;
+			canvas.height = img.height;
+			context.font = 'bold 44px Inter';
+			context.textAlign = 'center';
+			context.fillStyle = color;
+			for (let i = 0; i < 50; i++) {
+				context.putImageData(imageWithoutNumber, 0, 0);
+				context.fillText(i.toString(), img.width / 2, img.height / 1.6);
+				const newImg = context.getImageData(0, 0, img.width, img.height);
+				map.addImage(`${name}-${i}`, newImg);
+			}
+			console.log(`Loaded images in ${performance.now() - start}ms`);
 		})));
 	}
 	let unsubPos:Unsubscriber;
