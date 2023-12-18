@@ -56,18 +56,18 @@ export async function updateStations() {
 		const stationsList:StationInfo[] = [];
 		maybeStations.getStations.forEach(station => {
 			if (station === null || station === undefined) return;
-			const { code, name, description, latitude, longitude, bikes, docks, serialNumber } = station;
+			const { code, name, description, latitude, longitude, bikes, docks, serialNumber, assetStatus } = station;
 			if (code === null || code === undefined || name === null ||
         name === undefined || description === undefined ||
         latitude === null || latitude === undefined || longitude === null ||
         longitude === undefined || bikes === null || bikes === undefined ||
         docks === null || docks === undefined || serialNumber === null ||
-        serialNumber === undefined
+        serialNumber === undefined || assetStatus === null || assetStatus === undefined
 			) {
 				console.log('invalid station', station);
 				return;
 			}
-			stationsList.push({ code, name, description, latitude, longitude, bikes, docks, serialNumber });
+			stationsList.push({ code, name, description, latitude, longitude, bikes, docks, serialNumber, assetStatus });
 		});
 		stations.set(stationsList);
 	});
