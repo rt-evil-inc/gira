@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getTripHistory } from '$lib/gira-api';
 	import type { TripHistory_TripDetail } from '$lib/gira-api/types';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	let trips:TripHistory_TripDetail[] = [];
 	let observed:HTMLDivElement;
 	let loading = false;
@@ -25,15 +25,19 @@
 		const minutes = date.getMinutes().toString().padStart(2, '0');
 		return `${day} de ${month} de ${year} às ${hours}:${minutes}`;
 	}
+	let observer:IntersectionObserver;
 	onMount(async () => {
 		loadMoreTripHistory();
 		const options = {
 			rootMargin: '0px',
 			threshold: 0.5,
 		};
-		let observer = new IntersectionObserver(loadMoreTripHistory, options);
+		observer = new IntersectionObserver(loadMoreTripHistory, options);
 		observer.observe(observed);
 		console.log(observer);
+	});
+	onDestroy(() => {
+		observer.disconnect();
 	});
 
 </script>
