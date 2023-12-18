@@ -55,6 +55,12 @@ export type Subscription = {
 	subscriptionStatus: string;
 	type:string
 }
+export type Insets = {
+	top: number;
+	bottom: number;
+	left: number;
+	right: number;
+}
 
 export const userCredentials: Writable<{email: string, password: string}|null> = writable(null);
 export const token: Writable<Token|null|undefined> = writable(undefined);
@@ -63,6 +69,7 @@ export const stations = writable<StationInfo[]>([]);
 export const currentTrip = writable<ActiveTrip|null>(null);
 export const accountInfo = writable<AccountInfo|null>(null);
 export const selectedStation = writable<string|null>(null);
+export const safeInsets = writable<Insets>({ top: 0, bottom: 0, left: 0, right: 0 });
 
 export const loadingTasks:Writable<Set<number>> = writable(new Set);
 export function addLoadingTask() {

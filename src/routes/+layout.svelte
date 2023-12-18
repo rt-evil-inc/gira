@@ -1,5 +1,5 @@
 <script>
-	import { loadUserCreds, loadingTasks } from '$lib/stores';
+	import { loadUserCreds, loadingTasks, safeInsets } from '$lib/stores';
 	import '@fontsource/inter/latin-400.css';
 	import '@fontsource/inter/latin-500.css';
 	import '@fontsource/inter/latin-600.css';
@@ -7,9 +7,21 @@
 	import '@fontsource/roboto-mono/latin-400.css';
 	import IconLoader2 from '@tabler/icons-svelte/dist/svelte/icons/IconLoader2.svelte';
 	import { onMount } from 'svelte';
+	import { StatusBar, Style } from '@capacitor/status-bar';
+	import { Capacitor } from '@capacitor/core';
+	import { NavigationBar } from '@hugotomazi/capacitor-navigation-bar';
+	import { SafeArea } from 'capacitor-plugin-safe-area';
 	import '../app.css';
 	import { fade } from 'svelte/transition';
 
+	if (Capacitor.getPlatform() === 'android') {
+		StatusBar.setOverlaysWebView({ overlay: true });
+		StatusBar.setStyle({ style: Style.Light });
+		NavigationBar.setTransparency({ isTransparent: true });
+		SafeArea.getSafeAreaInsets().then(ins => {
+			safeInsets.set(ins.insets);
+		});
+	}
 	onMount(async () => {
 		loadUserCreds();
 	});

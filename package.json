@@ -52,9 +52,11 @@
     "@fontsource-variable/roboto-mono": "^5.0.17",
     "@fontsource/inter": "^5.0.16",
     "@fontsource/roboto-mono": "^5.0.16",
+    "@hugotomazi/capacitor-navigation-bar": "^2.0.1",
     "@kitql/client": "^0.5.12",
     "@sveltejs/adapter-static": "^2.0.3",
     "@tabler/icons-svelte": "^2.42.0",
+    "capacitor-plugin-safe-area": "^2.0.6",
     "maplibre-gl": "^3.6.2"
   }
 }
