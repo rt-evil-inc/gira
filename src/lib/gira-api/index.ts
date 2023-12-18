@@ -101,7 +101,7 @@ export async function getDocks(stationId: string): Promise<Q<['getDocks']>> {
 }
 
 export async function reserveBike(serialNumber: string) {
-	if (dev && false) {
+	if (dev) {
 		console.log('mock reserveBike');
 		return { reserveBike: true };
 	} else {
@@ -109,7 +109,6 @@ export async function reserveBike(serialNumber: string) {
 			'variables': { input: serialNumber },
 			'query': `mutation ($input: String) { reserveBike(input: $input) }`,
 		});
-		// console.log(req);
 		return req;
 	}
 }
@@ -119,12 +118,11 @@ export async function cancelBikeReserve() {
 		'variables': {},
 		'query': `mutation { cancelBikeReserve }`,
 	});
-	// console.log(req);
 	return req;
 }
 
 export async function startTrip() {
-	if (dev && false) {
+	if (dev) {
 		console.log('mock startTrip');
 		return { startTrip: true };
 	} else {
@@ -132,7 +130,6 @@ export async function startTrip() {
 			'variables': {},
 			'query': `mutation { startTrip }`,
 		});
-		// console.log(req);
 		return req;
 	}
 }
@@ -231,7 +228,6 @@ export async function getTrip(tripCode:string) {
 		'variables': { input: tripCode },
 		'query': `query ($input: String) { getTrip { user, asset, startDate, endDate, startLocation, endLocation, distance, rating, photo, cost, startOccupation, endOccupation, totalBonus, client, costBonus, comment, compensationTime, endTripDock, tripStatus, code, name, description, creationDate, createdBy, updateDate, updatedBy, defaultOrder, version } }`,
 	});
-	console.log('getTrips', req);
 	return req;
 }
 
@@ -276,8 +272,6 @@ export async function updateActiveTripInfo() {
 			defaultOrder,
 			version,
 		} = maybeTrips.activeTrip!;
-		console.log('distance', distance);
-		console.log('startLocation', startLocation);
 		currentTrip.update(_ => (
 			{
 				code: code!,
