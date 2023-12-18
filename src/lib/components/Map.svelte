@@ -68,7 +68,7 @@
 			'layout': {
 				// bike_white if active, bike_green otherwise
 				'icon-image': ['case', ['get', 'active'], ['concat', 'bike_green-', ['get', 'bikes']], ['concat', 'bike_white-', ['get', 'bikes']]],
-				'icon-size': ['interpolate', ['linear'], ['zoom'], 12, 0.25, 14, 0.5],
+				'icon-size': ['interpolate', ['linear'], ['zoom'], 11, 0.3, 13, 0.5],
 				'icon-anchor': 'bottom',
 				'icon-allow-overlap': true,
 				'icon-padding': 0,
@@ -110,11 +110,13 @@
 			}
 		});
 	}
+
 	async function loadImages() {
 		map.addImage('pulsing-dot', pulsingDot(map), { pixelRatio: 2 });
 		const imgs = [['bike_white', './assets/bike_marker_white.svg', '#79c000'], ['bike_green', './assets/bike_marker_green.svg', '#fff']];
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext('2d', { willReadFrequently: true })!;
+
 		await Promise.all(imgs.map(([name, url, color]) => loadSvg(url).then(img => {
 			const start = performance.now();
 			context.clearRect(0, 0, img.width, img.height);
