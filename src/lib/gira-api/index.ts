@@ -45,7 +45,7 @@ export async function getStations(): Promise<Q<['getStations']>> {
 	const req = query<['getStations']>({
 		'operationName': 'getStations',
 		'variables': {},
-		'query': 'query getStations {getStations {code, description, latitude, longitude, name, bikes, docks, serialNumber }}',
+		'query': 'query getStations {getStations {code, description, latitude, longitude, name, bikes, docks, serialNumber, assetStatus }}',
 	});
 	return req;
 }
@@ -272,6 +272,7 @@ export async function updateActiveTripInfo() {
 			defaultOrder,
 			version,
 		} = maybeTrips.activeTrip!;
+		if (code === 'no_trip') return;
 		currentTrip.update(_ => (
 			{
 				code: code!,

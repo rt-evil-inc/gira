@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { watchPosition } from '$lib/location';
+	import { Capacitor } from '@capacitor/core';
 	import { Geolocation } from '@capacitor/geolocation';
 	import { draw } from 'svelte/transition';
 	export let following = { active: false };
@@ -22,13 +23,17 @@
 			following.active = !following.active;
 			if (following.active) watchPosition();
 		} else {
-			Geolocation.requestPermissions().then(({ location }) => {
-				locationPermission = location == 'granted';
-				if (locationPermission) {
-					following.active = true;
-					watchPosition();
-				}
-			});
+			if (Capacitor.getPlatform() !== 'web') {
+				Geolocation.requestPermissions().then(({ location }) => {
+					locationPermission = location == 'granted';
+					if (locationPermission) {
+						following.active = true;
+						watchPosition();
+					}
+				});
+			} else {
+				watchPosition();
+			}
 		}
 	}} >
 	{#if locationPermission}
