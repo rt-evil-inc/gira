@@ -118,7 +118,7 @@
 	});
 
 	onDestroy(() => {
-		backListener.remove();
+		if (backListener) backListener.remove();
 	});
 
 	$: if ($selectedStation != null) {
