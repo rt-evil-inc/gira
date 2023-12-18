@@ -109,6 +109,7 @@ export async function loadUserCreds() {
 	if (email && password) {
 		userCredentials.set({ email, password });
 	} else {
+		// This is here to show the login dialog if there are no credentials set
 		token.set(null);
 	}
 
