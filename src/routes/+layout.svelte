@@ -7,18 +7,11 @@
 	import '@fontsource/roboto-mono/latin-400.css';
 	import IconLoader2 from '@tabler/icons-svelte/dist/svelte/icons/IconLoader2.svelte';
 	import { onMount } from 'svelte';
-	import { Geolocation } from '@capacitor/geolocation';
 	import '../app.css';
 	import { fade } from 'svelte/transition';
-	import { watchPosition } from '$lib/location';
 
 	onMount(async () => {
 		loadUserCreds();
-		Geolocation.checkPermissions().then(({ location }) => {
-			if (location == 'granted') {
-				watchPosition();
-			}
-		});
 	});
 </script>
 

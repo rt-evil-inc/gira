@@ -8,16 +8,31 @@
 	import StationMenu from '$lib/components/StationMenu.svelte';
 	import TripStatus from '$lib/components/TripStatus.svelte';
 	import { token, currentTrip } from '$lib/stores';
+	import { Geolocation } from '@capacitor/geolocation';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { fade } from 'svelte/transition';
+	import { watchPosition } from '$lib/location';
+	import { onMount } from 'svelte';
 
 	let menuHeight = 0;
-	let following:{active:boolean} =
-		{ active: false };
+	let following:{active:boolean} = { active: false };
 	let currentMode:'map'|'trip' = 'map';
 	let stationMenuPos:number|undefined = 0;
 	let tripStatusPos:number = 0;
 	let settingsOpen = false;
+	let locationPermission = false;
+
+	onMount(() => {
+		Geolocation.checkPermissions().then(({ location }) => {
+			locationPermission = location == 'granted';
+			setTimeout(() => {
+				if (locationPermission) {
+					following.active = true;
+					watchPosition();
+				}
+			}, 500);
+		});
+	});
 </script>
 
 <div class="h-full w-full relative overflow-hidden">
@@ -35,7 +50,7 @@
 	{/if}
 
 	<Floating right={16} pos={stationMenuPos} offset={-70}>
-		<LocationButton bind:following={following}/>
+		<LocationButton bind:locationPermission bind:following={following}/>
 	</Floating>
 
 	<Floating right={16} pos={tripStatusPos} offset={16}>

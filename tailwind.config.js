@@ -15,6 +15,7 @@ export default {
 				'background-tertiary': 'var(--color-background-tertiary)',
 				'label': 'var(--color-label)',
 				'info': 'var(--color-info)',
+				'warning': 'var(--color-warning)',
 			},
 			borderRadius: {
 				'4xl': '2rem',
