@@ -62,7 +62,6 @@ export function startWS() {
 				} else if (data.activeTripSubscription) {
 					const activeTripSubscription = data.activeTripSubscription;
 					// UNTESTED, REQUIRE REAL TRIP
-					console.log('trip from ws', activeTripSubscription);
 					currentTrip.update(trip => {
 						if (activeTripSubscription.code === 'no_trip' || activeTripSubscription.finished === true) return null;
 						if (trip) {

@@ -12,6 +12,7 @@ export type Payload = {
 export type Data = {
     activeTripSubscription?: ActiveTripSubscription;
     operationalStationsSubscription?: OperationalStationsSubscription[];
+    serverDate?: ServerDate;
 }
 
 export type ActiveTripSubscription = {
@@ -85,4 +86,13 @@ export type Execution = {
 export type Parsing = {
     startOffset: number;
     duration: number;
+}
+
+export interface ServerDate {
+  date: string
+}
+
+export interface Validation {
+  startOffset: number
+  duration: number
 }

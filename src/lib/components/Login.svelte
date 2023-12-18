@@ -10,6 +10,7 @@
 	async function loginWrapper() {
 		errorCode = await login(email, password);
 		if (errorCode === 0) userCredentials.set({ email, password });
+		else console.log(errorCode);
 	}
 </script>
 <div class="max-w-sm px-4 w-full">
