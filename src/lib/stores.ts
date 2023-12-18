@@ -1,9 +1,8 @@
 import { writable, type Writable } from 'svelte/store';
-import { getUserInfo } from './emel-api/emel-api';
 import { login, refreshToken, updateUserInfo } from './auth';
-import { getPointsAndBalance, getSubscriptions, updateAccountInfo, updateStations, updateSubscriptions } from './gira-api';
+import { updateAccountInfo, updateStations, updateSubscriptions, updateActiveTripInfo, getTripHistory } from './gira-api';
 import { Preferences } from '@capacitor/preferences';
-import { onMount } from 'svelte';
+import { startWS } from './gira-api/ws';
 
 export type User = {
 	email: string;
@@ -91,10 +90,13 @@ let tokenRefreshTimeout: ReturnType<typeof setTimeout>|null = null;
 token.subscribe(v => {
 	if (!v) return;
 	const jwt:JWT = JSON.parse(window.atob(v.accessToken.split('.')[1]));
+
+	startWS();
 	updateUserInfo();
 	updateStations();
 	updateAccountInfo();
 	updateSubscriptions();
+	updateActiveTripInfo();
 	if (tokenRefreshTimeout) clearTimeout(tokenRefreshTimeout);
 	tokenRefreshTimeout = setTimeout(refreshToken, jwt.exp * 1000 - Date.now() - 1000 * 30);
 });

@@ -8,9 +8,8 @@
 	import StationMenu from '$lib/components/StationMenu.svelte';
 	import TripStatus from '$lib/components/TripStatus.svelte';
 	import { token, currentTrip } from '$lib/stores';
-	import { text } from '@sveltejs/kit';
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import { fade, fly } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 
 	let menuHeight = 0;
 	let following:{active:boolean} =

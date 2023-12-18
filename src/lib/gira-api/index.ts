@@ -1,4 +1,4 @@
-import { token, type StationInfo, stations, accountInfo } from '$lib/stores';
+import { token, type StationInfo, stations, accountInfo, currentTrip } from '$lib/stores';
 import type { Mutation, Query } from './types';
 import { get } from 'svelte/store';
 import { CapacitorHttp, type HttpResponse } from '@capacitor/core';
@@ -36,6 +36,7 @@ async function query<T extends(keyof Query)[]>(body:any): Promise<Q<T>> {
 		},
 		data: body,
 	}).then(async res => {
+		console.log(res);
 		return res.data.data as Promise<Q<T>>;
 	});
 }
@@ -100,7 +101,7 @@ export async function getDocks(stationId: string): Promise<Q<['getDocks']>> {
 }
 
 export async function reserveBike(serialNumber: string) {
-	if (dev) {
+	if (dev && false) {
 		console.log('mock reserveBike');
 		return { reserveBike: true };
 	} else {
@@ -108,6 +109,7 @@ export async function reserveBike(serialNumber: string) {
 			'variables': { input: serialNumber },
 			'query': `mutation ($input: String) { reserveBike(input: $input) }`,
 		});
+		// console.log(req);
 		return req;
 	}
 }
@@ -117,11 +119,12 @@ export async function cancelBikeReserve() {
 		'variables': {},
 		'query': `mutation { cancelBikeReserve }`,
 	});
+	// console.log(req);
 	return req;
 }
 
 export async function startTrip() {
-	if (dev) {
+	if (dev && false) {
 		console.log('mock startTrip');
 		return { startTrip: true };
 	} else {
@@ -129,6 +132,7 @@ export async function startTrip() {
 			'variables': {},
 			'query': `mutation { startTrip }`,
 		});
+		// console.log(req);
 		return req;
 	}
 }
@@ -186,7 +190,7 @@ export async function getPointsAndBalance() {
 		'variables': {},
 		'query': `query { client { balance, bonus } }`,
 	});
-	console.log(req);
+	// console.log(req);
 	return req;
 }
 
@@ -207,17 +211,116 @@ export async function getSubscriptions() {
 		'variables': {},
 		'query': `query { activeUserSubscriptions { expirationDate subscriptionStatus name type active } }`,
 	});
-	console.log(req);
+	// console.log(req);
 	return req;
 }
 
 export async function updateSubscriptions() {
 	getSubscriptions().then(maybeSubscriptions => {
 		if (maybeSubscriptions.activeUserSubscriptions === null || maybeSubscriptions.activeUserSubscriptions === undefined || maybeSubscriptions.activeUserSubscriptions.length <= 0) return;
-		console.log(maybeSubscriptions.activeUserSubscriptions);
+		// console.log(maybeSubscriptions.activeUserSubscriptions);
 		const { active, expirationDate, name, subscriptionStatus, type } = maybeSubscriptions.activeUserSubscriptions[0]!;
 		accountInfo.update(ai => (
 			{ balance: ai?.balance ?? 0, bonus: ai?.bonus ?? 0, subscription: { active: active!, expirationDate: new Date(expirationDate), name: name!, subscriptionStatus: subscriptionStatus!, type: type ?? 'unknown' } }
 		));
 	});
+}
+
+export async function getTrip(tripCode:string) {
+	const req = query<['getTrip']>({
+		'variables': { input: tripCode },
+		'query': `query ($input: String) { getTrip { user, asset, startDate, endDate, startLocation, endLocation, distance, rating, photo, cost, startOccupation, endOccupation, totalBonus, client, costBonus, comment, compensationTime, endTripDock, tripStatus, code, name, description, creationDate, createdBy, updateDate, updatedBy, defaultOrder, version } }`,
+	});
+	console.log('getTrips', req);
+	return req;
+}
+
+export async function getActiveTripInfo() {
+	const req = query<['activeTrip']>({
+		'variables': {},
+		'query': `query { activeTrip { user, asset, startDate, endDate, startLocation, endLocation, distance, rating, photo, cost, startOccupation, endOccupation, totalBonus, client, costBonus, comment, compensationTime, endTripDock, tripStatus, code, name, description, creationDate, createdBy, updateDate, updatedBy, defaultOrder, version } }`,
+	});
+	return req;
+}
+
+export async function updateActiveTripInfo() {
+	getActiveTripInfo().then(maybeTrips => {
+		if (maybeTrips.activeTrip === null || maybeTrips.activeTrip === undefined) return;
+		const {
+			user,
+			asset,
+			startDate,
+			endDate,
+			startLocation,
+			endLocation,
+			distance,
+			rating,
+			photo,
+			cost,
+			startOccupation,
+			endOccupation,
+			totalBonus,
+			client,
+			costBonus,
+			comment,
+			compensationTime,
+			endTripDock,
+			tripStatus,
+			code,
+			name,
+			description,
+			creationDate,
+			createdBy,
+			updateDate,
+			updatedBy,
+			defaultOrder,
+			version,
+		} = maybeTrips.activeTrip!;
+		console.log('distance', distance);
+		console.log('startLocation', startLocation);
+		currentTrip.update(_ => (
+			{
+				code: code!,
+				bikeId: asset!,
+				startPos: null,
+				destination: null,
+				distance: distance!,
+				distanceLeft: null,
+				speed: 0,
+				startDate: new Date(startDate!),
+				predictedEndDate: new Date(endDate!),
+				arrivalTime: null,
+				finished: false,
+			}
+		));
+	});
+}
+//
+// tripHistory(pageInput: PageInput): [TripHistory_TripDetail]
+
+// input PageInput {
+//   _pageNum: Int
+//   _pageSize: Int
+// }
+
+//type TripHistory_TripDetail {
+//   code: String
+//   startDate: DateTime
+//   endDate: DateTime
+//   rating: Int
+//   bikeName: String
+//   startLocation: String
+//   endLocation: String
+//   bonus: Int
+//   usedPoints: Int
+//   cost: Float
+//   bikeType: String
+// }
+
+export async function getTripHistory(pageNum:number, pageSize:number) {
+	const req = query<['tripHistory']>({
+		'variables': { input: { _pageNum: pageNum, _pageSize: pageSize } },
+		'query': `query ($input: PageInput) { tripHistory(pageInput: $input) { code, startDate, endDate, rating, bikeName, startLocation, endLocation, bonus, usedPoints, cost, bikeType } }`,
+	});
+	return req;
 }
