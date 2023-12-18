@@ -4,10 +4,11 @@
 	import { cubicOut } from 'svelte/easing';
 	import { getStationInfo } from '$lib/gira-api';
 	import { onMount } from 'svelte';
-	import { stations, selectedStation } from '$lib/stores';
+	import { stations, selectedStation, type StationInfo } from '$lib/stores';
 	import { tick } from 'svelte';
 	import { currentPos } from '$lib/location';
 	import { distanceBetweenCoords, formatDistance } from '$lib/utils';
+	import { fade } from 'svelte/transition';
 
 	export let bikeListHeight = 0;
 	export let posTop:number|undefined = 0;
@@ -18,7 +19,7 @@
 		pos.set(dragged.clientHeight);
 		$selectedStation = null;
 	};
-	let name = '', bikes = 0, freeDocks = 0, distance = '', code = '',
+	let name = '', bikes = 0, freeDocks = 0, distance:number, code = '',
 		bikeInfo: {type:'electric'|'classic', id:string, battery:number|null, dock:string, serial:string}[] = [];
 	let isScrolling = false;
 	let dragging = false;
@@ -27,6 +28,12 @@
 	let menu:HTMLDivElement;
 	let updating = false;
 	let windowHeight:number;
+	let station:StationInfo|undefined;
+
+	$: if ($currentPos && station) {
+		distance = distanceBetweenCoords(station.latitude, station.longitude, $currentPos.coords.latitude, $currentPos.coords.longitude);
+	}
+
 	$: if ($pos !== null && !dragging && !updating) {
 		posTop = Math.min(menu?.getBoundingClientRect().y, windowHeight);
 	} else {
@@ -54,16 +61,13 @@
 		updating = true;
 		clearTimeout(timeout);
 		if ($stations) {
-			let station = $stations.find(s => s.serialNumber == $selectedStation);
+			station = $stations.find(s => s.serialNumber == $selectedStation);
 			if (station) {
 				name = station.name.split('-', 2)[1].trim();
 				bikes = station.bikes;
 				freeDocks = station.docks - station.bikes;
 				code = station.name.split('-', 2)[0].trim();
-				distance = '';
-				if ($currentPos) {
-					distance = formatDistance(distanceBetweenCoords(station.latitude, station.longitude, $currentPos.coords.latitude, $currentPos.coords.longitude));
-				}
+				if ($currentPos) distance = distanceBetweenCoords(station.latitude, station.longitude, $currentPos.coords.latitude, $currentPos.coords.longitude);
 			}
 		}
 		await tick();
@@ -121,7 +125,7 @@
 				<div class="flex items-center gap-2">
 					<span class="font-bold text-sm text-info">Estação {code}</span>
 					{#if distance}
-						<span class="font-medium bg-background-secondary text-xs text-info px-1 py-[1px] rounded">{distance}</span>
+						<span transition:fade={{ duration: 150 }} class="font-medium bg-background-secondary text-xs text-info px-1 py-[1px] rounded">{formatDistance(distance)}</span>
 					{/if}
 				</div>
 				<span class="text-xs font-medium text-label leading-none mt-[2px]">{name}</span>
