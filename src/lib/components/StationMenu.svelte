@@ -6,6 +6,8 @@
 	import { onMount } from 'svelte';
 	import { stations, selectedStation } from '$lib/stores';
 	import { tick } from 'svelte';
+	import { currentPos } from '$lib/location';
+	import { distanceBetweenCoords, formatDistance } from '$lib/utils';
 
 	export let bikeListHeight = 0;
 	export let posTop:number|undefined = 0;
@@ -58,8 +60,10 @@
 				bikes = station.bikes;
 				freeDocks = station.docks - station.bikes;
 				code = station.name.split('-', 2)[0].trim();
-				//TODO calc
-				distance = '1.2km';
+				distance = '';
+				if ($currentPos) {
+					distance = formatDistance(distanceBetweenCoords(station.latitude, station.longitude, $currentPos.coords.latitude, $currentPos.coords.longitude));
+				}
 			}
 		}
 		await tick();
@@ -81,8 +85,6 @@
 		bikeListHeight = bikeList.clientHeight;
 		await tick();
 		timeout = setTimeout(() => updating = false, 150);
-		//TODO calc
-		distance = '1.2km';
 	}
 
 	onMount(() => {
@@ -118,7 +120,9 @@
 			<div class="flex flex-col grow">
 				<div class="flex items-center gap-2">
 					<span class="font-bold text-sm text-info">Estação {code}</span>
-					<span class="font-medium bg-background-secondary text-xs text-info px-1 py-[1px] rounded">{distance}</span>
+					{#if distance}
+						<span class="font-medium bg-background-secondary text-xs text-info px-1 py-[1px] rounded">{distance}</span>
+					{/if}
 				</div>
 				<span class="text-xs font-medium text-label leading-none mt-[2px]">{name}</span>
 			</div>
