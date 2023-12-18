@@ -3,6 +3,7 @@ import { login, refreshToken, updateUserInfo } from './auth';
 import { updateAccountInfo, updateStations, updateSubscriptions, updateActiveTripInfo, getTripHistory } from './gira-api';
 import { Preferences } from '@capacitor/preferences';
 import { startWS } from './gira-api/ws';
+import { browser } from '$app/environment';
 
 export type User = {
 	email: string;
@@ -100,16 +101,6 @@ token.subscribe(v => {
 	if (tokenRefreshTimeout) clearTimeout(tokenRefreshTimeout);
 	tokenRefreshTimeout = setTimeout(refreshToken, jwt.exp * 1000 - Date.now() - 1000 * 30);
 });
-userCredentials.subscribe(async v => {
-	if (!v) return;
-	const responseCode = await login(v.email, v.password);
-	if (responseCode !== 0) {
-		console.log('Login failed!');
-		userCredentials.set(null);
-	}
-	Preferences.set({ key: 'email', value: v.email });
-	Preferences.set({ key: 'password', value: v.password });
-});
 
 export async function loadUserCreds() {
 	const email = (await Preferences.get({ key: 'email' })).value;
@@ -119,6 +110,21 @@ export async function loadUserCreds() {
 	} else {
 		token.set(null);
 	}
+
+	userCredentials.subscribe(async v => {
+		if (!v) {
+			Preferences.remove({ key: 'email' });
+			Preferences.remove({ key: 'password' });
+			return;
+		}
+		const responseCode = await login(v.email, v.password);
+		if (responseCode !== 0) {
+			console.log('Login failed!');
+			userCredentials.set(null);
+		}
+		Preferences.set({ key: 'email', value: v.email });
+		Preferences.set({ key: 'password', value: v.password });
+	});
 }
 
 export async function logOut() {
