@@ -84,7 +84,19 @@
 				serial: bike!.serialNumber!,
 			};
 		});
-		if (tmpBikeInfo && stationId === $selectedStation) bikeInfo = tmpBikeInfo;
+		let tmpDocks = info.getDocks?.filter(v => v != null && v.ledStatus !== 'red')?.length ?? 0;
+		let tmpBikes = tmpBikeInfo?.length ?? 0;
+		let thisStation = $stations.filter(s => s.serialNumber == stationId);
+		if (thisStation[0]) {
+			thisStation[0].bikes = tmpBikes;
+			thisStation[0].docks = tmpDocks;
+		}
+		if (tmpBikeInfo && stationId === $selectedStation) {
+			bikeInfo = tmpBikeInfo;
+			freeDocks = tmpDocks - tmpBikes;
+			bikes = tmpBikes;
+			$stations = $stations;
+		}
 		await tick();
 		bikeListHeight = bikeList.clientHeight;
 		await tick();
