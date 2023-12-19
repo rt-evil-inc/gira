@@ -43,11 +43,11 @@
 	$: aggregate = Object.entries(trips.reduce((acc, cur) => {
 		if (cur == null) return acc;
 		const date = new Date(cur.startDate);
-		const key = `${date.getTime()}`;
-		if (acc[key] == null) acc[key] = [];
-		acc[key].push(cur);
+		const key = `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+		if (acc[key] == null) acc[key] = [date.getTime(), []];
+		acc[key][1].push(cur);
 		return acc;
-	}, {} as Record<string, TripHistory_TripDetail[]>)).sort((a, b) => {
+	}, {} as Record<string, [number, TripHistory_TripDetail[]]>)).sort((a, b) => {
 		const aDate = new Date(a[0]);
 		const bDate = new Date(b[0]);
 		return bDate.getTime() - aDate.getTime();
@@ -61,10 +61,10 @@
 		<div class="text-2xl font-bold text-info pl-4 pt-1">Viagens</div>
 
 		<div class="flex flex-col gap-2 p-4">
-			{#each aggregate as [dayMs, trips]}
+			{#each aggregate as [_, tripsObj]}
 				<div class="flex flex-col gap-2">
-					<div class="font-semibold text-label text-sm">{formatDate(new Date(parseInt(dayMs)))}</div>
-					{#each trips as trip}
+					<div class="font-semibold text-label text-sm">{formatDate(new Date(parseInt(tripsObj[0])))}</div>
+					{#each tripsObj[1] as trip}
 						<HistoryItem trip={trip} />
 					{/each}
 				</div>
