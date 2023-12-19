@@ -55,11 +55,11 @@
 	$: console.log(aggregate);
 
 </script>
-<div class="pt-12 flex flex-col h-screen ">
-	<div class="text-2xl font-bold text-info pl-4">Viagens</div>
+<div class="pt-12 flex flex-col h-screen">
 	<div class="flex flex-col h-full overflow-y-auto">
-
 		<div class="fixed left-0 right-0 h-4 -mt-4" style:box-shadow="0px 6px 6px 0px var(--color-background)" />
+		<div class="text-2xl font-bold text-info pl-4 pt-1">Viagens</div>
+
 		<div class="flex flex-col gap-2 p-4">
 			{#each aggregate as [dayMs, trips]}
 				<div class="flex flex-col gap-2">
