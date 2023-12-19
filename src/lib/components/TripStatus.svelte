@@ -6,8 +6,12 @@
 	import { onDestroy, onMount } from 'svelte';
 
 	let height:number;
-	$: height = $t && $t.destination ? 228 : 172;
 	export { height as posBottom };
+	$: if ($t) {
+		height = $t.destination ? 228 : 172;
+	} else {
+		height = 0;
+	}
 
 	let seconds = 0;
 	let inter: ReturnType<typeof setInterval>;
