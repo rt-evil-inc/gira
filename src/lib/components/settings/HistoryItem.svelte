@@ -19,7 +19,7 @@
 <div class="flex bg-white rounded-xl py-4 text-info justify-between" style:box-shadow="0px 0px 16px 0px var(--color-shadow)">
 	<div class="w-16 flex flex-col items-center py-3">
 		<div class="rounded-full border-[3px] w-4 h-4 border-primary shrink-0"></div>
-		<div class="flex flex-col py-1 h-full justify-between">
+		<div class="flex flex-col h-full justify-evenly">
 			<div class="bg-primary w-[3px] h-2 rounded-full"></div>
 			<div class="bg-primary w-[3px] h-2 rounded-full"></div>
 			<div class="bg-primary w-[3px] h-2 rounded-full"></div>
