@@ -30,6 +30,8 @@
 						bikes: station.bikes,
 						active: station.serialNumber == $selectedStation,
 						inService: station.assetStatus === 'active',
+						docks: station.docks,
+						freeDocks: station.docks - station.bikes,
 					},
 					geometry: {
 						type: 'Point',
@@ -70,7 +72,37 @@
 				// bike_white if active, bike_green otherwise
 				// 'icon-image': ['case', ['get', 'active'], ['concat', 'bike_green-', ['get', 'bikes']], ['concat', 'bike_white-', ['get', 'bikes']]],
 				// Add case for inService and active
-				'icon-image': ['case', ['get', 'active'], ['concat', 'bike_green-', ['get', 'bikes']], ['case', ['get', 'inService'], ['concat', 'bike_white-', ['get', 'bikes']], 'bike_gray']],
+				visibility: 'visible',
+				'icon-image': ['case',
+					['get', 'active'],
+					['concat', 'bike_green-', ['get', 'bikes']],
+					['case',
+						['get', 'inService'],
+						['concat', 'bike_white-', ['get', 'bikes']],
+						'bike_gray']],
+
+				'icon-size': ['interpolate', ['linear'], ['zoom'], 11, 0.3, 13, 0.5],
+				'icon-anchor': 'bottom',
+				'icon-allow-overlap': true,
+				'icon-padding': 0,
+			},
+		});
+		map.addLayer({
+			'id': 'docks',
+			'type': 'symbol',
+			'source': 'points',
+			'layout': {
+				// bike_white if active, bike_green otherwise
+				// 'icon-image': ['case', ['get', 'active'], ['concat', 'bike_green-', ['get', 'bikes']], ['concat', 'bike_white-', ['get', 'bikes']]],
+				// Add case for inService and active
+				visibility: 'none',
+				'icon-image': ['case',
+					['get', 'active'],
+					['concat', 'dock_green-', ['get', 'freeDocks']],
+					['case',
+						['get', 'inService'],
+						['concat', 'dock_white-', ['get', 'freeDocks']],
+						'dock_gray']],
 
 				'icon-size': ['interpolate', ['linear'], ['zoom'], 11, 0.3, 13, 0.5],
 				'icon-anchor': 'bottom',
@@ -117,13 +149,14 @@
 
 	async function loadImages() {
 		map.addImage('pulsing-dot', pulsingDot(map), { pixelRatio: 2 });
-		let greyStation = await loadSvg('./assets/bike_marker_gray.svg');
-		map.addImage('bike_gray', greyStation);
-		const imgs = [['bike_white', './assets/bike_marker_white.svg', '#79c000'], ['bike_green', './assets/bike_marker_green.svg', '#fff']];
+		map.addImage('bike_gray', await loadSvg('./assets/bike_marker_gray.svg'));
+		map.addImage('dock_gray', await loadSvg('./assets/dock_marker_gray.svg'));
+
+		const imgs = [['bike_white', './assets/bike_marker_white.svg', '#79c000'], ['bike_green', './assets/bike_marker_green.svg', '#fff'], ['dock_white', './assets/dock_marker_white.svg', '#79c000'], ['dock_green', './assets/dock_marker_green.svg', '#fff']];
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext('2d', { willReadFrequently: true })!;
+		const start = performance.now();
 		await Promise.all(imgs.map(([name, url, color]) => loadSvg(url).then(img => {
-			const start = performance.now();
 			context.clearRect(0, 0, img.width, img.height);
 			context.drawImage(img, 0, 0);
 			const imageWithoutNumber = context.getImageData(0, 0, img.width, img.height);
@@ -138,8 +171,8 @@
 				const newImg = context.getImageData(0, 0, img.width, img.height);
 				map.addImage(`${name}-${i}`, newImg);
 			}
-			console.log(`Loaded images in ${performance.now() - start}ms`);
 		})));
+		console.log(`Loaded images in ${performance.now() - start}ms`);
 	}
 	let unsubPos:Unsubscriber;
 	async function onMapLoad(loadPromise: Promise<void>) {
@@ -213,7 +246,19 @@
 	}
 
 	currentTrip.subscribe(trip => {
-		if (trip) following.active = true;
+		if (trip) {
+			following.active = true;
+			// change visibility of layers
+			if (map) {
+				map.setLayoutProperty('points', 'visibility', 'none');
+				map.setLayoutProperty('docks', 'visibility', 'visible');
+			}
+		} else {
+			if (map) {
+				map.setLayoutProperty('points', 'visibility', 'visible');
+				map.setLayoutProperty('docks', 'visibility', 'none');
+			}
+		}
 	});
 
 	$: if (following.active && map && $currentPos) centerMap($currentPos);

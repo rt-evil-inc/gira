@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { accountInfo, logOut, user } from '$lib/stores';
+	import { accountInfo, logOut, safeInsets, user } from '$lib/stores';
 	import IconHistory from '@tabler/icons-svelte/dist/svelte/icons/IconHistory.svelte';
 	import IconX from '@tabler/icons-svelte/dist/svelte/icons/IconX.svelte';
 	import IconTool from '@tabler/icons-svelte/dist/svelte/icons/IconTool.svelte';
@@ -14,6 +14,8 @@
 	import History from './settings/History.svelte';
 	import Settings from './settings/Settings.svelte';
 	import Info from './settings/Info.svelte';
+	import { App } from '@capacitor/app';
+	import type { PluginListenerHandle } from '@capacitor/core';
 
 	const dispatch = createEventDispatcher();
 	let openPage: 'settings' | 'history' |'info'| null = null;
@@ -21,9 +23,20 @@
 		// 20 de Março de 2024
 		return `${date.getDate()} de ${date.toLocaleString('pt', { month: 'long' })} de ${date.getFullYear()}`;
 	}
+	let listener:PluginListenerHandle;
+	onMount(async () => {
+		await App.addListener('backButton', () => {
+			if (openPage !== null) openPage = null;
+			else dispatch('close');
+		});
+	});
+	onDestroy(async () => {
+		if (listener) listener.remove();
+	});
+
 </script>
 
-<div transition:fade={{ duration: 150 }} class="absolute w-full h-full inset-0 bg-background z-30 grid">
+<div transition:fade={{ duration: 150 }} class="absolute w-full h-full inset-0 bg-background z-30 grid" style:padding-top={$safeInsets.top + 'px'} >
 	{#if $user}
 		<div class="flex flex-col justify-between items-center h-full gap-10 col-start-1 col-end-2 row-start-1 row-end-2 p-4">
 			<div class="flex flex-col justify-center w-full">
@@ -93,13 +106,13 @@
 				<Info />
 			</div>
 		{/if}
-		<div class="absolute top-4 right-4 flex justify-end z-40">
+		<div class="absolute top-0 right-4 flex justify-end z-40" style:padding-top={($safeInsets.top ? $safeInsets.top : 16) + 'px'}>
 			<button on:click={() => dispatch('close')}>
 				<IconX class="text-info" size={24} />
 			</button>
 		</div>
 		{#if openPage !== null}
-			<div transition:fade={{ duration: 150 }} class="absolute top-4 left-4 flex justify-end z-40">
+			<div transition:fade={{ duration: 150 }} class="absolute top-0 left-4 flex justify-end z-40" style:padding-top={($safeInsets.top ? $safeInsets.top : 16) + 'px'}>
 				<button on:click={() => openPage = null}>
 					<IconArrowLeft class="text-info" size={24} />
 				</button>

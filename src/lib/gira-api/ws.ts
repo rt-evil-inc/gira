@@ -20,10 +20,11 @@ export function startWS() {
 
 	if (ws) {
 		ws.onclose = () => {};
-		ws.close();
+		if (ws.readyState === WebSocket.OPEN) ws.close();
 	}
 	ws = new WebSocket('wss://apigira.emel.pt/graphql', 'graphql-ws');
 	ws.onopen = () => {
+		backoff = 0;
 		console.log('ws opened');
 		ws.send(JSON.stringify({ 'type': 'connection_init' }));
 		ws.send(JSON.stringify({
@@ -62,7 +63,7 @@ export function startWS() {
 					const activeTripSubscription = data.activeTripSubscription;
 					// UNTESTED, REQUIRE REAL TRIP
 					currentTrip.update(trip => {
-						if (activeTripSubscription.code === 'no_trip' || activeTripSubscription.finished === true) return null;
+						if (activeTripSubscription.code === 'no_trip' || activeTripSubscription.bike === 'dummy' || activeTripSubscription.finished === true) return null;
 						if (trip) {
 							trip.startDate = new Date(activeTripSubscription.startDate);
 							trip.bikeId = activeTripSubscription.bike;
@@ -94,13 +95,20 @@ export function startWS() {
 		}
 	};
 
-	ws.onclose = () => {
-		console.log('ws closed');
-		startWS();
+	let backoff = 0;
+	function restartWS() {
+		setTimeout(() => {
+			startWS();
+			backoff += 1000;
+		}, backoff);
+	}
+	ws.onclose = e => {
+		console.log('ws closed', e);
+		restartWS();
 	};
 	ws.onerror = e => {
 		console.log('ws error', e);
-		startWS();
+		restartWS();
 	};
 	console.log('ws started');
 }

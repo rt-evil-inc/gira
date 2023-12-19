@@ -7,7 +7,7 @@
 	import Settings from '$lib/components/Settings.svelte';
 	import StationMenu from '$lib/components/StationMenu.svelte';
 	import TripStatus from '$lib/components/TripStatus.svelte';
-	import { token, currentTrip } from '$lib/stores';
+	import { token, currentTrip, safeInsets } from '$lib/stores';
 	import { Geolocation } from '@capacitor/geolocation';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { fade } from 'svelte/transition';
@@ -49,11 +49,11 @@
 		<StationMenu bind:posTop={stationMenuPos} bind:bikeListHeight={menuHeight} />
 	{/if}
 
-	<Floating right={16} pos={stationMenuPos} offset={-70}>
+	<Floating right={16} pos={stationMenuPos} offset={-70 - $safeInsets.bottom}>
 		<LocationButton bind:locationPermission bind:following={following}/>
 	</Floating>
 
-	<Floating right={16} pos={tripStatusPos} offset={16}>
+	<Floating right={16} pos={tripStatusPos} offset={$safeInsets.top ? $safeInsets.top : 16}>
 		<ProfileButton on:click={() => settingsOpen = true}/>
 	</Floating>
 	{#if settingsOpen}
