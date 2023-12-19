@@ -134,7 +134,7 @@
 			context.fillStyle = color;
 			for (let i = 0; i < 50; i++) {
 				context.putImageData(imageWithoutNumber, 0, 0);
-				context.fillText(i.toString(), img.width / 2, img.height / 1.6);
+				context.fillText(i.toString(), img.width / 2, img.height / 1.65);
 				const newImg = context.getImageData(0, 0, img.width, img.height);
 				map.addImage(`${name}-${i}`, newImg);
 			}
