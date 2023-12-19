@@ -63,7 +63,7 @@ export function startWS() {
 					const activeTripSubscription = data.activeTripSubscription;
 					// UNTESTED, REQUIRE REAL TRIP
 					currentTrip.update(trip => {
-						if (activeTripSubscription.code === 'no_trip' || activeTripSubscription.finished === true) return null;
+						if (activeTripSubscription.code === 'no_trip' || activeTripSubscription.bike === 'dummy' || activeTripSubscription.finished === true) return null;
 						if (trip) {
 							trip.startDate = new Date(activeTripSubscription.startDate);
 							trip.bikeId = activeTripSubscription.bike;

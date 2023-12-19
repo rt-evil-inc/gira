@@ -272,7 +272,8 @@ export async function updateActiveTripInfo() {
 			defaultOrder,
 			version,
 		} = maybeTrips.activeTrip!;
-		if (code === 'no_trip') return;
+		console.log('name maybeTrip', name);
+		if (code === 'no_trip' && asset !== 'dummy') return;
 		currentTrip.update(_ => (
 			{
 				code: code!,
