@@ -2,6 +2,7 @@
 	import { getTripHistory } from '$lib/gira-api';
 	import type { TripHistory_TripDetail } from '$lib/gira-api/types';
 	import { onDestroy, onMount } from 'svelte';
+	import HistoryItem from './HistoryItem.svelte';
 	let trips:TripHistory_TripDetail[] = [];
 	let observed:HTMLDivElement;
 	let loading = false;
@@ -17,13 +18,12 @@
 			loading = false;
 		});
 	}
-	function formatDateTime(date:Date) {
+	function formatDate(date:Date) {
 		const day = date.getDate();
-		const month = date.toLocaleString('pt', { month: 'long' });
+		const month = date.toLocaleString('pt', { month: 'short' });
 		const year = date.getFullYear();
-		const hours = date.getHours().toString().padStart(2, '0');
-		const minutes = date.getMinutes().toString().padStart(2, '0');
-		return `${day} de ${month} de ${year} às ${hours}:${minutes}`;
+		const dayOfWeek = date.toLocaleString('pt', { weekday: 'long' });
+		return `${dayOfWeek}, ${day} ${month} ${year}`;
 	}
 	let observer:IntersectionObserver;
 	onMount(async () => {
@@ -40,17 +40,36 @@
 		observer.disconnect();
 	});
 
+	$: aggregate = Object.entries(trips.reduce((acc, cur) => {
+		if (cur == null) return acc;
+		const date = new Date(cur.startDate);
+		const key = `${date.getTime()}`;
+		if (acc[key] == null) acc[key] = [];
+		acc[key].push(cur);
+		return acc;
+	}, {} as Record<string, TripHistory_TripDetail[]>)).sort((a, b) => {
+		const aDate = new Date(a[0]);
+		const bDate = new Date(b[0]);
+		return bDate.getTime() - aDate.getTime();
+	});
+	$: console.log(aggregate);
+
 </script>
-<div class="pt-10 flex flex-col h-screen overflow-y-auto">
-	<div class="flex flex-col gap-2 p-4">
-		{#each trips as trip}
-			<div class="flex bg-white rounded-xl px-2 py-1 text-info" style:box-shadow="0px 0px 20px 0px var(--color-shadow)">
-				<div>
-					<div class="font-bold text-sm">{trip.startLocation}</div>
-					<div class="font-medium text-xs">{formatDateTime(new Date(trip.startDate))}</div>
+<div class="pt-12 flex flex-col h-screen ">
+	<div class="text-2xl font-bold text-info pl-4">Viagens</div>
+	<div class="flex flex-col h-full overflow-y-auto">
+
+		<div class="fixed left-0 right-0 h-4 -mt-4" style:box-shadow="0px 6px 6px 0px var(--color-background)" />
+		<div class="flex flex-col gap-2 p-4">
+			{#each aggregate as [dayMs, trips]}
+				<div class="flex flex-col gap-2">
+					<div class="font-semibold text-label text-sm">{formatDate(new Date(parseInt(dayMs)))}</div>
+					{#each trips as trip}
+						<HistoryItem trip={trip} />
+					{/each}
 				</div>
-			</div>
-		{/each}
-		<div bind:this={observed}></div>
+			{/each}
+			<div bind:this={observed}></div>
+		</div>
 	</div>
 </div>
