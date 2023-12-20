@@ -11,7 +11,8 @@
 	import type { Unsubscriber } from 'svelte/motion';
 	export let blurred = true;
 	export let following:{active:boolean} = { active: false };
-	export let menuHeight = 0;
+	export let bottomPadding = 0;
+	export let topPadding = 0;
 	let mapElem: HTMLDivElement;
 	let map : Map;
 	let mapLoaded = false;
@@ -131,7 +132,7 @@
 			await tick();
 			map.flyTo({
 				center: feature.geometry.coordinates as [number, number],
-				padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
+				padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2) },
 				curve: 0,
 			});
 		});
@@ -187,7 +188,7 @@
 	function centerMap(pos: Position) {
 		map.flyTo({
 			center: [pos.coords.longitude, pos.coords.latitude],
-			padding: { bottom: Math.min(menuHeight, window.innerHeight / 2) },
+			padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2) },
 			curve: 0,
 		});
 	}
@@ -263,7 +264,7 @@
 
 	$: if (following.active && map && $currentPos) centerMap($currentPos);
 
-	$: if ($selectedStation == null) menuHeight = 0;
+	$: if ($selectedStation == null) bottomPadding = 0;
 </script>
 
 {#if !mapLoaded || blurred || $stations.length == 0}
