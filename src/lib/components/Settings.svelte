@@ -13,7 +13,7 @@
 	import Metric from './Metric.svelte';
 	import History from './settings/History.svelte';
 	import Settings from './settings/Settings.svelte';
-	import Info from './settings/Info.svelte';
+	import Info from './settings/About.svelte';
 	import { App } from '@capacitor/app';
 	import type { PluginListenerHandle } from '@capacitor/core';
 
