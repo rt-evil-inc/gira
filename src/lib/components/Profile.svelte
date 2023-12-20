@@ -84,7 +84,7 @@
 				</div>
 			</div>
 			<div class="flex flex-col grow font-semibold px-2 gap-3 w-full">
-				<SettingsEntry icon={IconHistory} text={'Histórico'} subtext={'Deslocações e transações'} on:click={() => openPage = 'history'} />
+				<SettingsEntry icon={IconHistory} text={'Histórico'} subtext={'Lista de viagens anteriores'} on:click={() => openPage = 'history'} />
 				<SettingsEntry icon={IconTool} text={'Configurações'} subtext={'Definições da aplicação'} on:click={() => openPage = 'settings'} />
 				<SettingsEntry icon={IconInfoCircle} text={'Sobre'} subtext={'Informação acerca da aplicação'} on:click={() => openPage = 'info'} />
 			</div>
