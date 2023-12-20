@@ -4,7 +4,7 @@
 	import Login from '$lib/components/Login.svelte';
 	import Map from '$lib/components/Map.svelte';
 	import ProfileButton from '$lib/components/ProfileButton.svelte';
-	import Settings from '$lib/components/Settings.svelte';
+	import Settings from '$lib/components/Profile.svelte';
 	import StationMenu from '$lib/components/StationMenu.svelte';
 	import TripStatus from '$lib/components/TripStatus.svelte';
 	import { token, currentTrip, safeInsets } from '$lib/stores';
