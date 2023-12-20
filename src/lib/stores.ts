@@ -71,19 +71,6 @@ export const accountInfo = writable<AccountInfo|null>(null);
 export const selectedStation = writable<string|null>(null);
 export const safeInsets = writable<Insets>({ top: 0, bottom: 0, left: 0, right: 0 });
 
-export const loadingTasks:Writable<Set<number>> = writable(new Set);
-export function addLoadingTask() {
-	const rnd = Math.random();
-	loadingTasks.update(tasks => tasks.add(rnd));
-	return rnd;
-}
-export function removeLoadingTask(id: number) {
-	loadingTasks.update(tasks => {
-		tasks.delete(id);
-		return tasks;
-	});
-}
-
 type JWT = {
 	jti: string;
 	sub: string;
