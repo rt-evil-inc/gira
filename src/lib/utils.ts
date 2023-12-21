@@ -14,5 +14,5 @@ export function distanceBetweenCoords(lat1:number, lon1:number, lat2:number, lon
 
 export function formatDistance(distance:number) {
 	if (distance < 1) return `${(distance * 1000).toFixed(0)}m`;
-	return `${distance.toFixed(1)}km`;
+	return `${distance.toLocaleString(undefined, { maximumFractionDigits: 2, useGrouping: false })}km`;
 }
