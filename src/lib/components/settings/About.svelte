@@ -1,8 +1,9 @@
 <script>
 	import { version } from '$app/environment';
+	import { safeInsets } from '$lib/stores';
 </script>
 
-<div class="pt-12 flex flex-col h-screen p-5">
+<div class="flex flex-col h-screen p-5" style:padding-top={$safeInsets.top + 48 + 'px'}>
 	<div class="text-3xl font-bold text-info pt-1">Sobre</div>
 	<div class="flex flex-col h-full px-5 py-10 gap-10 items-center">
 		<div class="flex flex-col w-full gap-3 font-medium text-info leading-tight">

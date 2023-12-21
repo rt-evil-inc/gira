@@ -3,6 +3,7 @@
 	import type { TripHistory_TripDetail } from '$lib/gira-api/types';
 	import { onDestroy, onMount } from 'svelte';
 	import HistoryItem from './HistoryItem.svelte';
+	import { safeInsets } from '$lib/stores';
 	let trips:TripHistory_TripDetail[] = [];
 	let observed:HTMLDivElement;
 	let didFirstRequest = false;
@@ -31,12 +32,15 @@
 	onMount(async () => {
 		loadMoreTripHistory();
 		const options = {
-			rootMargin: '0px',
-			threshold: 0.5,
+			rootMargin: '128px',
+			threshold: 0.1,
 		};
-		observer = new IntersectionObserver(loadMoreTripHistory, options);
+		function loadMoreTripHistoryProxy(entries:IntersectionObserverEntry[]) {
+			console.log(entries);
+			if (entries[0].isIntersecting) loadMoreTripHistory();
+		}
+		observer = new IntersectionObserver(loadMoreTripHistoryProxy, options);
 		observer.observe(observed);
-		console.log(observer);
 	});
 	onDestroy(() => {
 		observer.disconnect();
@@ -44,7 +48,6 @@
 
 	$: aggregate = Object.entries(trips.reduce((acc, cur) => {
 		if (cur == null) return acc;
-		console.log('cur', cur);
 		const date = new Date(cur.startDate);
 		const key = `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
 		if (acc[key] == null) acc[key] = [date.getTime(), []];
@@ -58,7 +61,7 @@
 	$: console.log(aggregate);
 
 </script>
-<div class="pt-12 flex flex-col h-screen">
+<div class="flex flex-col h-screen" style:padding-top={$safeInsets.top + 48 + 'px'}>
 	<div class="flex flex-col h-full overflow-y-auto">
 		<div class="fixed left-0 right-0 h-4 -mt-4" style:box-shadow="0px 6px 6px 0px var(--color-background)" />
 		<div class="text-3xl font-bold text-info pl-5 pt-1">Viagens</div>
@@ -78,7 +81,6 @@
 							{/each}
 						</div>
 					{/each}
-					<div bind:this={observed}></div>
 				</div>
 			{/if}
 		{:else}
@@ -95,5 +97,6 @@
 				{/each}
 			</div>
 		{/if}
+		<div class="min-h-[1px]" bind:this={observed}></div>
 	</div>
 </div>
