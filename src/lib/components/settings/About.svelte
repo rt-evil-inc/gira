@@ -1,3 +1,7 @@
+<script>
+	import { version } from '$app/environment';
+</script>
+
 <div class="pt-12 flex flex-col h-screen p-5">
 	<div class="text-3xl font-bold text-info pt-1">Sobre</div>
 	<div class="flex flex-col h-full px-5 py-10 gap-10 items-center">
@@ -37,4 +41,5 @@
 			<span class="font-semibold text-info text-xs">Projeto open-source sob a licença GPL-3.0</span>
 		</div>
 	</div>
+	<a href="https://github.com/ttmx/gira-app/releases" class="absolute bottom-5 left-5 font-semibold text-label text-xs">v{version}</a>
 </div>
