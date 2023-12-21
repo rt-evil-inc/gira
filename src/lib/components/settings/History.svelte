@@ -61,7 +61,7 @@
 <div class="pt-12 flex flex-col h-screen">
 	<div class="flex flex-col h-full overflow-y-auto">
 		<div class="fixed left-0 right-0 h-4 -mt-4" style:box-shadow="0px 6px 6px 0px var(--color-background)" />
-		<div class="text-2xl font-bold text-info pl-4 pt-1">Viagens</div>
+		<div class="text-3xl font-bold text-info pl-5 pt-1">Viagens</div>
 		{#if didFirstRequest }
 			{#if didFirstRequest && trips.length == 0 }
 				<div class="flex flex-col items-center justify-center h-full">
@@ -69,9 +69,9 @@
 					<div class="text-label text-sm text-center">Não há viagens registadas</div>
 				</div>
 			{:else}
-				<div class="flex flex-col gap-2 p-4">
+				<div class="flex flex-col gap-6 p-5">
 					{#each aggregate as [_, tripsObj]}
-						<div class="flex flex-col gap-2">
+						<div class="flex flex-col gap-3">
 							<div class="font-semibold text-label text-sm">{formatDate(new Date(tripsObj[0]))}</div>
 							{#each tripsObj[1] as trip}
 								<HistoryItem trip={trip} />
@@ -82,9 +82,9 @@
 				</div>
 			{/if}
 		{:else}
-			<div class="flex flex-col gap-2 p-4">
+			<div class="flex flex-col gap-6 p-5">
 				{#each new Array(4).fill(0) as _}
-					<div class="flex flex-col gap-2">
+					<div class="flex flex-col gap-3">
 						<div class="font-semibold text-label text-sm h-4 bg-neutral-100 rounded-xl animate-pulse"
 							style:width={(Math.random() * 15 + 40) + '%'}
 						></div>
