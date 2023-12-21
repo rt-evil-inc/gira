@@ -9,6 +9,7 @@
 	import IconArrowLeft from '@tabler/icons-svelte/dist/svelte/icons/IconArrowLeft.svelte';
 	import IconTicket from '@tabler/icons-svelte/dist/svelte/icons/IconTicket.svelte';
 	import IconLogout2 from '@tabler/icons-svelte/dist/svelte/icons/IconLogout2.svelte';
+	import IconMessageReport from '@tabler/icons-svelte/dist/svelte/icons/IconMessageReport.svelte';
 	import SettingsEntry from './SettingsEntry.svelte';
 	import Metric from './Metric.svelte';
 	import History from './settings/History.svelte';
@@ -86,6 +87,7 @@
 			<div class="flex flex-col grow font-semibold px-2 gap-3 w-full">
 				<SettingsEntry icon={IconHistory} text={'Histórico'} subtext={'Lista de viagens anteriores'} on:click={() => openPage = 'history'} />
 				<SettingsEntry icon={IconTool} text={'Configurações'} subtext={'Definições da aplicação'} on:click={() => openPage = 'settings'} />
+				<a href="https://github.com/ttmx/gira-app/issues"><SettingsEntry icon={IconMessageReport} text={'Feedback'} subtext={'Reportar problema ou dar sugestão'} /></a>
 				<SettingsEntry icon={IconInfoCircle} text={'Sobre'} subtext={'Informação acerca da aplicação'} on:click={() => openPage = 'info'} />
 			</div>
 			<button class="flex flex-col items-center mb-3" on:click={() => { dispatch('close'); logOut(); }}>
