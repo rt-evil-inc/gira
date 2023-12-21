@@ -6,6 +6,7 @@
 	import IconBattery4 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery4.svelte';
 	import IconBolt from '@tabler/icons-svelte/dist/svelte/icons/IconBolt.svelte';
 	import IconLockOpen from '@tabler/icons-svelte/dist/svelte/icons/IconLockOpen.svelte';
+	import IconLock from '@tabler/icons-svelte/dist/svelte/icons/IconLock.svelte';
 	import IconSettings from '@tabler/icons-svelte/dist/svelte/icons/IconSettings.svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
@@ -13,6 +14,7 @@
 	import { currentTrip } from '$lib/stores';
 	import { createEventDispatcher } from 'svelte';
 	import { currentPos } from '$lib/location';
+	import { fade, fly } from 'svelte/transition';
 
 	export let type:'classic'|'electric'|null = null, id:string = '', battery:number|null = null, dock:string|null = null, disabled = false, serial:string|null = null;
 	export let action = async () => {
@@ -38,6 +40,9 @@
 						predictedEndDate: null,
 						finished: false,
 					};
+					return true;
+				} else {
+					return false;
 				}
 			}
 		} catch (e) {
@@ -51,6 +56,7 @@
 	let timeout:ReturnType<typeof setTimeout> = setTimeout(() => {}, 0);
 	let slider:HTMLDivElement;
 	let moved = false;
+	let waiting = false;
 
 	function onTouchStart(event: TouchEvent) {
 		dragging = true;
@@ -73,16 +79,30 @@
 		} else {
 			pos.set(0);
 			if (Math.abs($pos) > slider.clientWidth * 0.6) {
-				action();
+				pos.set($pos > 0 ? slider.clientWidth : -slider.clientWidth);
+				waiting = true;
+				action().then(success => {
+					waiting = false;
+					if (!success) pos.set(0);
+				});
 			}
 		}
+		moved = false;
 	}
 </script>
 
 <div bind:this={slider} class="flex items-center justify-center w-full min-h-[70px] relative overflow-hidden rounded-2xl" style:box-shadow="0px 0px 12px 0px var(--color-shadow)" >
 	{#if type && id && dock }
 		<div class="absolute flex {$pos < 0 ? 'flex-row-reverse' : ''} w-[calc(100%-1px)] h-[calc(100%-1px)] items-center p-4 bg-primary rounded-2xl" style:box-shadow="0px 0px 12px 0px var(--color-shadow)">
-			<IconLockOpen size={32} stroke={2} class="text-background" />
+			{#if !waiting}
+				<div transition:fade={{ duration: 150 }}>
+					<IconLockOpen size={32} stroke={2} class="text-background" />
+				</div>
+			{:else}
+				<div class="absolute left-1/2 -translate-x-1/2" transition:fade={{ duration: 150, delay: 150 }}>
+					<IconLock size={32} stroke={2} class="text-background animate-bounce" />
+				</div>
+			{/if}
 		</div>
 		<div class="absolute flex items-center bg-background rounded-2xl h-full w-full px-5 gap-5" style:box-shadow="0px 0px 12px 0px var(--color-shadow)" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove} style:left="{$pos}px">
 			{#if type === 'electric'}

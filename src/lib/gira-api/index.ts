@@ -124,6 +124,7 @@ export async function cancelBikeReserve() {
 export async function startTrip() {
 	if (dev) {
 		console.log('mock startTrip');
+		await new Promise(resolve => setTimeout(resolve, 2000));
 		return { startTrip: true };
 	} else {
 		const req = mutate<['startTrip']>({
