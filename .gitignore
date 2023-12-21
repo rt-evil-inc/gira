@@ -14,5 +14,6 @@ package-lock.json
 # Capacitor
 /android
 !/android/app/src/main/AndroidManifest.xml
+!/android/app/src/main/res/**/*
 /ios
 capacitor.config.json.timestamp-*
