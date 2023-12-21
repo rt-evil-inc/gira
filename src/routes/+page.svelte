@@ -4,7 +4,7 @@
 	import Login from '$lib/components/Login.svelte';
 	import Map from '$lib/components/Map.svelte';
 	import ProfileButton from '$lib/components/ProfileButton.svelte';
-	import Settings from '$lib/components/Profile.svelte';
+	import Profile from '$lib/components/Profile.svelte';
 	import StationMenu from '$lib/components/StationMenu.svelte';
 	import TripStatus from '$lib/components/TripStatus.svelte';
 	import { token, currentTrip, safeInsets } from '$lib/stores';
@@ -19,7 +19,7 @@
 	let currentMode:'map'|'trip' = 'map';
 	let stationMenuPos:number|undefined = 0;
 	let tripStatusPos:number = 0;
-	let settingsOpen = false;
+	let profileOpen = false;
 	let locationPermission = false;
 
 	onMount(() => {
@@ -54,10 +54,10 @@
 	</Floating>
 
 	<Floating right={16} pos={tripStatusPos} offset={$safeInsets.top ? $safeInsets.top : 16}>
-		<ProfileButton on:click={() => settingsOpen = true}/>
+		<ProfileButton on:click={() => profileOpen = true}/>
 	</Floating>
-	{#if settingsOpen}
-		<Settings on:close={() => settingsOpen = false}/>
+	{#if profileOpen}
+		<Profile on:close={() => profileOpen = false}/>
 	{/if}
 
 </div>
