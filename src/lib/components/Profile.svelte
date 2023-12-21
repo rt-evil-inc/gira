@@ -87,7 +87,7 @@
 			<div class="flex flex-col grow font-semibold px-2 gap-3 w-full">
 				<SettingsEntry icon={IconHistory} text={'Histórico'} subtext={'Lista de viagens anteriores'} on:click={() => openPage = 'history'} />
 				<SettingsEntry icon={IconTool} text={'Configurações'} subtext={'Definições da aplicação'} on:click={() => openPage = 'settings'} />
-				<a href="https://github.com/ttmx/gira-app/issues"><SettingsEntry icon={IconMessageReport} text={'Feedback'} subtext={'Reportar problema ou dar sugestão'} /></a>
+				<a href="https://github.com/ttmx/gira-app/issues"><SettingsEntry icon={IconMessageReport} text={'Feedback'} subtext={'Problemas e sugestões'} /></a>
 				<SettingsEntry icon={IconInfoCircle} text={'Sobre'} subtext={'Informação acerca da aplicação'} on:click={() => openPage = 'info'} />
 			</div>
 			<button class="flex flex-col items-center mb-3" on:click={() => { dispatch('close'); logOut(); }}>
