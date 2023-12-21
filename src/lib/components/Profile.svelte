@@ -39,7 +39,9 @@
 
 <div transition:fade={{ duration: 150 }} class="absolute w-full h-full inset-0 bg-background z-30 grid" >
 	{#if $user}
-		<div class="flex flex-col justify-between items-center h-full gap-10 col-start-1 col-end-2 row-start-1 row-end-2 p-4 overflow-x-hidden">
+		<div class="flex flex-col justify-between items-center h-full gap-10 col-start-1 col-end-2 row-start-1 row-end-2 p-4 overflow-x-hidden"
+			style:margin-top={($safeInsets.top ? $safeInsets.top : 16) + 'px'}
+		>
 			<div class="flex flex-col justify-center w-full">
 				<div class="flex items-center gap-2 p-4 py-6">
 					<div class="relative">

@@ -68,7 +68,7 @@
 		<div class="text-3xl font-bold text-info pl-5 pt-1">Viagens</div>
 		{#if didFirstRequest }
 			{#if didFirstRequest && trips.length == 0 }
-				<div class="flex flex-col items-center justify-center h-full">
+				<div class="flex flex-col items-center justify-center h-full" style:margin-top={-$safeInsets.top - 32 + 'px'}>
 					<div class="text-2xl font-bold text-info">Nenhuma viagem</div>
 					<div class="text-label text-sm text-center">Não há viagens registadas</div>
 				</div>
@@ -99,6 +99,7 @@
 			</div>
 		{/if}
 		<div class="mx-auto"
+			class:hidden={trips.length == 0}
 			style:padding-bottom={$safeInsets.bottom + 'px'}
 			bind:this={observed}>
 			<svg out:fade={{ duration: 500 }} class="w-20 h-12 mb-4" width="57" height="38" viewBox="0 0 57 38" fill="none" xmlns="http://www.w3.org/2000/svg">
