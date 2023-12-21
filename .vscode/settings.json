@@ -13,4 +13,5 @@
 	"[html]": {
 		"editor.defaultFormatter": "vscode.html-language-features"
 	},
+	"files.eol": "\n",
 }
