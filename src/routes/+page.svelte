@@ -49,7 +49,7 @@
 		<StationMenu bind:posTop={stationMenuPos} bind:bikeListHeight={menuHeight} />
 	{/if}
 
-	<Floating right={16} pos={stationMenuPos} offset={-70 - $safeInsets.bottom}>
+	<Floating right={16} pos={stationMenuPos} offset={-70}>
 		<LocationButton bind:locationPermission bind:following={following}/>
 	</Floating>
 
