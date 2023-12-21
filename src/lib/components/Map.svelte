@@ -269,7 +269,7 @@
 
 {#if !mapLoaded || blurred || $stations.length == 0}
 	<div out:fade={{ duration: 500 }} class="blur absolute bg-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[2000px] h-[2000px] z-10 bg-[url(/assets/map-preview.jpg)]" />
-	<svg out:fade={{ duration: 500 }} class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10" width="57" height="38" viewBox="0 0 57 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<svg out:fade={{ duration: 500 }} class="absolute w-20 h-12 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10" width="57" height="38" viewBox="0 0 57 38" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<path d="M10.7469 26.7097L17.5402 20.9704C15.053 17.2971 9.84124 18.363 7.58001 18.8319C12.618 19.852 10.7469 26.7097 10.7469 26.7097Z" fill="#79C000"/>
 		<path d="M10.7469 26.7097L19.5439 26.8765C19.2379 24.317 18.5054 22.3959 17.5402 20.9704L10.7469 26.7097Z" fill="#79C000"/>
 		<path d="M26.0602 27L22.0853 17.1306M26.0602 27L38.7343 10.418M26.0602 27L19.5439 26.8765M18.5339 8.42235H15.7319M18.5339 8.42235H22.4436M18.5339 8.42235L22.0853 17.1306M10.7469 26.7097C10.7469 26.7097 12.618 19.852 7.58001 18.8319M10.7469 26.7097L19.5439 26.8765M10.7469 26.7097L17.5402 20.9704M22.0853 17.1306L17.5402 20.9704M46 26.7097L42.7419 22.1379L38.7343 10.418M38.7343 10.418L37.1379 5.12046L41.015 2L34.4988 2.39913M7.58001 18.8319C9.84124 18.363 15.053 17.2971 17.5402 20.9704M7.58001 18.8319H3M19.5439 26.8765C19.2379 24.317 18.5054 22.3959 17.5402 20.9704" stroke="#79C000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
