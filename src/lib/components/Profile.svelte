@@ -51,7 +51,7 @@
 				</div>
 				<div class="flex gap-16">
 					<Metric value={$accountInfo?.balance ?? 0} unit={'€'} label={'Saldo'} color={'info'} />
-					<Metric value={$accountInfo?.bonus ?? 0} unit={''} label={'Bónus'} color={'info'} />
+					<Metric value={$accountInfo?.bonus ?? 0} unit={''} label={'Pontos'} color={'info'} />
 				</div>
 				<div>
 					<div class="flex items-center gap-1 justify-center">
