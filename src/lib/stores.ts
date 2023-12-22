@@ -1,9 +1,8 @@
 import { writable, type Writable } from 'svelte/store';
 import { login, refreshToken, updateUserInfo } from './auth';
-import { updateAccountInfo, updateStations, updateSubscriptions, updateActiveTripInfo, getTripHistory } from './gira-api';
+import { updateAccountInfo, updateStations, updateSubscriptions, updateActiveTripInfo, getTripHistory, getTrip, getUnratedTrips, updateUnratedTrips } from './gira-api';
 import { Preferences } from '@capacitor/preferences';
 import { startWS } from './gira-api/ws';
-import { browser } from '$app/environment';
 
 export type User = {
 	email: string;
@@ -61,6 +60,20 @@ export type Insets = {
 	left: number;
 	right: number;
 }
+export type AppSettings = {
+	distanceLock: boolean;
+}
+export type TripRating = {
+	currentRating:{
+		code:string,
+		bikeId:string,
+		startDate:Date,
+		endDate:Date,
+		tripPoints:number,
+	}|null,
+	ratedTripCodes: Set<string>,
+	unratedTripCodes: Set<string>|null,
+}
 
 export const userCredentials: Writable<{email: string, password: string}|null> = writable(null);
 export const token: Writable<Token|null|undefined> = writable(undefined);
@@ -70,6 +83,8 @@ export const currentTrip = writable<ActiveTrip|null>(null);
 export const accountInfo = writable<AccountInfo|null>(null);
 export const selectedStation = writable<string|null>(null);
 export const safeInsets = writable<Insets>({ top: 0, bottom: 0, left: 0, right: 0 });
+export const appSettings = writable<AppSettings>({ distanceLock: true });
+export const tripRating = writable<TripRating>({ currentRating: null, ratedTripCodes: new Set, unratedTripCodes: null });
 
 type JWT = {
 	jti: string;
@@ -83,10 +98,11 @@ type JWT = {
 	aud: string;
 };
 let tokenRefreshTimeout: ReturnType<typeof setTimeout>|null = null;
-token.subscribe(v => {
+token.subscribe(async v => {
 	if (!v) return;
 	const jwt:JWT = JSON.parse(window.atob(v.accessToken.split('.')[1]));
 
+	await updateUnratedTrips();
 	startWS();
 	updateUserInfo();
 	updateStations();
@@ -106,6 +122,8 @@ export async function loadUserCreds() {
 		// This is here to show the login dialog if there are no credentials set
 		token.set(null);
 	}
+	const distanceLock = (await Preferences.get({ key: 'settings/distanceLock' })).value === 'true';
+	appSettings.set({ distanceLock });
 
 	userCredentials.subscribe(async v => {
 		if (!v) {
@@ -121,6 +139,9 @@ export async function loadUserCreds() {
 		Preferences.set({ key: 'email', value: v.email });
 		Preferences.set({ key: 'password', value: v.password });
 	});
+	appSettings.subscribe(async v => {
+		Preferences.set({ key: 'settings/distanceLock', value: v.distanceLock.toString() });
+	});
 }
 
 export async function logOut() {
@@ -130,4 +151,5 @@ export async function logOut() {
 	currentTrip.set(null);
 	user.set(null);
 	selectedStation.set(null);
+	// purposefully not settings settings distancelock, since thats annoying when you swap accounts
 }

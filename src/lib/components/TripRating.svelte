@@ -11,14 +11,30 @@
 	import IconMoodHappy from '@tabler/icons-svelte/dist/svelte/icons/IconMoodHappy.svelte';
 	import IconMoodHappyFilled from '@tabler/icons-svelte/dist/svelte/icons/IconMoodHappyFilled.svelte';
 	import { fade, fly } from 'svelte/transition';
+	import { rateTrip } from '$lib/gira-api';
+	import { tripRating } from '$lib/stores';
 
 	let show = true;
-	export let rating:number;
-
+	export let code:string;
+	let rating:number;
+	async function rate(code:string, rating:number) {
+		return (await rateTrip(code, rating)).rateTrip;
+	}
 	let timeout:ReturnType<typeof setTimeout>;
 	$: if (rating !== undefined) {
 		clearTimeout(timeout);
-		timeout = setTimeout(() => show = false, 500);
+		rate(code, rating).then(r => {
+			if (r) {
+				$tripRating.currentRating = null;
+				$tripRating.ratedTripCodes.add(code);
+				$tripRating.unratedTripCodes?.delete(code);
+				timeout = setTimeout(() => {
+					show = false;
+				}, 500);
+			} else {
+			//TODO error
+			}
+		});
 	}
 </script>
 

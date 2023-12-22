@@ -1,4 +1,4 @@
-import { token, type StationInfo, stations, accountInfo, currentTrip } from '$lib/stores';
+import { token, type StationInfo, stations, accountInfo, currentTrip, tripRating } from '$lib/stores';
 import type { Mutation, Query } from './types';
 import { get } from 'svelte/store';
 import { CapacitorHttp, type HttpResponse } from '@capacitor/core';
@@ -21,24 +21,30 @@ async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
 			data: body,
 		});
 		if (res.status >= 200 && res.status < 300) {
+			console.log(res);
 			return res.data.data as Promise<M<T>>;
 		}
 	}
 	throw new Error(res.data.errors || res.status);
 }
 async function query<T extends(keyof Query)[]>(body:any): Promise<Q<T>> {
-	return CapacitorHttp.post({
-		url: 'https://apigira.emel.pt/graphql',
-		headers: {
-			'User-Agent': 'Gira/3.2.8 (Android 34)',
-			'content-type': 'application/json',
-			'authorization': `Bearer ${get(token)?.accessToken}`,
-		},
-		data: body,
-	}).then(async res => {
+	let res: HttpResponse = { status: 0, data: {}, headers: {}, url: '' };
+	for (let tryNum = 0; tryNum < retries; tryNum++) {
+		res = await CapacitorHttp.post({
+			url: 'https://apigira.emel.pt/graphql',
+			headers: {
+				'User-Agent': 'Gira/3.2.8 (Android 34)',
+				'content-type': 'application/json',
+				'authorization': `Bearer ${get(token)?.accessToken}`,
+			},
+			data: body,
+		});
 		console.log(res);
-		return res.data.data as Promise<Q<T>>;
-	});
+		if (res.status >= 200 && res.status < 300) {
+			return res.data.data as Promise<Q<T>>;
+		}
+	}
+	throw new Error(res.data.errors || res.status);
 }
 
 export async function getStations(): Promise<Q<['getStations']>> {
@@ -160,29 +166,6 @@ export async function getActiveTrip() {
 	return req;
 }
 
-export async function rateTrip(tripCode: string, tripRating: number, tripComment: string) {
-	const req = mutate<['rateTrip']>({
-		'variables': { in: { code: tripCode, rating: tripRating, description: '', attachment: { bytes: null, fileName: `img_${tripCode}.png`, mimeType: 'image/png' } } },
-		'query': `mutation ($in: RateTrip_In) { rateTrip(in: $in) }`,
-	});
-	return req;
-}
-
-export async function tripPayWithNoPoints(tripCode: string) {
-	const req = mutate<['tripPayWithNoPoints']>({
-		'variables': { input: tripCode },
-		'query': `mutation ($input: String) { tripPayWithNoPoints(input: $input) }`,
-	});
-	return req;
-}
-
-export async function tripPayWithPoints(tripCode: string) {
-	const req = mutate<['tripPayWithPoints']>({
-		'variables': { input: tripCode },
-		'query': `mutation ($input: String) { tripPayWithPoints(input: $input) }`,
-	});
-	return req;
-}
 export async function getPointsAndBalance() {
 	const req = query<['client']>({
 		'variables': {},
@@ -227,7 +210,7 @@ export async function updateSubscriptions() {
 export async function getTrip(tripCode:string) {
 	const req = query<['getTrip']>({
 		'variables': { input: tripCode },
-		'query': `query ($input: String) { getTrip { user, asset, startDate, endDate, startLocation, endLocation, distance, rating, photo, cost, startOccupation, endOccupation, totalBonus, client, costBonus, comment, compensationTime, endTripDock, tripStatus, code, name, description, creationDate, createdBy, updateDate, updatedBy, defaultOrder, version } }`,
+		'query': `query ($input: String) { getTrip(input: $input) { user, asset, startDate, endDate, startLocation, endLocation, distance, rating, photo, cost, startOccupation, endOccupation, totalBonus, client, costBonus, comment, compensationTime, endTripDock, tripStatus, code, name, description, creationDate, createdBy, updateDate, updatedBy, defaultOrder, version } }`,
 	});
 	return req;
 }
@@ -318,6 +301,72 @@ export async function getTripHistory(pageNum:number, pageSize:number) {
 	const req = query<['tripHistory']>({
 		'variables': { input: { _pageNum: pageNum, _pageSize: pageSize } },
 		'query': `query ($input: PageInput) { tripHistory(pageInput: $input) { code, startDate, endDate, rating, bikeName, startLocation, endLocation, bonus, usedPoints, cost, bikeType } }`,
+	});
+	return req;
+}
+
+export async function getUnratedTrips(pageNum:number, pageSize:number) {
+	const req = query<['unratedTrips']>({
+		'variables': { input: { _pageNum: pageNum, _pageSize: pageSize } },
+		'query': `query ($input: PageInput) { unratedTrips(pageInput: $input) { code, startDate, endDate, rating, startLocation, endLocation, cost } }`,
+	});
+	return req;
+}
+
+export async function updateUnratedTrips() {
+	return getUnratedTrips(0, 15).then(maybeTrips => {
+		if (maybeTrips.unratedTrips === null || maybeTrips.unratedTrips === undefined) return;
+		const unratedTrips = maybeTrips.unratedTrips;
+		console.log('unratedTrips', unratedTrips);
+		tripRating.update(tr => {
+			const unratedTripCodes = tr.unratedTripCodes ?? new Set<string>;
+			unratedTrips.forEach(trip => {
+				if (trip === null || trip === undefined || trip.code === undefined || trip.code === null || trip.code === 'dummy') return;
+				unratedTripCodes.add(trip.code);
+			});
+			return { currentRating: tr.currentRating, ratedTripCodes: tr.ratedTripCodes, unratedTripCodes };
+		});
+	});
+}
+
+// input RateTrip_In {
+//   code: String
+//   rating: Int
+//   description: String
+//   attachment: Attachment
+// }
+export async function rateTrip(tripCode:string, tripRating:number, tripComment?:string, tripAttachment?:File) {
+	if (tripComment === undefined) tripComment = '';
+	const actualAttachment = tripAttachment === undefined ? null : tripAttachment;
+	const req = mutate<['rateTrip']>({
+		'variables': {
+			in: {
+				code: tripCode,
+				rating: tripRating,
+				description: tripComment,
+				attachment: actualAttachment !== null ? {
+					bytes: actualAttachment?.arrayBuffer() ?? null,
+					fileName: `img_${tripCode}.png`,
+					mimeType: 'image/png',
+				} : null,
+			},
+		},
+		'query': `mutation ($in: RateTrip_In) { rateTrip(in: $in) }`,
+	});
+	return req;
+}
+
+export async function tripPayWithNoPoints(tripCode: string) {
+	const req = mutate<['tripPayWithNoPoints']>({
+		'variables': { input: tripCode },
+		'query': `mutation ($input: String) { tripPayWithNoPoints(input: $input) }`,
+	});
+	return req;
+}
+export async function tripPayWithPoints(tripCode:string) {
+	const req = mutate<['tripPayWithPoints']>({
+		'variables': { input: tripCode },
+		'query': `mutation ($input: String) { tripPayWithPoints(input: $input) }`,
 	});
 	return req;
 }

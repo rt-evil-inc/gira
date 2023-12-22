@@ -1,7 +1,7 @@
-import { currentTrip, stations, token, type ActiveTrip } from '$lib/stores';
+import { currentTrip, stations, token, type ActiveTrip, tripRating } from '$lib/stores';
 import { get } from 'svelte/store';
 import type { WSEvent } from './ws-types';
-import { tripPayWithNoPoints } from '.';
+import { tripPayWithPoints } from '.';
 import { currentPos } from '$lib/location';
 let ws: WebSocket;
 
@@ -58,24 +58,51 @@ export function startWS() {
 			if (payload && payload.data) {
 				const data = payload.data;
 				if (data.operationalStationsSubscription) {
+					console.log('updated stations with websocket');
 					stations.set(data.operationalStationsSubscription);
 				} else if (data.activeTripSubscription) {
-					const activeTripSubscription = data.activeTripSubscription;
+					const recvTrip = data.activeTripSubscription;
+					console.log('activeTripSubscription on ws', recvTrip);
 					// UNTESTED, REQUIRE REAL TRIP
 					currentTrip.update(trip => {
-						if (activeTripSubscription.code === 'no_trip' || activeTripSubscription.bike === 'dummy' || activeTripSubscription.finished === true) return null;
+						if (recvTrip.code === 'no_trip' || recvTrip.bike === 'dummy') return null;
+						if (recvTrip.finished === true) {
+							if (!recvTrip.endDate) {
+								console.error('no end date on finished trip');
+								return trip;
+							}
+							const endDate = new Date(recvTrip.endDate);
+							if (recvTrip.canUsePoints === true) {
+								tripPayWithPoints(recvTrip.code);
+							}
+							const tr = get(tripRating);
+							if (!tr.ratedTripCodes.has(recvTrip.code) && tr.unratedTripCodes && tr.unratedTripCodes.has(recvTrip.code)) {
+								tripRating.update(rt => {
+									rt.ratedTripCodes.add(recvTrip.code);
+									rt.currentRating = {
+										code: recvTrip.code,
+										bikeId: recvTrip.bike,
+										startDate: new Date(recvTrip.startDate),
+										endDate: endDate,
+										tripPoints: recvTrip.tripPoints ?? 0,
+									};
+									return rt;
+								});
+							}
+							return trip;
+						}
 						if (trip) {
-							trip.startDate = new Date(activeTripSubscription.startDate);
-							trip.bikeId = activeTripSubscription.bike;
-							trip.code = activeTripSubscription.code;
-							trip.finished = activeTripSubscription.finished;
+							trip.startDate = new Date(recvTrip.startDate);
+							trip.bikeId = recvTrip.bike;
+							trip.code = recvTrip.code;
+							trip.finished = recvTrip.finished;
 						} else {
 							const pos = get(currentPos);
 							trip = {
-								startDate: new Date(activeTripSubscription.startDate),
-								bikeId: activeTripSubscription.bike,
-								code: activeTripSubscription.code,
-								finished: activeTripSubscription.finished,
+								startDate: new Date(recvTrip.startDate),
+								bikeId: recvTrip.bike,
+								code: recvTrip.code,
+								finished: recvTrip.finished,
 								startPos: pos ? { lat: pos.coords.latitude, lng: pos.coords.longitude } : null,
 								destination: null,
 								distance: 0,

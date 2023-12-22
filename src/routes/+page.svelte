@@ -7,7 +7,8 @@
 	import Profile from '$lib/components/Profile.svelte';
 	import StationMenu from '$lib/components/StationMenu.svelte';
 	import TripStatus from '$lib/components/TripStatus.svelte';
-	import { token, currentTrip, safeInsets } from '$lib/stores';
+	import TripRating from '$lib/components/TripRating.svelte';
+	import { token, currentTrip, safeInsets, tripRating } from '$lib/stores';
 	import { Geolocation } from '@capacitor/geolocation';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { fade } from 'svelte/transition';
@@ -47,6 +48,9 @@
 		<TripStatus bind:posBottom={tripStatusPos} />
 	{:else if currentMode == 'map'}
 		<StationMenu bind:posTop={stationMenuPos} bind:bikeListHeight={menuHeight} />
+		{#if $tripRating.currentRating != null}
+			<TripRating code={$tripRating.currentRating.code} />
+		{/if}
 	{/if}
 
 	<Floating right={16} pos={stationMenuPos} offset={-64}>

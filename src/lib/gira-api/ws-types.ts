@@ -19,13 +19,13 @@ export type ActiveTripSubscription = {
     code: string;
     bike: string;
     startDate: Date;
-    endDate: null;
+    endDate: Date|null;
     cost: null;
     finished: boolean;
-    canPayWithMoney: null;
-    canUsePoints: null;
-    clientPoints: null;
-    tripPoints: null;
+    canPayWithMoney: boolean|null;
+    canUsePoints: boolean|null;
+    clientPoints: number|null;
+    tripPoints: number|null;
     canceled: boolean;
     period: string;
     periodTime: string;

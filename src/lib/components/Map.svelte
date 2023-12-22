@@ -228,7 +228,6 @@
 			zoom: 11,
 			attributionControl: false,
 		});
-		console.log(map);
 		map.addControl(new AttributionControl, 'bottom-left');
 		const loadPromise = loadImages();
 		map.on('load', () => onMapLoad(loadPromise));
