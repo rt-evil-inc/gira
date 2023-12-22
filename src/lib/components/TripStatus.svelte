@@ -18,8 +18,9 @@
 
 	onMount(() => {
 		seconds = 0;
+		let startTime = Date.now();
 		inter = setInterval(() => {
-			seconds++;
+			seconds = (Date.now() - startTime) / 1000;
 		}, 1000);
 	});
 

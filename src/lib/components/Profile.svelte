@@ -26,7 +26,7 @@
 	}
 	let listener:PluginListenerHandle;
 	onMount(async () => {
-		await App.addListener('backButton', () => {
+		listener = await App.addListener('backButton', () => {
 			if (openPage !== null) openPage = null;
 			else dispatch('close');
 		});
