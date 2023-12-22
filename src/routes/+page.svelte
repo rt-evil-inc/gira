@@ -49,7 +49,7 @@
 		<StationMenu bind:posTop={stationMenuPos} bind:bikeListHeight={menuHeight} />
 	{/if}
 
-	<Floating right={16} pos={stationMenuPos} offset={-70}>
+	<Floating right={16} pos={stationMenuPos} offset={-64}>
 		<LocationButton bind:locationPermission bind:following={following}/>
 	</Floating>
 
@@ -59,5 +59,4 @@
 	{#if profileOpen}
 		<Profile on:close={() => profileOpen = false}/>
 	{/if}
-
 </div>
