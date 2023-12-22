@@ -53,11 +53,11 @@
 		{/if}
 	{/if}
 
-	<Floating right={16} pos={stationMenuPos} offset={-64}>
+	<Floating right={16} y={stationMenuPos} bottom offset={16}>
 		<LocationButton bind:locationPermission bind:following={following}/>
 	</Floating>
 
-	<Floating right={16} pos={tripStatusPos} offset={$safeInsets.top ? $safeInsets.top : 16}>
+	<Floating right={16} y={tripStatusPos} offset={16}>
 		<ProfileButton on:click={() => profileOpen = true}/>
 	</Floating>
 	{#if profileOpen}
