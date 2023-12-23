@@ -2,7 +2,6 @@
 	import { onDestroy, onMount, tick } from 'svelte';
 	import { AttributionControl, GeoJSONSource, Map } from 'maplibre-gl';
 	import type { GeoJSON } from 'geojson';
-
 	import { currentTrip, stations, selectedStation } from '$lib/stores';
 	import type { Position } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
@@ -13,11 +12,13 @@
 	export let following:{active:boolean} = { active: false };
 	export let bottomPadding = 0;
 	export let topPadding = 0;
+
 	let mapElem: HTMLDivElement;
 	let map : Map;
 	let mapLoaded = false;
 	let ready = false;
 	let blurred = true;
+
 	$: ready = mapLoaded && !loading && $stations.length != 0;
 	$: if (ready) setTimeout(() => blurred = false, 500);
 
@@ -59,6 +60,7 @@
 			});
 		}
 	}
+
 	function loadSvg(url: string): Promise<HTMLImageElement> {
 		return new Promise((resolve, reject) => {
 			let img = new Image;
@@ -179,6 +181,7 @@
 		})));
 		console.log(`Loaded images in ${performance.now() - start}ms`);
 	}
+
 	let unsubPos:Unsubscriber;
 	async function onMapLoad(loadPromise: Promise<void>) {
 		await loadPromise;

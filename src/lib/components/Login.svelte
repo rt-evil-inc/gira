@@ -1,18 +1,21 @@
 <script lang="ts">
 	import { login } from '$lib/auth';
 	import { userCredentials } from '../stores';
+
 	let email = '';
 	let password = '';
 	let errorCode:number|null = null;
 	let errorCodes:{[key:number]:string} = {
 		100: 'Credenciais inválidas',
 	};
+
 	async function loginWrapper() {
 		errorCode = await login(email, password);
 		if (errorCode === 0) userCredentials.set({ email, password });
 		else console.log(errorCode);
 	}
 </script>
+
 <div class="max-w-sm px-4 w-full">
 	<div class="bg-background rounded-2xl max-w-sm w-full flex flex-col items-center p-6" style:box-shadow="0px 0px 20px 0px var(--color-shadow)">
 		<div class="text-center text-lg text-info font-semibold mb-2 rounded-lg">Bem vindo ao Gira+</div>

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { safeInsets } from '$lib/stores';
 	import IconMoodWrrr from '@tabler/icons-svelte/dist/svelte/icons/IconMoodWrrr.svelte';
-	// import IconMoodWrrrFilled from '@tabler/icons-svelte/dist/svelte/icons/IconMoodWrrrFilled.svelte';
 	import IconMoodConfuzed from '@tabler/icons-svelte/dist/svelte/icons/IconMoodConfuzed.svelte';
 	import IconMoodConfuzedFilled from '@tabler/icons-svelte/dist/svelte/icons/IconMoodConfuzedFilled.svelte';
 	import IconMoodEmpty from '@tabler/icons-svelte/dist/svelte/icons/IconMoodEmpty.svelte';
@@ -17,9 +16,11 @@
 	let show = true;
 	export let code:string;
 	let rating:number;
+
 	async function rate(code:string, rating:number) {
 		return (await rateTrip(code, rating)).rateTrip;
 	}
+
 	let timeout:ReturnType<typeof setTimeout>;
 	$: if (rating !== undefined) {
 		clearTimeout(timeout);

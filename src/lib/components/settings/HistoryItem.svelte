@@ -9,13 +9,16 @@
 		const minute = date.getMinutes().toString().padStart(2, '0');
 		return `${hour}:${minute}`;
 	}
+
 	function idFromName(name:string) {
 		return name.split('-').map(t => t.trim())[0];
 	}
+
 	function nameFromName(name:string) {
 		return name.split('-').map(t => t.trim())[1];
 	}
 </script>
+
 {#if trip != null}
 	<div class="flex bg-white rounded-2xl py-4 px-6 gap-5 text-info justify-between" style:box-shadow="0px 0px 12px 0px var(--color-shadow)">
 		<div class="flex flex-col items-center justify-center gap-[6px]">

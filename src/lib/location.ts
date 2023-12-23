@@ -5,6 +5,7 @@ export const currentPos = writable<Position|null>(null);
 
 let watchId: string|null = null;
 let tryWatching = false;
+
 export async function watchPosition() {
 	if (tryWatching) return;
 	tryWatching = true;

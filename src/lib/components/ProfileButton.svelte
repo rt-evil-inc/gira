@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { user } from '$lib/stores';
-	import { createEventDispatcher } from 'svelte';
-
 </script>
 
 {#if $user}

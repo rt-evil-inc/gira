@@ -3,9 +3,11 @@
 	import { Capacitor } from '@capacitor/core';
 	import { Geolocation } from '@capacitor/geolocation';
 	import { draw } from 'svelte/transition';
+
 	export let following = { active: false };
 	export let locationPermission = false;
 </script>
+
 <button class="bg-background p-2 rounded-full grid grid-cols-1 grid-rows-1 w-12 h-12 active:bg-background transition-colors" style:box-shadow="0px 0px 20px 0px var(--color-shadow)"
 	on:click={ () => {
 		if (locationPermission) {

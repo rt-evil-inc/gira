@@ -5,10 +5,12 @@
 	import HistoryItem from './HistoryItem.svelte';
 	import { safeInsets } from '$lib/stores';
 	import { fade } from 'svelte/transition';
+
 	let trips:TripHistory_TripDetail[] = [];
 	let observed:HTMLDivElement;
 	let didFirstRequest = false;
 	let loading = false;
+
 	function loadMoreTripHistory() {
 		if (loading) return;
 		loading = true;
@@ -22,6 +24,7 @@
 			loading = false;
 		});
 	}
+
 	function formatDate(date:Date) {
 		const day = date.getDate();
 		const month = date.toLocaleString('pt', { month: 'short' });
@@ -29,6 +32,7 @@
 		const dayOfWeek = date.toLocaleString('pt', { weekday: 'long' });
 		return `${dayOfWeek}, ${day} ${month} ${year}`;
 	}
+
 	let observer:IntersectionObserver;
 	onMount(async () => {
 		loadMoreTripHistory();
@@ -60,8 +64,8 @@
 		return bDate.getTime() - aDate.getTime();
 	});
 	$: console.log(aggregate);
-
 </script>
+
 <div class="flex flex-col h-screen" style:padding-top={$safeInsets.top + 48 + 'px'}>
 	<div class="flex flex-col h-full overflow-y-auto">
 		<div class="fixed left-0 right-0 h-4 -mt-4" style:box-shadow="0px 6px 6px 0px var(--color-background)" />

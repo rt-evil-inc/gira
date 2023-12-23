@@ -18,23 +18,25 @@
 	import { App } from '@capacitor/app';
 	import type { PluginListenerHandle } from '@capacitor/core';
 
-	const dispatch = createEventDispatcher();
 	let openPage: 'settings' | 'history' |'info'| null = null;
+	let listener:PluginListenerHandle;
+	const dispatch = createEventDispatcher();
+
 	function formatDate(date:Date) {
 		// 20 de Março de 2024
 		return `${date.getDate()} de ${date.toLocaleString('pt', { month: 'long' })} de ${date.getFullYear()}`;
 	}
-	let listener:PluginListenerHandle;
+
 	onMount(async () => {
 		listener = await App.addListener('backButton', () => {
 			if (openPage !== null) openPage = null;
 			else dispatch('close');
 		});
 	});
+
 	onDestroy(async () => {
 		if (listener) listener.remove();
 	});
-
 </script>
 
 <div transition:fade={{ duration: 150 }} class="absolute w-full h-full inset-0 bg-background z-30 grid" >

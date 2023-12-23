@@ -12,9 +12,8 @@
 	import { cubicOut } from 'svelte/easing';
 	import { reserveBike, startTrip } from '../gira-api';
 	import { currentTrip } from '$lib/stores';
-	import { createEventDispatcher } from 'svelte';
 	import { currentPos } from '$lib/location';
-	import { fade, fly } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 
 	export let type:'classic'|'electric'|null = null, id:string = '', battery:number|null = null, dock:string|null = null, disabled = false, serial:string|null = null;
 	export let action = async () => {

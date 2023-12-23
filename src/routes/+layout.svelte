@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { loadUserCreds, safeInsets } from '$lib/stores';
 	import '@fontsource/inter/latin-400.css';
 	import '@fontsource/inter/latin-500.css';
@@ -20,6 +20,7 @@
 			safeInsets.set(ins.insets);
 		});
 	}
+
 	onMount(async () => {
 		loadUserCreds();
 	});

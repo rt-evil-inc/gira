@@ -104,6 +104,7 @@
 		await tick();
 		timeout = setTimeout(() => updating = false, 150);
 	}
+
 	let backListener:PluginListenerHandle;
 	onMount(async () => {
 		backListener = await App.addListener('backButton', () => {
