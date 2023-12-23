@@ -110,11 +110,11 @@
 			{:else}
 				<IconSettings size={42} stroke={1.7} class="text-primary -mx-3" />
 			{/if}
-			<span class="text-[15px] font-semibold text-primary">{id}</span>
+			<span class="text-[15px] font-bold text-primary">{id}</span>
 			<div class="grow" />
 			{#if type === 'electric' && battery != null}
 				<div class="flex items-center h-6 px-[6px] bg-primary rounded-md gap-1">
-					<span class="text-xs font-semibold text-background">{battery}%</span>
+					<span class="text-xs font-bold text-background">{battery}%</span>
 					{#if battery <= 20}
 						<IconBattery size={25} stroke={1.7} class="text-background -m-1" />
 					{:else if battery <= 40}

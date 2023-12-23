@@ -3,7 +3,7 @@
 	import { safeInsets } from '$lib/stores';
 </script>
 
-<div class="flex flex-col h-screen p-5" style:padding-top={$safeInsets.top + 48 + 'px'}>
+<div class="flex flex-col h-screen p-5" style:padding-top={$safeInsets.top + 48 + 'px'} style:padding-bottom="{Math.max($safeInsets.bottom, 20)}px">
 	<div class="text-3xl font-bold text-info pt-1">Sobre</div>
 	<div class="flex flex-col h-full px-5 py-10 gap-10 items-center">
 		<div class="flex flex-col w-full gap-3 font-medium text-info leading-tight">
@@ -36,5 +36,5 @@
 			<span class="font-semibold text-info text-xs">Projeto open-source sob a licença GPL-3.0</span>
 		</div>
 	</div>
-	<a href="https://github.com/rt-evil-inc/gira-plus/releases" class="absolute bottom-5 left-5 font-semibold text-label text-xs">v{version}</a>
+	<a href="https://github.com/rt-evil-inc/gira-plus/releases" class="absolute left-5 font-semibold text-label text-xs" style:bottom="{Math.max($safeInsets.bottom, 20)}px">v{version}</a>
 </div>

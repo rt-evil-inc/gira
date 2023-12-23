@@ -8,5 +8,5 @@
 			{unit}
 		</span>
 	</div>
-	<span class="text-2xs font-medium text-label text-center -mt-1 leading-none max-w-[70px]">{label.toUpperCase()}</span>
+	<span class="text-2xs font-semibold text-label text-center -mt-1 leading-none max-w-[70px]">{label.toUpperCase()}</span>
 </div>

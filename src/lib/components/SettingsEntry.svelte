@@ -9,6 +9,6 @@
 	<svelte:component this={icon} class="text-primary" size={32} stroke={2} />
 	<div>
 		<div class="font-bold text-base text-primary">{text}</div>
-		<div class="text-xs text-label -mt-[2px]">{subtext}</div>
+		<div class="text-xs font-semibold text-label -mt-[2px]">{subtext}</div>
 	</div>
 </button>

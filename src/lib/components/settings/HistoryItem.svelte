@@ -30,17 +30,17 @@
 		</div>
 		<div class="flex flex-col gap-4 grow">
 			<div>
-				<div class="font-bold text-primary text-lg leading-none">{formatHours(new Date(trip.startDate))}</div>
+				<div class="font-bold text-primary text-xl leading-none">{formatHours(new Date(trip.startDate))}</div>
 				{#if trip.startLocation}
 					<div class="font-bold text-xs">Estação {idFromName(trip.startLocation)}</div>
-					<div class="font-medium leading-tight text-2xs text-label">{nameFromName(trip.startLocation)}</div>
+					<div class="font-medium leading-none text-xs text-label">{nameFromName(trip.startLocation)}</div>
 				{/if}
 			</div>
 			<div>
-				<div class="font-bold text-primary text-lg leading-none">{formatHours(new Date(trip.endDate))}</div>
+				<div class="font-bold text-primary text-xl leading-none">{formatHours(new Date(trip.endDate))}</div>
 				{#if trip.endLocation}
 					<div class="font-bold text-xs">Estação {idFromName(trip.endLocation)}</div>
-					<div class="font-medium leading-tight text-2xs text-label">{nameFromName(trip.endLocation)}</div>
+					<div class="font-medium leading-none text-xs text-label">{nameFromName(trip.endLocation)}</div>
 				{/if}
 			</div>
 		</div>

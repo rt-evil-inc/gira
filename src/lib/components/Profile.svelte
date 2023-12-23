@@ -40,14 +40,14 @@
 <div transition:fade={{ duration: 150 }} class="absolute w-full h-full inset-0 bg-background z-30 grid" >
 	{#if $user}
 		<div class="flex flex-col justify-between items-center h-full gap-10 col-start-1 col-end-2 row-start-1 row-end-2 p-4 overflow-x-hidden"
-			style:padding-top="{Math.max($safeInsets.top, 16)}px"
+			style:padding-top="{Math.max($safeInsets.top, 16)}px" style:padding-bottom="{Math.max($safeInsets.bottom, 24)}px"
 		>
 			<div class="flex flex-col justify-center items-center w-full gap-6 mt-8">
 				<div class="flex flex-col items-center">
 					<div class="font-bold text-primary text-3xl">
 						{$user?.name ? `${$user.name.split(' ').shift()} ${$user.name.split(' ').pop()}` : 'Utilizador'}
 					</div>
-					<div class="text-sm font-semibold text-label -mt-[2px]">{$user?.email}</div>
+					<div class="text-sm font-medium text-label -mt-[2px]">{$user?.email}</div>
 				</div>
 				<div class="flex gap-16">
 					<Metric value={$accountInfo?.balance ?? 0} unit={'€'} label={'Saldo'} color={'info'} />
@@ -58,7 +58,7 @@
 						<IconTicket size={28} stroke={1.9} class="text-info -my-1" />
 						<div class="text-info font-bold text-lg">{$accountInfo?.subscription?.name ?? 'Sem subscrição'}</div>
 					</div>
-					<div class="text-2xs text-label font-medium text-center -mt-[2px]">{$accountInfo?.subscription?.expirationDate ?
+					<div class="text-xs text-label font-medium text-center -mt-[2px]">{$accountInfo?.subscription?.expirationDate ?
 						`Válido até ${formatDate($accountInfo.subscription.expirationDate)}` : ''}</div>
 				</div>
 			</div>
@@ -70,7 +70,7 @@
 			</div>
 			<button class="flex flex-col items-center mb-3" on:click={() => { dispatch('close'); logOut(); }}>
 				<IconLogout2 class="text-primary mr-2" size={32} />
-				<span class="text-2xs font-medium text-label text-center leading-none max-w-[70px]">SAIR</span>
+				<span class="text-2xs font-semibold text-label text-center leading-none max-w-[70px]">SAIR</span>
 			</button>
 		</div>
 		{#if openPage === 'history'}

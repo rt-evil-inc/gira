@@ -149,7 +149,7 @@
 				<div class="flex items-center gap-2">
 					<span class="font-bold text-sm text-info">Estação {code}</span>
 					{#if distance}
-						<span transition:fade={{ duration: 150 }} class="font-medium bg-background-secondary text-xs text-info px-1 py-[1px] rounded">{formatDistance(distance)}</span>
+						<span transition:fade={{ duration: 150 }} class="font-semibold bg-background-secondary text-xs text-info px-1 py-[1px] rounded">{formatDistance(distance)}</span>
 					{/if}
 				</div>
 				<span class="text-xs font-medium text-label leading-none mt-[2px]">{name}</span>
