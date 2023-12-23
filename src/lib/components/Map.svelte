@@ -8,10 +8,12 @@
 	import { pulsingDot } from '$lib/pulsing-dot';
 	import { currentPos } from '$lib/location';
 	import type { Unsubscriber } from 'svelte/motion';
+
 	export let loading = true;
 	export let following:{active:boolean} = { active: false };
 	export let bottomPadding = 0;
 	export let topPadding = 0;
+	export let bearing = 0;
 
 	let mapElem: HTMLDivElement;
 	let map : Map;
@@ -152,6 +154,9 @@
 				$selectedStation = null;
 			}
 		});
+		map.on('rotate', () => {
+			bearing = map.getBearing();
+		});
 	}
 
 	async function loadImages() {
@@ -197,6 +202,12 @@
 			center: [pos.coords.longitude, pos.coords.latitude],
 			padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2) },
 			zoom: 16,
+		});
+	}
+
+	export function orientNorth() {
+		map.flyTo({
+			bearing: 0,
 		});
 	}
 

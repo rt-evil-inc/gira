@@ -14,6 +14,7 @@
 	import { fade } from 'svelte/transition';
 	import { watchPosition } from '$lib/location';
 	import { onMount } from 'svelte';
+	import Compass from '$lib/components/Compass.svelte';
 
 	let menuHeight = 0;
 	let following:{active:boolean} = { active: false };
@@ -22,6 +23,8 @@
 	let tripStatusPos:number = 0;
 	let profileOpen = false;
 	let locationPermission = false;
+	let bearing = 0;
+	let orientNorth: () => void = () => {};
 
 	onMount(() => {
 		Geolocation.checkPermissions().then(({ location }) => {
@@ -42,7 +45,7 @@
 			<Login />
 		</div>
 	{/if}
-	<Map loading={!$token} bind:bottomPadding={menuHeight} bind:topPadding={tripStatusPos} bind:following={following}/>
+	<Map loading={!$token} bind:bottomPadding={menuHeight} bind:topPadding={tripStatusPos} bind:following bind:bearing bind:orientNorth />
 
 	{#if $currentTrip !== null}
 		<TripStatus bind:posBottom={tripStatusPos} />
@@ -53,13 +56,18 @@
 		{/if}
 	{/if}
 
-	<Floating right={16} y={stationMenuPos} bottom offset={16}>
+	<Floating right={20} y={stationMenuPos} bottom offset={20}>
 		<LocationButton bind:locationPermission bind:following={following}/>
 	</Floating>
 
 	<Floating right={16} y={tripStatusPos} offset={16}>
 		<ProfileButton on:click={() => profileOpen = true}/>
 	</Floating>
+
+	<Floating right={20} y={tripStatusPos} offset={92}>
+		<Compass {bearing} on:click={() => orientNorth()}/>
+	</Floating>
+
 	{#if profileOpen}
 		<Profile on:close={() => profileOpen = false}/>
 	{/if}
