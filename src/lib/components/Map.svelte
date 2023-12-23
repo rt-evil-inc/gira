@@ -189,7 +189,7 @@
 		map.flyTo({
 			center: [pos.coords.longitude, pos.coords.latitude],
 			padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2) },
-			curve: 0,
+			zoom: 16,
 		});
 	}
 
