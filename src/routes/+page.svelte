@@ -42,7 +42,7 @@
 			<Login />
 		</div>
 	{/if}
-	<Map blurred={!$token} bind:bottomPadding={menuHeight} bind:topPadding={tripStatusPos} bind:following={following}/>
+	<Map loading={!$token} bind:bottomPadding={menuHeight} bind:topPadding={tripStatusPos} bind:following={following}/>
 
 	{#if $currentTrip !== null}
 		<TripStatus bind:posBottom={tripStatusPos} />

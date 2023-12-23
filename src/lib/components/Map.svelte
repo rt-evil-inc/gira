@@ -9,13 +9,17 @@
 	import { pulsingDot } from '$lib/pulsing-dot';
 	import { currentPos } from '$lib/location';
 	import type { Unsubscriber } from 'svelte/motion';
-	export let blurred = true;
+	export let loading = true;
 	export let following:{active:boolean} = { active: false };
 	export let bottomPadding = 0;
 	export let topPadding = 0;
 	let mapElem: HTMLDivElement;
 	let map : Map;
 	let mapLoaded = false;
+	let ready = false;
+	let blurred = true;
+	$: ready = mapLoaded && !loading && $stations.length != 0;
+	$: if (ready) setTimeout(() => blurred = false, 500);
 
 	function setSourceData() {
 		const src = map.getSource('points') as GeoJSONSource|null;
@@ -195,7 +199,7 @@
 
 	async function handleLocUpdate(pos: Position|null) {
 		if (pos && pos.coords) {
-			if (following.active) centerMap(pos);
+			if (following.active && !blurred) centerMap(pos);
 			const src = map.getSource('user-location') as GeoJSONSource|null;
 			// dont change to GeoJSONSource as building breaks for no apparent reason
 			if (src !== null) {
@@ -261,12 +265,12 @@
 		}
 	});
 
-	$: if (following.active && map && $currentPos) centerMap($currentPos);
+	$: if (following.active && !blurred && $currentPos) centerMap($currentPos);
 
 	$: if ($selectedStation == null) bottomPadding = 0;
 </script>
 
-{#if !mapLoaded || blurred || $stations.length == 0}
+{#if !ready}
 	<div out:fade={{ duration: 500 }} class="blur absolute bg-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[2000px] h-[2000px] z-10 bg-[url(/assets/map-preview.jpg)]" />
 	<svg out:fade={{ duration: 500 }} class="absolute w-20 h-12 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10" width="57" height="38" viewBox="0 0 57 38" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<path d="M10.7469 26.7097L17.5402 20.9704C15.053 17.2971 9.84124 18.363 7.58001 18.8319C12.618 19.852 10.7469 26.7097 10.7469 26.7097Z" fill="#79C000"/>
