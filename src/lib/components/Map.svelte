@@ -37,7 +37,7 @@
 						serialNumber: station.serialNumber,
 						name: station.name,
 						bikes: station.bikes,
-						active: station.serialNumber == $selectedStation,
+						selected: station.serialNumber == $selectedStation,
 						inService: station.assetStatus === 'active',
 						docks: station.docks,
 						freeDocks: station.docks - station.bikes,
@@ -79,17 +79,20 @@
 			'type': 'symbol',
 			'source': 'points',
 			'layout': {
-				// bike_white if active, bike_green otherwise
-				// 'icon-image': ['case', ['get', 'active'], ['concat', 'bike_green-', ['get', 'bikes']], ['concat', 'bike_white-', ['get', 'bikes']]],
-				// Add case for inService and active
+				// bike if selected, bike_selected otherwise
+				// 'icon-image': ['case', ['get', 'selected'], ['concat', 'bike_selected-', ['get', 'bikes']], ['concat', 'bike-', ['get', 'bikes']]],
+				// Add case for inService and selected
 				visibility: 'visible',
 				'icon-image': ['case',
-					['get', 'active'],
-					['concat', 'bike_green-', ['get', 'bikes']],
+					['get', 'selected'],
 					['case',
 						['get', 'inService'],
-						['concat', 'bike_white-', ['get', 'bikes']],
-						'bike_gray']],
+						['concat', 'bike_selected-', ['get', 'bikes']],
+						'bike_inactive_selected'],
+					['case',
+						['get', 'inService'],
+						['concat', 'bike-', ['get', 'bikes']],
+						'bike_inactive']],
 
 				'icon-size': ['interpolate', ['linear'], ['zoom'], 11, 0.3, 13, 0.5],
 				'icon-anchor': 'bottom',
@@ -102,17 +105,20 @@
 			'type': 'symbol',
 			'source': 'points',
 			'layout': {
-				// bike_white if active, bike_green otherwise
-				// 'icon-image': ['case', ['get', 'active'], ['concat', 'bike_green-', ['get', 'bikes']], ['concat', 'bike_white-', ['get', 'bikes']]],
-				// Add case for inService and active
+				// bike if selected, bike_selected otherwise
+				// 'icon-image': ['case', ['get', 'selected'], ['concat', 'bike_selected-', ['get', 'bikes']], ['concat', 'bike-', ['get', 'bikes']]],
+				// Add case for inService and selected
 				visibility: 'none',
 				'icon-image': ['case',
-					['get', 'active'],
-					['concat', 'dock_green-', ['get', 'freeDocks']],
+					['get', 'selected'],
 					['case',
 						['get', 'inService'],
-						['concat', 'dock_white-', ['get', 'freeDocks']],
-						'dock_gray']],
+						['concat', 'dock_selected-', ['get', 'freeDocks']],
+						'dock_inactive_selected'],
+					['case',
+						['get', 'inService'],
+						['concat', 'dock-', ['get', 'freeDocks']],
+						'dock_inactive']],
 
 				'icon-size': ['interpolate', ['linear'], ['zoom'], 11, 0.3, 13, 0.5],
 				'icon-anchor': 'bottom',
@@ -163,10 +169,12 @@
 
 	async function loadImages() {
 		map.addImage('pulsing-dot', pulsingDot(map), { pixelRatio: 2 });
-		map.addImage('bike_gray', await loadSvg('./assets/bike_marker_gray.svg'));
-		map.addImage('dock_gray', await loadSvg('./assets/dock_marker_gray.svg'));
+		map.addImage('bike_inactive', await loadSvg('./assets/bike_marker_inactive.svg'));
+		map.addImage('bike_inactive_selected', await loadSvg('./assets/bike_marker_inactive_selected.svg'));
+		map.addImage('dock_inactive', await loadSvg('./assets/dock_marker_inactive.svg'));
+		map.addImage('dock_inactive_selected', await loadSvg('./assets/dock_marker_inactive_selected.svg'));
 
-		const imgs = [['bike_white', './assets/bike_marker_white.svg', '#79c000'], ['bike_green', './assets/bike_marker_green.svg', '#fff'], ['dock_white', './assets/dock_marker_white.svg', '#79c000'], ['dock_green', './assets/dock_marker_green.svg', '#fff']];
+		const imgs = [['bike', './assets/bike_marker.svg', '#79c000'], ['bike_selected', './assets/bike_marker_selected.svg', '#fff'], ['dock', './assets/dock_marker.svg', '#79c000'], ['dock_selected', './assets/dock_marker_selected.svg', '#fff']];
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext('2d', { willReadFrequently: true })!;
 		const start = performance.now();
