@@ -3,7 +3,7 @@
 	import Metric from '$lib/components/Metric.svelte';
 	import { cubicInOut } from 'svelte/easing';
 	import { safeInsets, currentTrip as t } from '$lib/stores';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 
 	let height:number;
 	export { height as posBottom };
@@ -22,10 +22,9 @@
 		inter = setInterval(() => {
 			seconds = (Date.now() - startTime) / 1000;
 		}, 1000);
-	});
-
-	onDestroy(() => {
-		clearInterval(inter);
+		return () => {
+			clearInterval(inter);
+		};
 	});
 
 	function msToMinuteSeconds(ms: number) {

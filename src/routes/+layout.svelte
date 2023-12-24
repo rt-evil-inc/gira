@@ -5,7 +5,7 @@
 	import '@fontsource/inter/latin-600.css';
 	import '@fontsource/inter/latin-700.css';
 	import '@fontsource/roboto-mono/latin-400.css';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { StatusBar, Style } from '@capacitor/status-bar';
 	import { Capacitor } from '@capacitor/core';
 	import { NavigationBar } from '@hugotomazi/capacitor-navigation-bar';
@@ -13,7 +13,6 @@
 	import '../app.css';
 	import { App } from '@capacitor/app';
 	import { refreshToken } from '$lib/auth';
-	import { browser } from '$app/environment';
 
 	if (Capacitor.getPlatform() === 'android') {
 		StatusBar.setOverlaysWebView({ overlay: true });
@@ -24,7 +23,7 @@
 		});
 	}
 
-	onMount(async () => {
+	onMount(() => {
 		loadUserCreds();
 		App.addListener('resume', () => {
 			if ($token != null && $token.refreshToken != null) {
@@ -32,9 +31,9 @@
 				refreshToken();
 			}
 		});
-	});
-	onDestroy(() => {
-		if (browser) App.removeAllListeners();
+		return () => {
+			App.removeAllListeners();
+		};
 	});
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { accountInfo, logOut, safeInsets, user } from '$lib/stores';
 	import IconHistory from '@tabler/icons-svelte/dist/svelte/icons/IconHistory.svelte';
@@ -27,16 +27,16 @@
 		return `${date.getDate()} de ${date.toLocaleString('pt', { month: 'long' })} de ${date.getFullYear()}`;
 	}
 
-	onMount(async () => {
-		listener = await App.addListener('backButton', () => {
+	onMount(() => {
+		listener = App.addListener('backButton', () => {
 			if (openPage !== null) openPage = null;
 			else dispatch('close');
 		});
+		return () => {
+			listener.remove();
+		};
 	});
 
-	onDestroy(async () => {
-		if (listener) listener.remove();
-	});
 </script>
 
 <div transition:fade={{ duration: 150 }} class="absolute w-full h-full inset-0 bg-background z-30 grid" >

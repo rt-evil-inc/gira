@@ -1,5 +1,5 @@
  <script lang="ts">
-	import { onDestroy, onMount, tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { AttributionControl, GeoJSONSource, Map } from 'maplibre-gl';
 	import type { GeoJSON } from 'geojson';
 	import { currentTrip, stations, selectedStation } from '$lib/stores';
@@ -234,7 +234,7 @@
 		}
 	}
 
-	onMount(async () => {
+	onMount(() => {
 		map = new Map({
 			container: mapElem,
 			style: 'https://tiles2.intermodal.pt/styles/iml/style.json',
@@ -245,11 +245,10 @@
 		map.addControl(new AttributionControl, 'bottom-left');
 		const loadPromise = loadImages();
 		map.on('load', () => onMapLoad(loadPromise));
-	});
-
-	onDestroy(() => {
-		if (map) map.remove();
-		if (unsubPos) unsubPos();
+		return () => {
+			map.remove();
+			if (unsubPos) unsubPos();
+		};
 	});
 
 	$: if ($stations && map) {

@@ -3,14 +3,13 @@
 	import Bike from '$lib/components/Bike.svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { getStationInfo } from '$lib/gira-api';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { stations, selectedStation, type StationInfo } from '$lib/stores';
 	import { tick } from 'svelte';
 	import { currentPos } from '$lib/location';
 	import { distanceBetweenCoords, formatDistance } from '$lib/utils';
 	import { fade } from 'svelte/transition';
 	import { App } from '@capacitor/app';
-	import type { PluginListenerHandle } from '@capacitor/core';
 
 	export let bikeListHeight = 0;
 	export let posTop:number|undefined = 0;
@@ -105,9 +104,8 @@
 		timeout = setTimeout(() => updating = false, 150);
 	}
 
-	let backListener:PluginListenerHandle;
-	onMount(async () => {
-		backListener = await App.addListener('backButton', () => {
+	onMount(() => {
+		let backListener = App.addListener('backButton', () => {
 			if ($selectedStation != null) {
 				dismiss();
 			}
@@ -116,10 +114,9 @@
 		pos.set(dragged.clientHeight, { duration: 0 });
 		if ($selectedStation == null) return;
 		updateInfo($selectedStation);
-	});
-
-	onDestroy(() => {
-		if (backListener) backListener.remove();
+		return () => {
+			if (backListener) backListener.remove();
+		};
 	});
 
 	$: if ($selectedStation != null) {

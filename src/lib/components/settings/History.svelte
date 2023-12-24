@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getTripHistory } from '$lib/gira-api';
 	import type { TripHistory_TripDetail } from '$lib/gira-api/types';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import HistoryItem from './HistoryItem.svelte';
 	import { safeInsets } from '$lib/stores';
 	import { fade } from 'svelte/transition';
@@ -34,7 +34,7 @@
 	}
 
 	let observer:IntersectionObserver;
-	onMount(async () => {
+	onMount(() => {
 		loadMoreTripHistory();
 		const options = {
 			rootMargin: '128px',
@@ -46,9 +46,9 @@
 		}
 		observer = new IntersectionObserver(loadMoreTripHistoryProxy, options);
 		observer.observe(observed);
-	});
-	onDestroy(() => {
-		observer.disconnect();
+		return () => {
+			observer.disconnect();
+		};
 	});
 
 	$: aggregate = Object.entries(trips.reduce((acc, cur) => {
