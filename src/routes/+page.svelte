@@ -15,6 +15,7 @@
 	import { watchPosition } from '$lib/location';
 	import { onMount } from 'svelte';
 	import Compass from '$lib/components/Compass.svelte';
+	import ErrorMessage from '$lib/components/ErrorMessage.svelte';
 
 	let menuHeight = 0;
 	let following:{active:boolean} = { active: false };
@@ -69,4 +70,6 @@
 	{#if profileOpen}
 		<Profile on:close={() => profileOpen = false}/>
 	{/if}
+
+	<ErrorMessage />
 </div>

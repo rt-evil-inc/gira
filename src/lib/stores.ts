@@ -83,6 +83,7 @@ export const selectedStation = writable<string|null>(null);
 export const safeInsets = writable<Insets>({ top: 0, bottom: 0, left: 0, right: 0 });
 export const appSettings = writable<AppSettings>({ distanceLock: true });
 export const tripRating = writable<TripRating>({ currentRating: null });
+export const errorMessage = writable<string|null>(null);
 
 type JWT = {
 	jti: string;
