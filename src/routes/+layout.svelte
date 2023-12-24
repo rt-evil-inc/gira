@@ -1,16 +1,19 @@
 <script lang="ts">
-	import { loadUserCreds, safeInsets } from '$lib/stores';
+	import { loadUserCreds, safeInsets, token } from '$lib/stores';
 	import '@fontsource/inter/latin-400.css';
 	import '@fontsource/inter/latin-500.css';
 	import '@fontsource/inter/latin-600.css';
 	import '@fontsource/inter/latin-700.css';
 	import '@fontsource/roboto-mono/latin-400.css';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { StatusBar, Style } from '@capacitor/status-bar';
 	import { Capacitor } from '@capacitor/core';
 	import { NavigationBar } from '@hugotomazi/capacitor-navigation-bar';
 	import { SafeArea } from 'capacitor-plugin-safe-area';
 	import '../app.css';
+	import { App } from '@capacitor/app';
+	import { refreshToken } from '$lib/auth';
+	import { browser } from '$app/environment';
 
 	if (Capacitor.getPlatform() === 'android') {
 		StatusBar.setOverlaysWebView({ overlay: true });
@@ -23,6 +26,15 @@
 
 	onMount(async () => {
 		loadUserCreds();
+		App.addListener('resume', () => {
+			if ($token != null && $token.refreshToken != null) {
+				console.log('Refreshing token because app was reopened');
+				refreshToken();
+			}
+		});
+	});
+	onDestroy(() => {
+		if (browser) App.removeAllListeners();
 	});
 </script>
 
