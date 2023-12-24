@@ -11,11 +11,8 @@
 		if (y !== undefined) {
 			if (bottom) {
 				pos = Math.max((innerHeight - y) + offset, $safeInsets.bottom);
-			// console.log(innerHeight - y);
 			} else {
-				if ($safeInsets.top === 0) pos = y + offset;
-				else pos = $safeInsets.top + offset - 16;
-				console.log('pos top', pos, y, offset, $safeInsets.top);
+				pos = Math.max(y + offset, $safeInsets.top);
 			}
 			setTimeout(() => show = true, 150);
 		}

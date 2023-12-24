@@ -8,7 +8,7 @@
 	import StationMenu from '$lib/components/StationMenu.svelte';
 	import TripStatus from '$lib/components/TripStatus.svelte';
 	import TripRating from '$lib/components/TripRating.svelte';
-	import { token, currentTrip, tripRating } from '$lib/stores';
+	import { token, currentTrip, tripRating, safeInsets } from '$lib/stores';
 	import { Geolocation } from '@capacitor/geolocation';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { fade } from 'svelte/transition';
@@ -62,7 +62,7 @@
 		<ProfileButton on:click={() => profileOpen = true}/>
 	</Floating>
 
-	<Floating right={20} y={tripStatusPos} offset={92}>
+	<Floating right={20} y={Math.max(tripStatusPos + 16, $safeInsets.top)} offset={70}>
 		<Compass />
 	</Floating>
 
