@@ -1,8 +1,8 @@
-import { token, type StationInfo, stations, accountInfo, currentTrip, tripRating } from '$lib/stores';
-import type { Mutation, Query } from './types';
-import { get } from 'svelte/store';
-import { CapacitorHttp, type HttpResponse } from '@capacitor/core';
 import { dev } from '$app/environment';
+import { accountInfo, currentTrip, stations, token, tripRating, type StationInfo } from '$lib/stores';
+import { CapacitorHttp, type HttpResponse } from '@capacitor/core';
+import { get } from 'svelte/store';
+import type { Mutation, Query } from './types';
 type Q<T extends (keyof Query)[]> = {[K in T[number]]:Query[K]};
 type M<T extends (keyof Mutation)[]> = {[K in T[number]]:Mutation[K]};
 
@@ -225,51 +225,52 @@ export async function getActiveTripInfo() {
 
 export async function updateActiveTripInfo() {
 	getActiveTripInfo().then(maybeTrips => {
-		if (maybeTrips.activeTrip === null || maybeTrips.activeTrip === undefined) return;
+		if (maybeTrips.activeTrip === null || maybeTrips.activeTrip === undefined || maybeTrips.activeTrip.code === 'no_trip' || maybeTrips.activeTrip.asset === 'dummy') {
+			currentTrip.set(null);
+			return;
+		}
 		const {
-			user,
 			asset,
 			startDate,
-			endDate,
-			startLocation,
-			endLocation,
 			distance,
-			rating,
-			photo,
-			cost,
-			startOccupation,
-			endOccupation,
-			totalBonus,
-			client,
-			costBonus,
-			comment,
-			compensationTime,
-			endTripDock,
-			tripStatus,
 			code,
-			name,
-			description,
-			creationDate,
-			createdBy,
-			updateDate,
-			updatedBy,
-			defaultOrder,
-			version,
+			// user,
+			// endDate,
+			// startLocation,
+			// endLocation,
+			// rating,
+			// photo,
+			// cost,
+			// startOccupation,
+			// endOccupation,
+			// totalBonus,
+			// client,
+			// costBonus,
+			// comment,
+			// compensationTime,
+			// endTripDock,
+			// tripStatus,
+			// name,
+			// description,
+			// creationDate,
+			// createdBy,
+			// updateDate,
+			// updatedBy,
+			// defaultOrder,
+			// version,
 		} = maybeTrips.activeTrip!;
-		console.log('name maybeTrip', name);
-		if (code === 'no_trip' && asset !== 'dummy') return;
-		currentTrip.update(_ => (
+		currentTrip.update(ct => (
 			{
 				code: code!,
 				bikeId: asset!,
-				startPos: null,
-				destination: null,
+				startPos: ct?.startPos ?? null,
+				destination: ct?.destination ?? null,
 				distance: distance!,
-				distanceLeft: null,
-				speed: 0,
+				distanceLeft: ct?.distanceLeft ?? null,
+				speed: ct?.speed ?? 0,
 				startDate: new Date(startDate!),
-				predictedEndDate: new Date(endDate!),
-				arrivalTime: null,
+				predictedEndDate: ct?.predictedEndDate ?? null,
+				arrivalTime: ct?.predictedEndDate ?? null,
 				finished: false,
 			}
 		));
@@ -308,23 +309,29 @@ export async function getTripHistory(pageNum:number, pageSize:number) {
 export async function getUnratedTrips(pageNum:number, pageSize:number) {
 	const req = query<['unratedTrips']>({
 		'variables': { input: { _pageNum: pageNum, _pageSize: pageSize } },
-		'query': `query ($input: PageInput) { unratedTrips(pageInput: $input) { code, startDate, endDate, rating, startLocation, endLocation, cost } }`,
+		'query': `query ($input: PageInput) { unratedTrips(pageInput: $input) { code, startDate, endDate, rating, startLocation, endLocation, cost, costBonus, asset } }`,
 	});
 	return req;
 }
 
-export async function updateUnratedTrips() {
-	return getUnratedTrips(0, 15).then(maybeTrips => {
-		if (maybeTrips.unratedTrips === null || maybeTrips.unratedTrips === undefined) return;
-		const unratedTrips = maybeTrips.unratedTrips;
-		console.log('unratedTrips', unratedTrips);
-		tripRating.update(tr => {
-			const unratedTripCodes = tr.unratedTripCodes ?? new Set<string>;
-			unratedTrips.forEach(trip => {
-				if (trip === null || trip === undefined || trip.code === undefined || trip.code === null || trip.code === 'dummy') return;
-				unratedTripCodes.add(trip.code);
-			});
-			return { currentRating: tr.currentRating, ratedTripCodes: tr.ratedTripCodes, unratedTripCodes };
+export async function updateLastUnratedTrip() {
+	return getUnratedTrips(0, 1).then(maybeTrips => {
+		if (maybeTrips.unratedTrips === null || maybeTrips.unratedTrips === undefined || maybeTrips.unratedTrips.length <= 0) return;
+		const unratedTrip = maybeTrips.unratedTrips[0];
+		if (unratedTrip == null || unratedTrip.code == null || unratedTrip.asset == null || unratedTrip.costBonus == null) return;
+		const endToNow = (new Date).getTime() - new Date(unratedTrip.endDate).getTime();
+		// check if 24h have passed
+		if (endToNow < 24 * 60 * 60 * 1000) return;
+
+		tripRating.set({
+			currentRating: {
+				code: unratedTrip.code,
+				// probably have to translate asset to bike id
+				bikeId: unratedTrip.asset,
+				startDate: new Date(unratedTrip.startDate),
+				endDate: new Date(unratedTrip.endDate),
+				tripPoints: unratedTrip.costBonus,
+			},
 		});
 	});
 }

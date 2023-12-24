@@ -1,6 +1,6 @@
 import { writable, type Writable } from 'svelte/store';
 import { login, refreshToken, updateUserInfo } from './auth';
-import { updateAccountInfo, updateStations, updateSubscriptions, updateActiveTripInfo, getTripHistory, getTrip, getUnratedTrips, updateUnratedTrips } from './gira-api';
+import { updateAccountInfo, updateStations, updateSubscriptions, updateActiveTripInfo, getTripHistory, getTrip, getUnratedTrips, updateLastUnratedTrip } from './gira-api';
 import { Preferences } from '@capacitor/preferences';
 import { startWS } from './gira-api/ws';
 
@@ -71,8 +71,6 @@ export type TripRating = {
 		endDate:Date,
 		tripPoints:number,
 	}|null,
-	ratedTripCodes: Set<string>,
-	unratedTripCodes: Set<string>|null,
 }
 
 export const userCredentials: Writable<{email: string, password: string}|null> = writable(null);
@@ -84,7 +82,7 @@ export const accountInfo = writable<AccountInfo|null>(null);
 export const selectedStation = writable<string|null>(null);
 export const safeInsets = writable<Insets>({ top: 0, bottom: 0, left: 0, right: 0 });
 export const appSettings = writable<AppSettings>({ distanceLock: true });
-export const tripRating = writable<TripRating>({ currentRating: null, ratedTripCodes: new Set, unratedTripCodes: null });
+export const tripRating = writable<TripRating>({ currentRating: null });
 
 type JWT = {
 	jti: string;
@@ -102,13 +100,13 @@ token.subscribe(async v => {
 	if (!v) return;
 	const jwt:JWT = JSON.parse(window.atob(v.accessToken.split('.')[1]));
 
-	await updateUnratedTrips();
 	startWS();
 	updateUserInfo();
 	updateStations();
 	updateAccountInfo();
 	updateSubscriptions();
 	updateActiveTripInfo();
+	updateLastUnratedTrip();
 	if (tokenRefreshTimeout) clearTimeout(tokenRefreshTimeout);
 	tokenRefreshTimeout = setTimeout(refreshToken, jwt.exp * 1000 - Date.now() - 1000 * 30);
 });

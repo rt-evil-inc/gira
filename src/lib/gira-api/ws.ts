@@ -1,8 +1,7 @@
 import { currentTrip, stations, token, type ActiveTrip, tripRating } from '$lib/stores';
 import { get } from 'svelte/store';
-import type { WSEvent } from './ws-types';
+import type { ActiveTripSubscription, WSEvent } from './ws-types';
 import { tripPayWithPoints } from '.';
-import { currentPos } from '$lib/location';
 let ws: WebSocket;
 
 function randomUUID() {
@@ -62,58 +61,7 @@ export function startWS() {
 					stations.set(data.operationalStationsSubscription);
 				} else if (data.activeTripSubscription) {
 					const recvTrip = data.activeTripSubscription;
-					console.log('activeTripSubscription on ws', recvTrip);
-					// UNTESTED, REQUIRE REAL TRIP
-					currentTrip.update(trip => {
-						if (recvTrip.code === 'no_trip' || recvTrip.bike === 'dummy') return null;
-						if (recvTrip.finished === true) {
-							if (!recvTrip.endDate) {
-								console.error('no end date on finished trip');
-								return trip;
-							}
-							const endDate = new Date(recvTrip.endDate);
-							if (recvTrip.canUsePoints === true) {
-								tripPayWithPoints(recvTrip.code);
-							}
-							const tr = get(tripRating);
-							if (!tr.ratedTripCodes.has(recvTrip.code) && tr.unratedTripCodes && tr.unratedTripCodes.has(recvTrip.code)) {
-								tripRating.update(rt => {
-									rt.ratedTripCodes.add(recvTrip.code);
-									rt.currentRating = {
-										code: recvTrip.code,
-										bikeId: recvTrip.bike,
-										startDate: new Date(recvTrip.startDate),
-										endDate: endDate,
-										tripPoints: recvTrip.tripPoints ?? 0,
-									};
-									return rt;
-								});
-							}
-							return trip;
-						}
-						if (trip) {
-							trip.startDate = new Date(recvTrip.startDate);
-							trip.bikeId = recvTrip.bike;
-							trip.code = recvTrip.code;
-							trip.finished = recvTrip.finished;
-						} else {
-							const pos = get(currentPos);
-							trip = {
-								startDate: new Date(recvTrip.startDate),
-								bikeId: recvTrip.bike,
-								code: recvTrip.code,
-								finished: recvTrip.finished,
-								startPos: pos ? { lat: pos.coords.latitude, lng: pos.coords.longitude } : null,
-								destination: null,
-								distance: 0,
-								distanceLeft: null,
-								speed: pos && pos.coords && pos.coords.speed ? pos.coords.speed : 0,
-								predictedEndDate: null,
-								arrivalTime: null,
-							};
-						}
-						return trip;
-					});
+					ingestTripMessage(recvTrip);
 				} else if (data.serverDate) {
 					console.log('serverdate', data.serverDate.date);
 					console.log('serverdate diff', new Date(data.serverDate.date).getTime() - Date.now(), 'ms');
@@ -140,3 +88,54 @@ export function startWS() {
 	console.log('ws started');
 }
 //TODO reliability issues
+function ingestTripMessage(recvTrip:ActiveTripSubscription) {
+	// UNTESTED, REQUIRE REAL TRIP
+	if (recvTrip.code === 'no_trip' || recvTrip.bike === 'dummy') return;
+	const ctrip = get(currentTrip);
+	if (recvTrip.code === ctrip?.code) ingestCurrentTripUpdate(recvTrip);
+	else ingestOtherTripUpdate(recvTrip);
+	// If the received trip is 'no_trip' or 'dummy', exit the function
+}
+
+function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
+	currentTrip.update(trip => {
+		if (recvTrip.finished) {
+			tripRating.update(rating => {
+				rating.currentRating = {
+					code: recvTrip.code,
+					bikeId: recvTrip.bike,
+					startDate: new Date(recvTrip.startDate),
+					endDate: new Date(recvTrip.endDate ?? 0),
+					tripPoints: recvTrip.tripPoints ?? 0,
+				};
+				return rating;
+			});
+			return null;
+		} else {
+			if (recvTrip.canPayWithMoney) tripPayWithPoints(recvTrip.code);
+			if (trip === null) throw new Error('trip is null in impossible place');
+			return {
+				...trip,
+				startDate: new Date(recvTrip.startDate),
+				bikeId: recvTrip.bike,
+				code: recvTrip.code,
+			};
+		}
+	});
+}
+function ingestOtherTripUpdate(recvTrip:ActiveTripSubscription) {
+	if (recvTrip.finished) return;
+	currentTrip.set({
+		startDate: new Date(recvTrip.startDate),
+		bikeId: recvTrip.bike,
+		code: recvTrip.code,
+		finished: recvTrip.finished,
+		startPos: null,
+		destination: null,
+		distance: 0,
+		distanceLeft: null,
+		speed: 0,
+		predictedEndDate: null,
+		arrivalTime: null,
+	});
+}
