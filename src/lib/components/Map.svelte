@@ -6,14 +6,13 @@
 	import type { Position } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
 	import { pulsingDot } from '$lib/pulsing-dot';
-	import { currentPos } from '$lib/location';
+	import { currentPos, bearingNorth, bearing } from '$lib/location';
 	import type { Unsubscriber } from 'svelte/motion';
 
 	export let loading = true;
 	export let following:{active:boolean} = { active: false };
 	export let bottomPadding = 0;
 	export let topPadding = 0;
-	export let bearing = 0;
 
 	let mapElem: HTMLDivElement;
 	let map : Map;
@@ -23,6 +22,8 @@
 
 	$: ready = mapLoaded && !loading && $stations.length != 0;
 	$: if (ready) setTimeout(() => blurred = false, 500);
+
+	$: if ($bearingNorth) map.flyTo({ bearing: 0 });
 
 	function setSourceData() {
 		const src = map.getSource('points') as GeoJSONSource|null;
@@ -155,7 +156,8 @@
 			}
 		});
 		map.on('rotate', () => {
-			bearing = map.getBearing();
+			bearing.set(map.getBearing());
+			bearingNorth.set(false);
 		});
 	}
 
@@ -202,12 +204,6 @@
 			center: [pos.coords.longitude, pos.coords.latitude],
 			padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2) },
 			zoom: 16,
-		});
-	}
-
-	export function orientNorth() {
-		map.flyTo({
-			bearing: 0,
 		});
 	}
 

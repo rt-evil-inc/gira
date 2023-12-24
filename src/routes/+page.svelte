@@ -23,8 +23,6 @@
 	let tripStatusPos:number = 0;
 	let profileOpen = false;
 	let locationPermission = false;
-	let bearing = 0;
-	let orientNorth: () => void = () => {};
 
 	onMount(() => {
 		Geolocation.checkPermissions().then(({ location }) => {
@@ -45,7 +43,7 @@
 			<Login />
 		</div>
 	{/if}
-	<Map loading={!$token} bind:bottomPadding={menuHeight} bind:topPadding={tripStatusPos} bind:following bind:bearing bind:orientNorth />
+	<Map loading={!$token} bind:bottomPadding={menuHeight} bind:topPadding={tripStatusPos} bind:following />
 
 	{#if $currentTrip !== null}
 		<TripStatus bind:posBottom={tripStatusPos} />
@@ -65,7 +63,7 @@
 	</Floating>
 
 	<Floating right={20} y={tripStatusPos} offset={92}>
-		<Compass {bearing} on:click={() => orientNorth()}/>
+		<Compass />
 	</Floating>
 
 	{#if profileOpen}

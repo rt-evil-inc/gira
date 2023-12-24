@@ -2,6 +2,8 @@ import { Geolocation, type Position } from '@capacitor/geolocation';
 import { writable } from 'svelte/store';
 
 export const currentPos = writable<Position|null>(null);
+export const bearingNorth = writable<boolean>(false);
+export const bearing = writable<number>(0);
 
 let watchId: string|null = null;
 let tryWatching = false;
