@@ -34,7 +34,7 @@
 </script>
 
 <div transition:fly={{ y: -120 }} class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center p-2 gap-1 bg-background rounded-2xl" style:box-shadow="0px 0px 20px 0px var(--color-shadow)" style:top="{Math.max(16, $safeInsets.top + 8)}px">
-	<span class="font-bold text-info text-sm">How was your last trip?</span>
+	<span class="font-bold text-info text-sm mx-1 whitespace-nowrap">Como foi a sua última viagem?</span>
 	<div class="grid columns-5 gap-[3px]">
 		{#if rating === 1}
 			<div transition:fade={{ duration: 150 }} class="flex items-center justify-center w-[40px] h-[40px] col-start-1 col-end-1 row-start-1 row-end-1">
