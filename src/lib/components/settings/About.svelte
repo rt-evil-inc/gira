@@ -1,6 +1,27 @@
-<script>
+<script lang="ts">
 	import { version } from '$app/environment';
 	import { safeInsets } from '$lib/stores';
+	import { tweened } from 'svelte/motion';
+	import { fade } from 'svelte/transition';
+	async function wait(ms:number) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+	let animating = false;
+	let rotatedOutside = false;
+	let showingBike = false;
+	let wheelsSpinning = false;
+	let forwardPixels = tweened(0, { duration: 300 });
+	async function animate() {
+		if (animating) return;
+		animating = true;
+		rotatedOutside = true;
+		await wait(2000);
+		showingBike = true;
+		await wait(2000);
+		wheelsSpinning = true;
+		await wait(500);
+		forwardPixels.set(500);
+	}
 </script>
 
 <div class="flex flex-col h-screen p-5" style:padding-top={$safeInsets.top + 48 + 'px'} style:padding-bottom="{Math.max($safeInsets.bottom, 20)}px">
@@ -10,22 +31,55 @@
 			<span>Esta aplicação é uma re-implementação das funcionalidades da aplicação Gira.</span>
 			<span>A aplicação não é oficial, não estando associada de modo algum à EMEL ou à Câmara Municipal de Lisboa.</span>
 		</div>
-		<div class="flex flex-col w-full gap-4">
-			<span class="font-bold text-info text-lg">Desenvolvido por:</span>
-			<a href="https://github.com/rodrigohpalmeirim" class="flex gap-3 items-center">
-				<img src="https://avatars.githubusercontent.com/u/34187774" alt="" class="w-14 h-14 rounded-full" />
+		<div class="flex flex-col w-full gap-4 origin-[1.75rem_144px] relative
+			transition-transform duration-1000
+		"
+			class:rotate-90={rotatedOutside}
+			style:--tw-translate-x={$forwardPixels + 'px'}
+		>
+			<span class="font-bold text-info text-lg transition-opacity" on:click={animate}
+				on:keydown={animate}
+				tabindex="0"
+				role="button"
+				class:opacity-0={showingBike}
+			>Desenvolvido por:</span>
+			<a href="https://github.com/rodrigohpalmeirim" class="flex gap-3 items-center z-10 origin-[1.75rem_1.75rem]"
+				class:animate-[spin_0.1s_linear_infinite]={wheelsSpinning}>
+				<img src="https://avatars.githubusercontent.com/u/34187774?s=64" alt="" class="w-14 h-14 rounded-full" />
 				<div class="flex flex-col">
 					<span class="font-bold text-primary">Rodrigo Palmeirim</span>
 					<span class="font-semibold text-label text-xs -mt-[2px]">gira@rodlabs.dev</span>
 				</div>
 			</a>
-			<a href="https://github.com/ttmx" class="flex gap-3 items-center">
-				<img src="https://avatars.githubusercontent.com/u/12669467" alt="" class="w-14 h-14 rounded-full" />
+			<a href="https://github.com/ttmx" class="flex gap-3 items-center z-10 origin-[1.75rem_1.75rem]"
+				class:animate-[spin_0.1s_linear_infinite]={wheelsSpinning}>
+				<img src="https://avatars.githubusercontent.com/u/12669467?s=64" alt="" class="w-14 h-14 rounded-full" />
 				<div class="flex flex-col">
 					<span class="font-bold text-primary">Tiago Teles</span>
 					<span class="font-semibold text-label text-xs -mt-[2px]">gira@tteles.dev</span>
 				</div>
 			</a>
+			<div class="absolute -left-12 top-[4.5rem]">
+				<svg class="h-full w-[110px] -rotate-90 transition-opacity duration-75" width="62" height="38" viewBox="0 0 62 38" fill="none" xmlns="http://www.w3.org/2000/svg"
+					class:opacity-0={!showingBike}
+				>
+					<path d="M11.0862 26.6841L18.6347 20.9505C15.871 17.2807 10.0799 18.3456 7.56726 18.814C13.1653 19.8331 11.0862 26.6841 11.0862 26.6841Z" fill="#79C000"/>
+					<path d="M11.0862 26.6848L20.8612 26.8514C20.5211 24.2944 19.7072 22.3752 18.6347 20.9512L11.0862 26.6848Z" fill="#79C000"/>
+					<path d="M28.1018 26.9753L23.685 17.1157M28.1018 26.9753L42.185 10.4097M28.1018 26.9753L20.8612 26.8519M23.685 17.1157L19.7388 8.41601M23.685 17.1157L18.6347 20.9517M42.185 10.4097L46.638 22.118L50.2583 26.6853M42.185 10.4097L40.411 5.11738L44.7192 2L37.4785 2.39874M42.185 10.4097H46.245M20.8612 26.8519L11.0862 26.6853M20.8612 26.8519C20.5211 24.2949 19.7072 22.3757 18.6347 20.9517M19.7388 8.41601H16.6254M19.7388 8.41601H24.0833M11.0862 26.6853C11.0862 26.6853 13.1653 19.8343 7.56725 18.8152M11.0862 26.6853L18.6347 20.9517M7.56725 18.8152C10.0798 18.3468 15.871 17.282 18.6347 20.9517M7.56725 18.8152H2.987" stroke="#79C000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+					<g class="animate-spin origin-[11.5026px_26.4977px]">
+						<circle cx="11.5026" cy="26.4977" r="9.50259" stroke="#79C000" stroke-width="4"/>
+						<path d="M2.10678 26.582H21.0676" stroke="#79C000"/>
+						<path d="M6.84695 34.793L16.3274 18.3724" stroke="#79C000"/>
+						<path d="M16.3274 34.793L6.84696 18.3724" stroke="#79C000"/>
+					</g>
+					<g class="animate-spin origin-[50.1864px_26.4903px]">
+						<circle cx="50.1864" cy="26.4903" r="9.49523" stroke="#79C000" stroke-width="4"/>
+						<path d="M40.7966 26.5762H59.7452" stroke="#79C000"/>
+						<path d="M45.5337 34.7793L55.0081 18.3693" stroke="#79C000"/>
+						<path d="M55.0081 34.7793L45.5337 18.3693" stroke="#79C000"/>
+					</g>
+				</svg>
+			</div>
 		</div>
 		<div class="flex flex-col grow items-center justify-end">
 			<a href="https://github.com/rt-evil-inc/gira-plus">
