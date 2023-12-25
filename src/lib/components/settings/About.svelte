@@ -7,6 +7,14 @@
 	async function wait(ms:number) {
 		return new Promise(resolve => setTimeout(resolve, ms));
 	}
+	let clicked = false;
+	function click() {
+		if (clicked) animate();
+		else {
+			clicked = true;
+			setTimeout(() => clicked = false, 600);
+		}
+	}
 	let animating = false;
 	let rotatedOutside = false;
 	let showingBike = false;
@@ -38,8 +46,8 @@
 			class:rotate-90={rotatedOutside}
 			style:--tw-translate-x={$forwardPixels + 'px'}
 		>
-			<span class="font-bold text-info text-lg transition-opacity" on:click={animate}
-				on:keydown={animate}
+			<span class="font-bold text-info text-lg transition-opacity" on:click={click}
+				on:keydown={click}
 				tabindex="0"
 				role="button"
 				class:opacity-0={showingBike}
