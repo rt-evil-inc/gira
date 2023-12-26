@@ -3,6 +3,7 @@ import { accountInfo, currentTrip, stations, token, tripRating, type StationInfo
 import { CapacitorHttp, type HttpResponse } from '@capacitor/core';
 import { get } from 'svelte/store';
 import type { Mutation, Query } from './types';
+import { Preferences } from '@capacitor/preferences';
 type Q<T extends (keyof Query)[]> = {[K in T[number]]:Query[K]};
 type M<T extends (keyof Mutation)[]> = {[K in T[number]]:Mutation[K]};
 export type ThrownError = {
@@ -129,7 +130,7 @@ export async function getDocks(stationId: string): Promise<Q<['getDocks']>> {
 }
 
 export async function reserveBike(serialNumber: string) {
-	if (dev) {
+	if (dev && (await Preferences.get({ key: 'settings/mockUnlock' })).value === 'true') {
 		console.log('mock reserveBike');
 		return { reserveBike: true };
 	} else {
@@ -150,7 +151,7 @@ export async function cancelBikeReserve() {
 }
 
 export async function startTrip() {
-	if (dev) {
+	if (dev && (await Preferences.get({ key: 'settings/mockUnlock' })).value === 'true') {
 		console.log('mock startTrip');
 		await new Promise(resolve => setTimeout(resolve, 2000));
 		return { startTrip: true };

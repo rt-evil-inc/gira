@@ -65,6 +65,7 @@ export type Insets = {
 }
 export type AppSettings = {
 	distanceLock: boolean;
+	mockUnlock: boolean;
 }
 export type TripRating = {
 	currentRating:{
@@ -84,7 +85,7 @@ export const currentTrip = writable<ActiveTrip|null>(null);
 export const accountInfo = writable<AccountInfo|null>(null);
 export const selectedStation = writable<string|null>(null);
 export const safeInsets = writable<Insets>({ top: 0, bottom: 0, left: 0, right: 0 });
-export const appSettings = writable<AppSettings>({ distanceLock: true });
+export const appSettings = writable<AppSettings>({ distanceLock: true, mockUnlock: true });
 export const tripRating = writable<TripRating>({ currentRating: null });
 
 export const errorMessages:Writable<{msg:string, id:number}[]> = writable([]);
@@ -139,8 +140,9 @@ export async function loadUserCreds() {
 		// This is here to show the login dialog if there are no credentials set
 		token.set(null);
 	}
-	const distanceLock = (await Preferences.get({ key: 'settings/distanceLock' })).value === 'true';
-	appSettings.set({ distanceLock });
+	const distanceLock = (await Preferences.get({ key: 'settings/distanceLock' })).value !== 'false'; // !== 'false' is so that it defaults to true if the key is not set
+	const mockUnlock = (await Preferences.get({ key: 'settings/mockUnlock' })).value !== 'false';
+	appSettings.set({ distanceLock, mockUnlock });
 
 	userCredentials.subscribe(async v => {
 		if (!v) {
@@ -158,6 +160,7 @@ export async function loadUserCreds() {
 	});
 	appSettings.subscribe(async v => {
 		Preferences.set({ key: 'settings/distanceLock', value: v.distanceLock.toString() });
+		Preferences.set({ key: 'settings/mockUnlock', value: v.mockUnlock.toString() });
 	});
 }
 currentPos.subscribe(async v => {
