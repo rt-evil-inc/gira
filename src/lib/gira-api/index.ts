@@ -254,7 +254,6 @@ export async function updateActiveTripInfo() {
 		const {
 			asset,
 			startDate,
-			distance,
 			code,
 			// user,
 			// endDate,
@@ -352,10 +351,10 @@ export async function updateLastUnratedTrip() {
 	return getUnratedTrips(0, 1).then(maybeTrips => {
 		if (maybeTrips.unratedTrips === null || maybeTrips.unratedTrips === undefined || maybeTrips.unratedTrips.length <= 0) return;
 		const unratedTrip = maybeTrips.unratedTrips[0];
-		if (unratedTrip == null || unratedTrip.code == null || unratedTrip.asset == null || unratedTrip.costBonus == null) return;
+		if (unratedTrip == null || unratedTrip.code == null || unratedTrip.asset == null) return;
 		const endToNow = (new Date).getTime() - new Date(unratedTrip.endDate).getTime();
 		// check if 24h have passed
-		if (endToNow > 24 * 60 * 60 * 1000) return;
+		if (!(endToNow < 24 * 60 * 60 * 1000)) return;
 
 		tripRating.set({
 			currentRating: {
@@ -364,7 +363,7 @@ export async function updateLastUnratedTrip() {
 				bikeId: unratedTrip.asset,
 				startDate: new Date(unratedTrip.startDate),
 				endDate: new Date(unratedTrip.endDate),
-				tripPoints: unratedTrip.costBonus,
+				tripPoints: unratedTrip.costBonus || 0,
 			},
 		});
 	});
