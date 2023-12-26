@@ -270,12 +270,12 @@
 		if (trip) {
 			following.active = true;
 			// change visibility of layers
-			if (map) {
+			if (mapLoaded) {
 				map.setLayoutProperty('points', 'visibility', 'none');
 				map.setLayoutProperty('docks', 'visibility', 'visible');
 			}
 		} else {
-			if (map) {
+			if (mapLoaded) {
 				map.setLayoutProperty('points', 'visibility', 'visible');
 				map.setLayoutProperty('docks', 'visibility', 'none');
 			}
