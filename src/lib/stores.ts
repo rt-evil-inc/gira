@@ -87,16 +87,19 @@ export const safeInsets = writable<Insets>({ top: 0, bottom: 0, left: 0, right: 
 export const appSettings = writable<AppSettings>({ distanceLock: true });
 export const tripRating = writable<TripRating>({ currentRating: null });
 
-export const errorMessages:Writable<Set<string>> = writable(new Set);
-export function addErrorMessage(message:string) {
-	errorMessages.update(messages => messages.add(message));
-	setTimeout(() => removeErrorMessage(message), 3000);
-	return message;
-}
-export function removeErrorMessage(message:string) {
+export const errorMessages:Writable<{msg:string, id:number}[]> = writable([]);
+export function addErrorMessage(msg:string, delay = 3000) {
+	const id = Math.random();
 	errorMessages.update(messages => {
-		messages.delete(message);
+		messages.push({ msg, id });
 		return messages;
+	});
+	setTimeout(() => removeErrorMessage(id), delay);
+	return id;
+}
+export function removeErrorMessage(id:number) {
+	errorMessages.update(messages => {
+		return messages.filter(m => m.id !== id);
 	});
 }
 

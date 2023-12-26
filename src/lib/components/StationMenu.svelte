@@ -10,6 +10,7 @@
 	import { distanceBetweenCoords, formatDistance } from '$lib/utils';
 	import { fade } from 'svelte/transition';
 	import { App } from '@capacitor/app';
+	import BikeSkeleton from './BikeSkeleton.svelte';
 
 	export let bikeListHeight = 0;
 	export let posTop:number|undefined = 0;
@@ -133,6 +134,14 @@
 			tick: (_:number) => dismiss(),
 		};
 	}
+	function getStationFromSerial(serial:string) {
+		const s = $stations.find(s => s.serialNumber == serial);
+		if (!s) {
+			console.error('Station not found', serial, $stations);
+			throw new Error('Station not found');
+		}
+		return s;
+	}
 </script>
 
 <svelte:window bind:innerHeight={windowHeight} />
@@ -165,12 +174,15 @@
 			<div bind:this={bikeList} class="flex flex-col p-5 pt-2 gap-3">
 				{#if bikeInfo.length == 0}
 					{#each new Array(bikes) as _}
-						<Bike disabled={true} />
+						<BikeSkeleton />
 					{/each}
 				{/if}
-				{#each bikeInfo as bike}
-					<Bike type={bike.type} id={bike.id} battery={bike.battery} dock={bike.dock} serial={bike.serial} disabled={isScrolling} />
-				{/each}
+				{#if $selectedStation !== null}
+					{@const station = getStationFromSerial($selectedStation)}
+					{#each bikeInfo as bike}
+						<Bike type={bike.type} id={bike.id} battery={bike.battery} dock={bike.dock} serial={bike.serial} disabled={isScrolling} station={station} />
+					{/each}
+				{/if}
 				<div class="fixed left-0 w-full h-4 -mt-6" style:box-shadow="0px 6px 6px 0px var(--color-background)" />
 			</div>
 		</div>

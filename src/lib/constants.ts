@@ -1,0 +1,1 @@
+export const LOCK_DISTANCE_m = 35;
