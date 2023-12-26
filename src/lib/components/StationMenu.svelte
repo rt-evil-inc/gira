@@ -131,7 +131,10 @@
 	function transition(_: HTMLElement) {
 		return {
 			duration: 150,
-			tick: (_:number) => dismiss(),
+			tick: (_:number) => {
+				dismiss();
+				posTop = windowHeight;
+			},
 		};
 	}
 	function getStationFromSerial(serial:string) {
