@@ -126,7 +126,7 @@ export async function getDocks(stationId: string): Promise<Q<['getDocks']>> {
 }
 
 export async function reserveBike(serialNumber: string) {
-	if (dev && false) {
+	if (dev) {
 		console.log('mock reserveBike');
 		return { reserveBike: true };
 	} else {
@@ -147,7 +147,7 @@ export async function cancelBikeReserve() {
 }
 
 export async function startTrip() {
-	if (dev && false) {
+	if (dev) {
 		console.log('mock startTrip');
 		await new Promise(resolve => setTimeout(resolve, 2000));
 		return { startTrip: true };
