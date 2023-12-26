@@ -12,6 +12,7 @@ export type ThrownError = {
 
 const retries = 5;
 const retryDelay = 1000;
+let backoff = 1000;
 
 async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
 	let res: HttpResponse = { status: 0, data: {}, headers: {}, url: '' };
@@ -27,13 +28,14 @@ async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
 		});
 		if (res.status >= 200 && res.status < 300) {
 			console.log(res);
+			backoff = retryDelay;
 			return res.data.data as Promise<M<T>>;
 		} else {
-			console.log('error in mutate', res);
+			console.debug('error in mutate', res);
 		}
-		await new Promise(resolve => setTimeout(resolve, retryDelay));
+		await new Promise(resolve => setTimeout(resolve, backoff += 1000));
 	}
-	console.log('failed mutation with body', body, res);
+	console.error('failed mutation with body', body, res);
 	throw {
 		errors: res.data.errors,
 		status: res.status,
@@ -52,14 +54,15 @@ async function query<T extends(keyof Query)[]>(body:any): Promise<Q<T>> {
 			data: body,
 		});
 		if (res.status >= 200 && res.status < 300) {
-			console.log(res);
+			console.debug(body, res);
+			backoff = retryDelay;
 			return res.data.data as Promise<Q<T>>;
 		} else {
-			console.log('error in query', res);
+			console.debug('error in query', res);
 		}
-		await new Promise(resolve => setTimeout(resolve, retryDelay));
+		await new Promise(resolve => setTimeout(resolve, backoff += 1000));
 	}
-	console.log('failed query with body', body, res);
+	console.error('failed query with body', body, res);
 	throw {
 		errors: res.data.errors,
 		status: res.status,
