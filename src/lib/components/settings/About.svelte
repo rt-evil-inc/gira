@@ -52,6 +52,7 @@
 					tabindex="0"
 					role="button"
 					class:opacity-0={showingBike}
+					style="-webkit-tap-highlight-color: transparent"
 				>Desenvolvido por:</span>
 				<a href="https://github.com/rodrigohpalmeirim" class="flex gap-3 items-center z-10 origin-[1.75rem_1.75rem]"
 					class:animate-[spin_0.1s_linear_infinite]={wheelsSpinning}>
