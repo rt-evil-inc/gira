@@ -23,8 +23,8 @@ project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacit
 include ':capacitor-toast'
 project(':capacitor-toast').projectDir = new File('../node_modules/@capacitor/toast/android')
 
-include ':hugotomazi-capacitor-navigation-bar'
-project(':hugotomazi-capacitor-navigation-bar').projectDir = new File('../node_modules/@hugotomazi/capacitor-navigation-bar/android')
+include ':mauricewegner-capacitor-navigation-bar'
+project(':mauricewegner-capacitor-navigation-bar').projectDir = new File('../node_modules/@mauricewegner/capacitor-navigation-bar/android')
 
 include ':capacitor-plugin-safe-area'
 project(':capacitor-plugin-safe-area').projectDir = new File('../node_modules/capacitor-plugin-safe-area/android')

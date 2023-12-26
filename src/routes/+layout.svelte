@@ -8,7 +8,7 @@
 	import { onMount } from 'svelte';
 	import { StatusBar, Style } from '@capacitor/status-bar';
 	import { Capacitor } from '@capacitor/core';
-	import { NavigationBar } from '@hugotomazi/capacitor-navigation-bar';
+	import { NavigationBar } from '@mauricewegner/capacitor-navigation-bar';
 	import { SafeArea } from 'capacitor-plugin-safe-area';
 	import '../app.css';
 	import { App } from '@capacitor/app';
