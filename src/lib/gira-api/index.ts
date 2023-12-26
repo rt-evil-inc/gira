@@ -27,7 +27,7 @@ async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
 			data: body,
 		});
 		if (res.status >= 200 && res.status < 300) {
-			console.log(res);
+			console.debug(body, res);
 			backoff = retryDelay;
 			return res.data.data as Promise<M<T>>;
 		} else {
