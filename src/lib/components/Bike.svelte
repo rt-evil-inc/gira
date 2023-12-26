@@ -31,7 +31,7 @@
 					return false;
 				} else {
 					if (distanceBetweenCoords($currentPos.coords.latitude, $currentPos.coords.longitude, station.latitude, station.longitude) > LOCK_DISTANCE_m / 1000) {
-						addErrorMessage('Não está perto o suficiente da estação selecionada');
+						addErrorMessage('Não está perto o suficiente da estação');
 						return false;
 					}
 				}
