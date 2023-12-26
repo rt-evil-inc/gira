@@ -76,25 +76,19 @@
 			</button>
 		</div>
 		{#if openPage === 'history'}
-			<div transition:fade={{ duration: 150 }} class="bg-background col-start-1 col-end-2 row-start-1 row-end-2 z-40">
-				<History />
-			</div>
+			<History />
 		{:else if openPage === 'settings'}
-			<div transition:fade={{ duration: 150 }} class="bg-background col-start-1 col-end-2 row-start-1 row-end-2 z-40 ">
-				<Settings />
-			</div>
+			<Settings />
 		{:else if openPage === 'info'}
-			<div transition:fade={{ duration: 150 }} class="bg-background col-start-1 col-end-2 row-start-1 row-end-2 z-40">
-				<Info />
-			</div>
+			<Info />
 		{/if}
-		<div class="absolute top-0 right-4 flex justify-end z-40" style:margin-top="{Math.max($safeInsets.top, 16)}px">
+		<div class="absolute top-2 right-6 flex justify-end z-40" style:margin-top="{Math.max($safeInsets.top, 16)}px">
 			<button on:click={() => dispatch('close')}>
 				<IconX class="text-info" size={24} />
 			</button>
 		</div>
 		{#if openPage !== null}
-			<div transition:fade={{ duration: 150 }} class="absolute top-0 left-4 flex justify-end z-40" style:margin-top="{Math.max($safeInsets.top, 16)}px">
+			<div transition:fade={{ duration: 150 }} class="absolute top-2 left-6 flex justify-end z-40" style:margin-top="{Math.max($safeInsets.top, 16)}px">
 				<button on:click={() => openPage = null}>
 					<IconArrowLeft class="text-info" size={24} />
 				</button>

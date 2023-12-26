@@ -5,6 +5,7 @@
 	import HistoryItem from './HistoryItem.svelte';
 	import { safeInsets } from '$lib/stores';
 	import { fade } from 'svelte/transition';
+	import MenuPage from '../MenuPage.svelte';
 
 	let trips:TripHistory_TripDetail[] = [];
 	let observed:HTMLDivElement;
@@ -66,63 +67,60 @@
 	$: console.log(aggregate);
 </script>
 
-<div class="flex flex-col h-screen" style:padding-top={$safeInsets.top + 48 + 'px'}>
-	<div class="flex flex-col h-full overflow-y-auto">
-		<div class="fixed left-0 right-0 h-4 -mt-4" style:box-shadow="0px 6px 6px 0px var(--color-background)" />
-		<div class="text-3xl font-bold text-info pl-5 pt-1">Viagens</div>
-		{#if didFirstRequest }
-			{#if didFirstRequest && trips.length == 0 }
-				<div class="flex flex-col items-center justify-center h-full" style:margin-top={-$safeInsets.top - 32 + 'px'}>
-					<div class="text-2xl font-bold text-info">Nenhuma viagem</div>
-					<div class="text-label text-sm text-center">Não há viagens registadas</div>
-				</div>
-			{:else}
-				<div class="flex flex-col gap-6 p-5">
-					{#each aggregate as [_, tripsObj]}
-						<div class="flex flex-col gap-3">
-							<div class="font-semibold text-label text-sm">{formatDate(new Date(tripsObj[0]))}</div>
-							{#each tripsObj[1] as trip}
-								<HistoryItem trip={trip} />
-							{/each}
-						</div>
-					{/each}
-				</div>
-			{/if}
+<MenuPage>
+	<div class="text-3xl font-bold text-info px-5 pt-5">Viagens</div>
+	{#if didFirstRequest }
+		{#if didFirstRequest && trips.length == 0 }
+			<div class="flex flex-col items-center justify-center h-full" style:margin-top={-$safeInsets.top - 32 + 'px'}>
+				<div class="text-2xl font-bold text-info">Nenhuma viagem</div>
+				<div class="text-label text-sm text-center">Não há viagens registadas</div>
+			</div>
 		{:else}
 			<div class="flex flex-col gap-6 p-5">
-				{#each new Array(4).fill(0) as _}
+				{#each aggregate as [_, tripsObj]}
 					<div class="flex flex-col gap-3">
-						<div class="font-semibold text-label text-sm h-4 bg-neutral-100 rounded-xl animate-pulse"
-							style:width={(Math.random() * 15 + 40) + '%'}
-						></div>
-						{#each new Array(Math.floor(Math.random() * 3 + 1)).fill(0) as _}
-							<HistoryItem trip={null} />
+						<div class="font-semibold text-label text-sm">{formatDate(new Date(tripsObj[0]))}</div>
+						{#each tripsObj[1] as trip}
+							<HistoryItem trip={trip} />
 						{/each}
 					</div>
 				{/each}
 			</div>
 		{/if}
-		<div class="mx-auto"
-			class:hidden={trips.length == 0}
-			style:padding-bottom={$safeInsets.bottom + 'px'}
-			bind:this={observed}>
-			<svg out:fade={{ duration: 500 }} class="w-20 h-12 mb-4" width="62" height="38" viewBox="0 0 62 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<path d="M11.0862 26.6841L18.6347 20.9505C15.871 17.2807 10.0799 18.3456 7.56726 18.814C13.1653 19.8331 11.0862 26.6841 11.0862 26.6841Z" fill="#79C000"/>
-				<path d="M11.0862 26.6848L20.8612 26.8514C20.5211 24.2944 19.7072 22.3752 18.6347 20.9512L11.0862 26.6848Z" fill="#79C000"/>
-				<path d="M28.1018 26.9753L23.685 17.1157M28.1018 26.9753L42.185 10.4097M28.1018 26.9753L20.8612 26.8519M23.685 17.1157L19.7388 8.41601M23.685 17.1157L18.6347 20.9517M42.185 10.4097L46.638 22.118L50.2583 26.6853M42.185 10.4097L40.411 5.11738L44.7192 2L37.4785 2.39874M42.185 10.4097H46.245M20.8612 26.8519L11.0862 26.6853M20.8612 26.8519C20.5211 24.2949 19.7072 22.3757 18.6347 20.9517M19.7388 8.41601H16.6254M19.7388 8.41601H24.0833M11.0862 26.6853C11.0862 26.6853 13.1653 19.8343 7.56725 18.8152M11.0862 26.6853L18.6347 20.9517M7.56725 18.8152C10.0798 18.3468 15.871 17.282 18.6347 20.9517M7.56725 18.8152H2.987" stroke="#79C000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-				<g class="animate-spin origin-[11.5026px_26.4977px]">
-					<circle cx="11.5026" cy="26.4977" r="9.50259" stroke="#79C000" stroke-width="4"/>
-					<path d="M2.10678 26.582H21.0676" stroke="#79C000"/>
-					<path d="M6.84695 34.793L16.3274 18.3724" stroke="#79C000"/>
-					<path d="M16.3274 34.793L6.84696 18.3724" stroke="#79C000"/>
-				</g>
-				<g class="animate-spin origin-[50.1864px_26.4903px]">
-					<circle cx="50.1864" cy="26.4903" r="9.49523" stroke="#79C000" stroke-width="4"/>
-					<path d="M40.7966 26.5762H59.7452" stroke="#79C000"/>
-					<path d="M45.5337 34.7793L55.0081 18.3693" stroke="#79C000"/>
-					<path d="M55.0081 34.7793L45.5337 18.3693" stroke="#79C000"/>
-				</g>
-			</svg>
+	{:else}
+		<div class="flex flex-col gap-6 p-5">
+			{#each new Array(4).fill(0) as _}
+				<div class="flex flex-col gap-3">
+					<div class="font-semibold text-label text-sm h-4 bg-neutral-100 rounded-xl animate-pulse"
+						style:width={(Math.random() * 15 + 40) + '%'}
+					></div>
+					{#each new Array(Math.floor(Math.random() * 3 + 1)).fill(0) as _}
+						<HistoryItem trip={null} />
+					{/each}
+				</div>
+			{/each}
 		</div>
+	{/if}
+	<div class="mx-auto"
+		class:hidden={trips.length == 0}
+		style:padding-bottom={$safeInsets.bottom + 'px'}
+		bind:this={observed}>
+		<svg out:fade={{ duration: 500 }} class="w-20 h-12 mb-4" width="62" height="38" viewBox="0 0 62 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path d="M11.0862 26.6841L18.6347 20.9505C15.871 17.2807 10.0799 18.3456 7.56726 18.814C13.1653 19.8331 11.0862 26.6841 11.0862 26.6841Z" fill="#79C000"/>
+			<path d="M11.0862 26.6848L20.8612 26.8514C20.5211 24.2944 19.7072 22.3752 18.6347 20.9512L11.0862 26.6848Z" fill="#79C000"/>
+			<path d="M28.1018 26.9753L23.685 17.1157M28.1018 26.9753L42.185 10.4097M28.1018 26.9753L20.8612 26.8519M23.685 17.1157L19.7388 8.41601M23.685 17.1157L18.6347 20.9517M42.185 10.4097L46.638 22.118L50.2583 26.6853M42.185 10.4097L40.411 5.11738L44.7192 2L37.4785 2.39874M42.185 10.4097H46.245M20.8612 26.8519L11.0862 26.6853M20.8612 26.8519C20.5211 24.2949 19.7072 22.3757 18.6347 20.9517M19.7388 8.41601H16.6254M19.7388 8.41601H24.0833M11.0862 26.6853C11.0862 26.6853 13.1653 19.8343 7.56725 18.8152M11.0862 26.6853L18.6347 20.9517M7.56725 18.8152C10.0798 18.3468 15.871 17.282 18.6347 20.9517M7.56725 18.8152H2.987" stroke="#79C000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+			<g class="animate-spin origin-[11.5026px_26.4977px]">
+				<circle cx="11.5026" cy="26.4977" r="9.50259" stroke="#79C000" stroke-width="4"/>
+				<path d="M2.10678 26.582H21.0676" stroke="#79C000"/>
+				<path d="M6.84695 34.793L16.3274 18.3724" stroke="#79C000"/>
+				<path d="M16.3274 34.793L6.84696 18.3724" stroke="#79C000"/>
+			</g>
+			<g class="animate-spin origin-[50.1864px_26.4903px]">
+				<circle cx="50.1864" cy="26.4903" r="9.49523" stroke="#79C000" stroke-width="4"/>
+				<path d="M40.7966 26.5762H59.7452" stroke="#79C000"/>
+				<path d="M45.5337 34.7793L55.0081 18.3693" stroke="#79C000"/>
+				<path d="M55.0081 34.7793L45.5337 18.3693" stroke="#79C000"/>
+			</g>
+		</svg>
 	</div>
-</div>
+</MenuPage>
