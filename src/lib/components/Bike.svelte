@@ -27,7 +27,7 @@
 						code: '',
 						arrivalTime: null,
 						bikeId: id,
-						distance: 0,
+						travelledDistanceKm: 0,
 						destination: null,
 						distanceLeft: null,
 						speed: 0,
@@ -38,6 +38,11 @@
 						} : null,
 						predictedEndDate: null,
 						finished: false,
+						pathTaken: $currentPos ? [{
+							lng: $currentPos.coords.longitude,
+							lat: $currentPos.coords.latitude,
+							time: new Date,
+						}] : [],
 					};
 					return true;
 				} else {

@@ -43,7 +43,7 @@
 				<span class="font-semibold text-label text-lg">{$t.bikeId}</span>
 				<span class="text-5xl text-primary font-bold">{msToMinuteSeconds(deltaSeconds)}</span>
 				<div class="absolute top-[92px] transition-all {$t.destination ? 'left-12' : 'left-20'}">
-					<Metric value={$t.distance} unit="km" label="Distância Percorrida" />
+					<Metric value={$t.travelledDistanceKm} unit="km" label="Distância Percorrida" />
 				</div>
 				<div class="absolute top-[92px] transition-all {$t.destination ? 'right-1/2 translate-x-1/2' : 'right-20 translate-x-0'}">
 					<Metric value={$t.speed} unit="km/h" label="Velocidade Média" />

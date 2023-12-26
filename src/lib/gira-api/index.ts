@@ -259,21 +259,33 @@ export async function updateActiveTripInfo() {
 			// defaultOrder,
 			// version,
 		} = maybeTrips.activeTrip!;
-		currentTrip.update(ct => (
-			{
-				code: code!,
-				bikeId: asset!,
-				startPos: ct?.startPos ?? null,
-				destination: ct?.destination ?? null,
-				distance: distance!,
-				distanceLeft: ct?.distanceLeft ?? null,
-				speed: ct?.speed ?? 0,
-				startDate: new Date(startDate!),
-				predictedEndDate: ct?.predictedEndDate ?? null,
-				arrivalTime: ct?.predictedEndDate ?? null,
-				finished: false,
-			}
-		));
+		currentTrip.update(ct => ct ? {
+			code: code!,
+			bikeId: asset!,
+			startPos: ct.startPos,
+			destination: ct.destination,
+			travelledDistanceKm: distance!,
+			distanceLeft: ct.distanceLeft,
+			speed: ct.speed,
+			startDate: new Date(startDate!),
+			predictedEndDate: ct.predictedEndDate,
+			arrivalTime: ct.predictedEndDate,
+			finished: false,
+			pathTaken: ct.pathTaken,
+		} : {
+			code: code!,
+			bikeId: asset!,
+			startPos: null,
+			destination: null,
+			travelledDistanceKm: distance!,
+			distanceLeft: null,
+			speed: 0,
+			startDate: new Date(startDate!),
+			predictedEndDate: null,
+			arrivalTime: null,
+			finished: false,
+			pathTaken: [],
+		});
 	});
 }
 //

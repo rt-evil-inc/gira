@@ -2,6 +2,7 @@ import { currentTrip, stations, token, type ActiveTrip, tripRating } from '$lib/
 import { get } from 'svelte/store';
 import type { ActiveTripSubscription, WSEvent } from './ws-types';
 import { tripPayWithPoints } from '.';
+import { currentPos } from '$lib/location';
 let ws: WebSocket;
 
 function randomUUID() {
@@ -99,6 +100,7 @@ function ingestTripMessage(recvTrip:ActiveTripSubscription) {
 
 function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
 	currentTrip.update(trip => {
+		// if trip finished, rate, else, update trip stuff
 		if (recvTrip.finished) {
 			tripRating.update(rating => {
 				rating.currentRating = {
@@ -125,6 +127,7 @@ function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
 }
 function ingestOtherTripUpdate(recvTrip:ActiveTripSubscription) {
 	if (recvTrip.finished) return;
+	const p = get(currentPos);
 	currentTrip.set({
 		startDate: new Date(recvTrip.startDate),
 		bikeId: recvTrip.bike,
@@ -132,10 +135,15 @@ function ingestOtherTripUpdate(recvTrip:ActiveTripSubscription) {
 		finished: recvTrip.finished,
 		startPos: null,
 		destination: null,
-		distance: 0,
+		travelledDistanceKm: 0,
 		distanceLeft: null,
 		speed: 0,
 		predictedEndDate: null,
 		arrivalTime: null,
+		pathTaken: p ? [{
+			lat: p.coords.latitude,
+			lng: p.coords.longitude,
+			time: new Date,
+		}] : [],
 	});
 }

@@ -3,6 +3,8 @@ import { login, refreshToken, updateUserInfo } from './auth';
 import { updateAccountInfo, updateStations, updateSubscriptions, updateActiveTripInfo, getTripHistory, getTrip, getUnratedTrips, updateLastUnratedTrip } from './gira-api';
 import { Preferences } from '@capacitor/preferences';
 import { startWS } from './gira-api/ws';
+import { currentPos } from './location';
+import { distanceBetweenCoords } from './utils';
 
 export type User = {
 	email: string;
@@ -33,13 +35,14 @@ export type ActiveTrip = {
 	bikeId: string,
 	startPos: {lat: number, lng: number}|null,
 	destination: {lat: number, lng: number}|null,
-	distance: number,
+	travelledDistanceKm: number,
 	distanceLeft: number|null,
 	speed: number,
 	startDate: Date,
 	predictedEndDate: Date|null,
 	arrivalTime: Date|null,
 	finished: boolean,
+	pathTaken : {lat: number, lng: number, time:Date}[]
 }
 
 export type AccountInfo = {
@@ -154,6 +157,22 @@ export async function loadUserCreds() {
 		Preferences.set({ key: 'settings/distanceLock', value: v.distanceLock.toString() });
 	});
 }
+currentPos.subscribe(async v => {
+	if (!v) return;
+	currentTrip.update(trip => {
+		if (!trip) return trip;
+		trip.pathTaken.push({ lat: v.coords.latitude, lng: v.coords.longitude, time: new Date(v.timestamp) });
+
+		if (trip.pathTaken.length > 1) {
+			const lastLocation = trip.pathTaken[trip.pathTaken.length - 2];
+			const travelledDistance = distanceBetweenCoords(lastLocation.lat, lastLocation.lng, v.coords.latitude, v.coords.longitude);
+			trip.travelledDistanceKm += travelledDistance;
+			const speed = travelledDistance / ((v.timestamp - lastLocation.time.getTime()) / 1000);
+			trip.speed = speed;
+		}
+		return trip;
+	});
+});
 
 export async function logOut() {
 	token.set(null);
