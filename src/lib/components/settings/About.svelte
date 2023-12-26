@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { version } from '$app/environment';
 	import { safeInsets } from '$lib/stores';
-	import { cubicOut } from 'svelte/easing';
-	import { tweened } from 'svelte/motion';
 	import MenuPage from '../MenuPage.svelte';
 	async function wait(ms:number) {
 		return new Promise(resolve => setTimeout(resolve, ms));
@@ -19,7 +17,7 @@
 	let rotatedOutside = false;
 	let showingBike = false;
 	let wheelsSpinning = false;
-	let forwardPixels = tweened(0, { duration: 600, easing: cubicOut });
+	let move = false;
 	async function animate() {
 		if (animating) return;
 		animating = true;
@@ -29,7 +27,7 @@
 		await wait(2000);
 		wheelsSpinning = true;
 		await wait(500);
-		forwardPixels.set(1200);
+		move = true;
 	}
 </script>
 
@@ -42,16 +40,16 @@
 				<span>A aplicação não é oficial, não estando associada de modo algum à EMEL ou à Câmara Municipal de Lisboa.</span>
 			</div>
 			<div class="flex flex-col w-full gap-4 origin-[1.75rem_144px] relative
-				transition-transform duration-1000
+				transition-transform transform duration-1000
 			"
-				class:rotate-90={rotatedOutside}
-				style:--tw-translate-x={$forwardPixels + 'px'}
+				style:--tw-translate-x="{move ? 1000 : 0}px"
+				style:--tw-rotate="{rotatedOutside ? move ? 0 : 90 : 0}deg"
 			>
 				<span class="font-bold text-info text-lg transition-opacity" on:click={click}
 					on:keydown={click}
 					tabindex="0"
 					role="button"
-					class:opacity-0={showingBike}
+					class:opacity-0={rotatedOutside}
 					style="-webkit-tap-highlight-color: transparent"
 				>Desenvolvido por:</span>
 				<a href="https://github.com/rodrigohpalmeirim" class="flex gap-3 items-center z-10 origin-[1.75rem_1.75rem]"
