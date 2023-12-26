@@ -167,7 +167,7 @@ currentPos.subscribe(async v => {
 			const lastLocation = trip.pathTaken[trip.pathTaken.length - 2];
 			const travelledDistance = distanceBetweenCoords(lastLocation.lat, lastLocation.lng, v.coords.latitude, v.coords.longitude);
 			trip.travelledDistanceKm += travelledDistance;
-			const speed = travelledDistance / ((v.timestamp - lastLocation.time.getTime()) / 1000);
+			const speed = (travelledDistance / ((v.timestamp - lastLocation.time.getTime()) / 1000)) * 3600;
 			trip.speed = speed;
 		}
 		return trip;
