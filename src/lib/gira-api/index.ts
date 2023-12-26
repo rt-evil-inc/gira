@@ -355,7 +355,7 @@ export async function updateLastUnratedTrip() {
 		if (unratedTrip == null || unratedTrip.code == null || unratedTrip.asset == null || unratedTrip.costBonus == null) return;
 		const endToNow = (new Date).getTime() - new Date(unratedTrip.endDate).getTime();
 		// check if 24h have passed
-		if (endToNow < 24 * 60 * 60 * 1000) return;
+		if (endToNow > 24 * 60 * 60 * 1000) return;
 
 		tripRating.set({
 			currentRating: {
