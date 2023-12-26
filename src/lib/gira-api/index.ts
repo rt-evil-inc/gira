@@ -6,44 +6,52 @@ import type { Mutation, Query } from './types';
 type Q<T extends (keyof Query)[]> = {[K in T[number]]:Query[K]};
 type M<T extends (keyof Mutation)[]> = {[K in T[number]]:Mutation[K]};
 
-const retries = 3;
+const retries = 5;
+const retryDelay = 1000;
 
 async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
 	let res: HttpResponse = { status: 0, data: {}, headers: {}, url: '' };
 	for (let tryNum = 0; tryNum < retries; tryNum++) {
-		res = await CapacitorHttp.post({
-			url: 'https://apigira.emel.pt/graphql',
-			headers: {
-				'User-Agent': 'Gira/3.2.8 (Android 34)',
-				'content-type': 'application/json',
-				'authorization': `Bearer ${get(token)?.accessToken}`,
-			},
-			data: body,
-		});
-		if (res.status >= 200 && res.status < 300) {
-			console.log(res);
-			return res.data.data as Promise<M<T>>;
-		}
+		try {
+			res = await CapacitorHttp.post({
+				url: 'https://apigira.emel.pt/graphql',
+				headers: {
+					'User-Agent': 'Gira/3.2.8 (Android 34)',
+					'content-type': 'application/json',
+					'authorization': `Bearer ${get(token)?.accessToken}`,
+				},
+				data: body,
+			});
+			if (res.status >= 200 && res.status < 300) {
+				console.log(res);
+				return res.data.data as Promise<M<T>>;
+			}
+			await new Promise(resolve => setTimeout(resolve, retryDelay));
+		} catch (e) { /* empty */ }
 	}
+	console.log('failed mutation with body', body, res);
 	throw new Error(res.data.errors || res.status);
 }
 async function query<T extends(keyof Query)[]>(body:any): Promise<Q<T>> {
 	let res: HttpResponse = { status: 0, data: {}, headers: {}, url: '' };
 	for (let tryNum = 0; tryNum < retries; tryNum++) {
-		res = await CapacitorHttp.post({
-			url: 'https://apigira.emel.pt/graphql',
-			headers: {
-				'User-Agent': 'Gira/3.2.8 (Android 34)',
-				'content-type': 'application/json',
-				'authorization': `Bearer ${get(token)?.accessToken}`,
-			},
-			data: body,
-		});
-		console.log(res);
-		if (res.status >= 200 && res.status < 300) {
-			return res.data.data as Promise<Q<T>>;
-		}
+		try {
+			res = await CapacitorHttp.post({
+				url: 'https://apigira.emel.pt/graphql',
+				headers: {
+					'User-Agent': 'Gira/3.2.8 (Android 34)',
+					'content-type': 'application/json',
+					'authorization': `Bearer ${get(token)?.accessToken}`,
+				},
+				data: body,
+			});
+			if (res.status >= 200 && res.status < 300) {
+				return res.data.data as Promise<Q<T>>;
+			}
+			await new Promise(resolve => setTimeout(resolve, retryDelay));
+		} catch (e) { /* empty */ }
 	}
+	console.log('failed query with body', body, res);
 	throw new Error(res.data.errors || res.status);
 }
 
