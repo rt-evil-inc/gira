@@ -12,20 +12,22 @@
 	let didFirstRequest = false;
 	let loading = false;
 	let loadedAll = false;
+	const loadedPerPage = 15;
 
-	function loadMoreTripHistory() {
+	async function loadMoreTripHistory() {
 		if (loading) return;
 		loading = true;
-		getTripHistory(Math.floor(trips.length / 15), 15).then(res => {
-			didFirstRequest = true;
-			if (res.tripHistory == null) return;
-			if (res.tripHistory.length < 15) loadedAll = true;
-			trips = trips.concat(res.tripHistory.reduce((acc, cur) => {
-				if (cur != null) acc.push(cur);
-				return acc;
-			}, [] as TripHistory_TripDetail[]));
-			loading = false;
-		});
+		const res = await getTripHistory(Math.floor(trips.length / loadedPerPage) + 1, loadedPerPage);
+		didFirstRequest = true;
+		console.log('page ' + Math.floor(trips.length / loadedPerPage) + ' loaded');
+		if (res.tripHistory == null) return;
+		if (res.tripHistory.length < loadedPerPage) loadedAll = true;
+		trips = trips.concat(res.tripHistory.reduce((acc, cur) => {
+			if (cur != null) acc.push(cur);
+			return acc;
+		}, [] as TripHistory_TripDetail[]));
+		console.log(trips);
+		loading = false;
 	}
 
 	function formatDate(date:Date) {
@@ -44,7 +46,6 @@
 			threshold: 0.1,
 		};
 		function loadMoreTripHistoryProxy(entries:IntersectionObserverEntry[]) {
-			console.log(entries);
 			if (entries[0].isIntersecting) loadMoreTripHistory();
 		}
 		observer = new IntersectionObserver(loadMoreTripHistoryProxy, options);
@@ -66,7 +67,6 @@
 		const bDate = new Date(b[0]);
 		return bDate.getTime() - aDate.getTime();
 	});
-	$: console.log(aggregate);
 </script>
 
 <MenuPage>
