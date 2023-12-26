@@ -12,9 +12,4 @@ bun.lockb
 package-lock.json
 
 # Capacitor
-/android
-!/android/app/src/main/AndroidManifest.xml
-!/android/app/src/main/java/dev/tteles/gira/MainActivity.java
-!/android/app/src/main/res/**/*
-/ios
 capacitor.config.json.timestamp-*
