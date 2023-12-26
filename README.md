@@ -36,5 +36,6 @@ O ficheiro .apk será criado em android/app/build/outputs/apk/debug/app-debug.ap
 
 ## Misc
 Cumprimentos ao [@afonsosousah](https://github.com/afonsosousah), que inspirou o projeto com o [mGira](https://github.com/afonsosousah/mgira).  
-Obrigado ao [@joaodcp](https://github.com/joaodcp), que ajudou com esforços de reverse engineering na do sistema original.
+Obrigado ao [@joaodcp](https://github.com/joaodcp), que ajudou com esforços de reverse engineering na do sistema original.  
+Agradecimentos à Inês Freitas pelo design do logo da aplicação.
 
