@@ -181,14 +181,6 @@ export async function getActiveTripCost() {
 	return req;
 }
 
-export async function getActiveTrip() {
-	const req = query<['activeTrip']>({
-		'variables': {},
-		'query': `query { activeTrip { code, startDate, endDate, cost, client, tripStatus, version } }`,
-	});
-	return req;
-}
-
 export async function getPointsAndBalance() {
 	const req = query<['client']>({
 		'variables': {},
@@ -248,6 +240,7 @@ export async function getActiveTripInfo() {
 
 export async function updateActiveTripInfo() {
 	getActiveTripInfo().then(maybeTrips => {
+		console.log('activeTripInfo', maybeTrips);
 		if (maybeTrips.activeTrip === null || maybeTrips.activeTrip === undefined || maybeTrips.activeTrip.code === 'no_trip' || maybeTrips.activeTrip.asset === 'dummy') {
 			currentTrip.set(null);
 			return;
@@ -281,9 +274,10 @@ export async function updateActiveTripInfo() {
 			// defaultOrder,
 			// version,
 		} = maybeTrips.activeTrip!;
+		console.log(get(currentTrip)?.bikePlate);
 		currentTrip.update(ct => ct ? {
 			code: code!,
-			bikeId: asset!,
+			bikePlate: ct.bikePlate,
 			startPos: ct.startPos,
 			destination: ct.destination,
 			travelledDistanceKm: ct.travelledDistanceKm,
@@ -296,7 +290,7 @@ export async function updateActiveTripInfo() {
 			pathTaken: ct.pathTaken,
 		} : {
 			code: code!,
-			bikeId: asset!,
+			bikePlate: null,
 			startPos: null,
 			destination: null,
 			travelledDistanceKm: 0,
@@ -356,16 +350,21 @@ export async function updateLastUnratedTrip() {
 		const endToNow = (new Date).getTime() - new Date(unratedTrip.endDate).getTime();
 		// check if 24h have passed
 		if (!(endToNow < 24 * 60 * 60 * 1000)) return;
+		let bikePlate;
 		if (history.tripHistory !== null && history.tripHistory !== undefined && history.tripHistory.length > 0) {
-			const lastTripCode = history.tripHistory[0]?.code;
-			if (lastTripCode !== unratedTrip.code) return;
+			const lastTrip = history.tripHistory[0];
+			if (lastTrip) {
+				const lastTripCode = lastTrip?.code;
+				bikePlate = lastTrip.bikeName;
+				if (lastTripCode !== unratedTrip.code) return;
+			}
 		}
 
 		tripRating.set({
 			currentRating: {
 				code: unratedTrip.code,
 				// probably have to translate asset to bike id
-				bikeId: unratedTrip.asset,
+				bikePlate: bikePlate ?? '???',
 				startDate: new Date(unratedTrip.startDate),
 				endDate: new Date(unratedTrip.endDate),
 				tripPoints: unratedTrip.costBonus || 0,

@@ -53,6 +53,7 @@ export function startWS() {
 
 	ws.onmessage = (event:MessageEvent<string>) => {
 		const eventData = JSON.parse(event.data) as WSEvent;
+		console.debug('ws message', eventData);
 		if (eventData.type === 'data') {
 			const payload = eventData.payload;
 			if (payload && payload.data) {
@@ -103,7 +104,7 @@ function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
 			tripRating.update(rating => {
 				rating.currentRating = {
 					code: recvTrip.code,
-					bikeId: recvTrip.bike,
+					bikePlate: recvTrip.bike,
 					startDate: new Date(recvTrip.startDate),
 					endDate: new Date(recvTrip.endDate ?? 0),
 					tripPoints: recvTrip.tripPoints ?? 0,
@@ -117,7 +118,7 @@ function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
 			return {
 				...trip,
 				startDate: new Date(recvTrip.startDate),
-				bikeId: recvTrip.bike,
+				bikePlate: recvTrip.bike,
 				code: recvTrip.code,
 			};
 		}
@@ -128,7 +129,7 @@ function ingestOtherTripUpdate(recvTrip:ActiveTripSubscription) {
 	const p = get(currentPos);
 	currentTrip.set({
 		startDate: new Date(recvTrip.startDate),
-		bikeId: recvTrip.bike,
+		bikePlate: recvTrip.bike,
 		code: recvTrip.code,
 		finished: recvTrip.finished,
 		startPos: null,

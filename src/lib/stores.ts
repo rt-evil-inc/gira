@@ -32,7 +32,7 @@ export type StationInfo ={
 // let destination:boolean, bike:string, time:string, distance:string, speed:string, distanceLeft:string, timeLeft:string, arrivalTime:string;
 export type ActiveTrip = {
 	code: string,
-	bikeId: string,
+	bikePlate: string|null,
 	startPos: {lat: number, lng: number}|null,
 	destination: {lat: number, lng: number}|null,
 	travelledDistanceKm: number,
@@ -69,7 +69,7 @@ export type AppSettings = {
 }
 export type TripRating = {
 	currentRating:{
-		code:string,
+		code:string|null,
 		bikeId:string,
 		startDate:Date,
 		endDate:Date,

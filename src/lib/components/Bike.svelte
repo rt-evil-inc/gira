@@ -43,7 +43,7 @@
 					$currentTrip = {
 						code: '',
 						arrivalTime: null,
-						bikeId: id,
+						bikePlate: id,
 						travelledDistanceKm: 0,
 						destination: null,
 						distanceLeft: null,

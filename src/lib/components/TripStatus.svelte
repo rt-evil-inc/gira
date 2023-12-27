@@ -40,7 +40,9 @@
 		{#if $t != null}
 			{@const deltaSeconds = Date.now() - $t.startDate.getTime()}
 			<div class="flex flex-col items-center gap-2 relative" style:margin-top="{Math.max(12, $safeInsets.top)}px">
-				<span class="font-semibold text-label text-lg">{$t.bikeId}</span>
+				{#if $t.bikePlate}
+					<span class="font-semibold text-label text-lg">{$t.bikePlate}</span>
+				{/if}
 				<span class="text-5xl text-primary font-bold">{msToMinuteSeconds(deltaSeconds)}</span>
 				<div class="absolute top-[92px] transition-all {$t.destination ? 'left-12' : 'left-20'}">
 					<Metric value={$t.travelledDistanceKm >= 1 ? $t.travelledDistanceKm : $t.travelledDistanceKm / 1000} unit={$t.travelledDistanceKm >= 1 ? 'km' : 'm'} label="Distância Percorrida" />
