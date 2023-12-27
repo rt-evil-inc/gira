@@ -349,13 +349,17 @@ export async function getUnratedTrips(pageNum:number, pageSize:number) {
 }
 
 export async function updateLastUnratedTrip() {
-	return getUnratedTrips(0, 1).then(maybeTrips => {
+	return Promise.all([getUnratedTrips(0, 1), getTripHistory(0, 1)]).then(([maybeTrips, history]) => {
 		if (maybeTrips.unratedTrips === null || maybeTrips.unratedTrips === undefined || maybeTrips.unratedTrips.length <= 0) return;
 		const unratedTrip = maybeTrips.unratedTrips[0];
 		if (unratedTrip == null || unratedTrip.code == null || unratedTrip.asset == null) return;
 		const endToNow = (new Date).getTime() - new Date(unratedTrip.endDate).getTime();
 		// check if 24h have passed
 		if (!(endToNow < 24 * 60 * 60 * 1000)) return;
+		if (history.tripHistory !== null && history.tripHistory !== undefined && history.tripHistory.length > 0) {
+			const lastTripCode = history.tripHistory[0]?.code;
+			if (lastTripCode !== unratedTrip.code) return;
+		}
 
 		tripRating.set({
 			currentRating: {
