@@ -46,7 +46,7 @@
 					<Metric value={$t.travelledDistanceKm >= 1 ? $t.travelledDistanceKm : $t.travelledDistanceKm / 1000} unit={$t.travelledDistanceKm >= 1 ? 'km' : 'm'} label="Distância Percorrida" />
 				</div>
 				<div class="absolute top-[92px] transition-all {$t.destination ? 'right-1/2 translate-x-1/2' : 'right-20 translate-x-0'}">
-					<Metric value={$t.speed} unit="km/h" label="Velocidade Média" />
+					<Metric value={$t.speed < 0 ? 0 : $t.speed} unit="km/h" label="Velocidade Média" />
 				</div>
 				{#if $t.destination}
 					<div transition:fly={{ x: 64, duration: 150, easing: cubicInOut }} class="absolute top-[92px] transition-all right-12">
