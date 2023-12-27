@@ -1,7 +1,7 @@
 import { currentTrip, stations, token, type ActiveTrip, tripRating } from '$lib/stores';
 import { get } from 'svelte/store';
 import type { ActiveTripSubscription, WSEvent } from './ws-types';
-import { tripPayWithPoints } from '.';
+import { tripPayWithNoPoints, tripPayWithPoints } from '.';
 import { currentPos } from '$lib/location';
 let ws: WebSocket;
 
@@ -100,6 +100,9 @@ function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
 	currentTrip.update(trip => {
 		// if trip finished, rate, else, update trip stuff
 		if (recvTrip.finished) {
+			if (recvTrip.canUsePoints) tripPayWithPoints(recvTrip.code);
+			else if (recvTrip.canPayWithMoney) tripPayWithNoPoints(recvTrip.code);
+
 			tripRating.update(rating => {
 				rating.currentRating = {
 					code: recvTrip.code,
@@ -112,7 +115,6 @@ function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
 			});
 			return null;
 		} else {
-			if (recvTrip.canPayWithMoney) tripPayWithPoints(recvTrip.code);
 			if (trip === null) throw new Error('trip is null in impossible place');
 			return {
 				...trip,
