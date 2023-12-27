@@ -93,7 +93,7 @@ export async function updateStations() {
         docks === null || docks === undefined || serialNumber === null ||
         serialNumber === undefined || assetStatus === null || assetStatus === undefined
 			) {
-				console.log('invalid station', station);
+				console.error('invalid station', station);
 				return;
 			}
 			stationsList.push({ code, name, description, latitude, longitude, bikes, docks, serialNumber, assetStatus });
@@ -131,7 +131,7 @@ export async function getDocks(stationId: string): Promise<Q<['getDocks']>> {
 
 export async function reserveBike(serialNumber: string) {
 	if (dev && (await Preferences.get({ key: 'settings/mockUnlock' })).value === 'true') {
-		console.log('mock reserveBike');
+		console.debug('mock reserveBike');
 		return { reserveBike: true };
 	} else {
 		const req = mutate<['reserveBike']>({
@@ -152,7 +152,7 @@ export async function cancelBikeReserve() {
 
 export async function startTrip() {
 	if (dev && (await Preferences.get({ key: 'settings/mockUnlock' })).value === 'true') {
-		console.log('mock startTrip');
+		console.debug('mock startTrip');
 		await new Promise(resolve => setTimeout(resolve, 2000));
 		return { startTrip: true };
 	} else {
@@ -186,7 +186,6 @@ export async function getPointsAndBalance() {
 		'variables': {},
 		'query': `query { client { balance, bonus } }`,
 	});
-	// console.log(req);
 	return req;
 }
 
@@ -199,7 +198,6 @@ export async function updateAccountInfo() {
 			{ subscription: ai?.subscription ?? null, balance, bonus }
 		));
 	});
-	// console.log('client', maybeClient.client);
 }
 
 export async function getSubscriptions() {
@@ -207,14 +205,12 @@ export async function getSubscriptions() {
 		'variables': {},
 		'query': `query { activeUserSubscriptions { expirationDate subscriptionStatus name type active } }`,
 	});
-	// console.log(req);
 	return req;
 }
 
 export async function updateSubscriptions() {
 	getSubscriptions().then(maybeSubscriptions => {
 		if (maybeSubscriptions.activeUserSubscriptions === null || maybeSubscriptions.activeUserSubscriptions === undefined || maybeSubscriptions.activeUserSubscriptions.length <= 0) return;
-		// console.log(maybeSubscriptions.activeUserSubscriptions);
 		const { active, expirationDate, name, subscriptionStatus, type } = maybeSubscriptions.activeUserSubscriptions[0]!;
 		accountInfo.update(ai => (
 			{ balance: ai?.balance ?? 0, bonus: ai?.bonus ?? 0, subscription: { active: active!, expirationDate: new Date(expirationDate), name: name!, subscriptionStatus: subscriptionStatus!, type: type ?? 'unknown' } }
@@ -240,7 +236,6 @@ export async function getActiveTripInfo() {
 
 export async function updateActiveTripInfo() {
 	getActiveTripInfo().then(maybeTrips => {
-		console.log('activeTripInfo', maybeTrips);
 		if (maybeTrips.activeTrip === null || maybeTrips.activeTrip === undefined || maybeTrips.activeTrip.code === 'no_trip' || maybeTrips.activeTrip.asset === 'dummy') {
 			currentTrip.set(null);
 			return;
@@ -274,7 +269,6 @@ export async function updateActiveTripInfo() {
 			// defaultOrder,
 			// version,
 		} = maybeTrips.activeTrip!;
-		console.log(get(currentTrip)?.bikePlate);
 		currentTrip.update(ct => ct ? {
 			code: code!,
 			bikePlate: ct.bikePlate,

@@ -27,7 +27,7 @@
 		loadUserCreds();
 		App.addListener('resume', () => {
 			if ($token != null && $token.refreshToken != null) {
-				console.log('Refreshing token because app was reopened');
+				console.debug('Refreshing token because app was reopened');
 				refreshToken();
 			}
 		});

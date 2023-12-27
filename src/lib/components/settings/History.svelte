@@ -19,14 +19,13 @@
 		loading = true;
 		const res = await getTripHistory(Math.floor(trips.length / loadedPerPage) + 1, loadedPerPage);
 		didFirstRequest = true;
-		console.log('page ' + Math.floor(trips.length / loadedPerPage) + ' loaded');
 		if (res.tripHistory == null) return;
 		if (res.tripHistory.length < loadedPerPage) loadedAll = true;
 		trips = trips.concat(res.tripHistory.reduce((acc, cur) => {
 			if (cur != null) acc.push(cur);
 			return acc;
 		}, [] as TripHistory_TripDetail[]));
-		console.log(trips);
+		console.debug(trips);
 		loading = false;
 	}
 

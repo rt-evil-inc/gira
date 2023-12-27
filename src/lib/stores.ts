@@ -69,8 +69,8 @@ export type AppSettings = {
 }
 export type TripRating = {
 	currentRating:{
-		code:string|null,
-		bikeId:string,
+		code:string,
+		bikePlate:string|null,
 		startDate:Date,
 		endDate:Date,
 		tripPoints:number,
@@ -152,7 +152,7 @@ export async function loadUserCreds() {
 		}
 		const responseCode = await login(v.email, v.password);
 		if (responseCode !== 0) {
-			console.log('Login failed!');
+			console.error('Login failed!');
 			userCredentials.set(null);
 		}
 		Preferences.set({ key: 'email', value: v.email });

@@ -17,7 +17,6 @@
 		errorCode = null;
 		errorCode = await login(email, password);
 		if (errorCode === 0) userCredentials.set({ email, password });
-		else console.log(errorCode);
 	}
 
 	let keyboardHeight = 0;

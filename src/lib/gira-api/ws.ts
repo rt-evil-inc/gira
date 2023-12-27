@@ -13,7 +13,7 @@ function randomUUID() {
 }
 
 export function startWS() {
-	console.log('starting ws');
+	console.debug('starting ws');
 	const tokens = get(token);
 	const access = tokens?.accessToken;
 	if (!access) return;
@@ -25,7 +25,7 @@ export function startWS() {
 	ws = new WebSocket('wss://apigira.emel.pt/graphql', 'graphql-ws');
 	ws.onopen = () => {
 		backoff = 0;
-		console.log('ws opened');
+		console.debug('ws opened');
 		ws.send(JSON.stringify({ 'type': 'connection_init' }));
 		ws.send(JSON.stringify({
 			'type': 'start',
@@ -59,14 +59,14 @@ export function startWS() {
 			if (payload && payload.data) {
 				const data = payload.data;
 				if (data.operationalStationsSubscription) {
-					console.log('updated stations with websocket');
+					console.debug('updated stations with websocket');
 					stations.set(data.operationalStationsSubscription);
 				} else if (data.activeTripSubscription) {
 					const recvTrip = data.activeTripSubscription;
 					ingestTripMessage(recvTrip);
 				} else if (data.serverDate) {
-					console.log('serverdate', data.serverDate.date);
-					console.log('serverdate diff', new Date(data.serverDate.date).getTime() - Date.now(), 'ms');
+					console.debug('serverdate', data.serverDate.date);
+					console.debug('serverdate diff', new Date(data.serverDate.date).getTime() - Date.now(), 'ms');
 				}
 			}
 		}
@@ -80,14 +80,13 @@ export function startWS() {
 		}, backoff);
 	}
 	ws.onclose = e => {
-		console.log('ws closed', e);
+		console.debug('ws closed', e);
 		restartWS();
 	};
 	ws.onerror = e => {
-		console.log('ws error', e);
+		console.debug('ws error', e);
 		restartWS();
 	};
-	console.log('ws started');
 }
 function ingestTripMessage(recvTrip:ActiveTripSubscription) {
 	console.debug('ingesting trip message from ws', recvTrip);

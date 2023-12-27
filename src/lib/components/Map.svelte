@@ -194,7 +194,7 @@
 				map.addImage(`${name}-${i}`, newImg);
 			}
 		})));
-		console.log(`Loaded images in ${performance.now() - start}ms`);
+		console.debug(`Loaded images in ${performance.now() - start}ms`);
 	}
 
 	let unsubPos:Unsubscriber;
