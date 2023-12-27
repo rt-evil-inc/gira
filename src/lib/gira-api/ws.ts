@@ -88,14 +88,12 @@ export function startWS() {
 	};
 	console.log('ws started');
 }
-//TODO reliability issues
 function ingestTripMessage(recvTrip:ActiveTripSubscription) {
-	// UNTESTED, REQUIRE REAL TRIP
+	console.debug('ingesting trip message from ws', recvTrip);
 	if (recvTrip.code === 'no_trip' || recvTrip.bike === 'dummy') return;
 	const ctrip = get(currentTrip);
 	if (recvTrip.code === ctrip?.code) ingestCurrentTripUpdate(recvTrip);
 	else ingestOtherTripUpdate(recvTrip);
-	// If the received trip is 'no_trip' or 'dummy', exit the function
 }
 
 function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {

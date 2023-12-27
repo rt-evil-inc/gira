@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { safeInsets } from '$lib/stores';
+	import { addErrorMessage, safeInsets } from '$lib/stores';
 	import IconMoodWrrr from '@tabler/icons-svelte/dist/svelte/icons/IconMoodWrrr.svelte';
 	import IconMoodConfuzed from '@tabler/icons-svelte/dist/svelte/icons/IconMoodConfuzed.svelte';
 	import IconMoodConfuzedFilled from '@tabler/icons-svelte/dist/svelte/icons/IconMoodConfuzedFilled.svelte';
@@ -27,7 +27,7 @@
 			if (r) {
 				$tripRating.currentRating = null;
 			} else {
-			//TODO error
+				addErrorMessage('Erro ao avaliar viagem');
 			}
 		});
 	}
