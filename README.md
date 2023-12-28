@@ -6,6 +6,23 @@
 **Gira+** é uma re-implementação da aplicação Gira da Câmara Municipal de Lisboa/EMEL.
 Com um olhar atento ao design, à experiência do utilizador (UX) e à estabilidade, este projeto visa proporcionar uma experiência de utilização mais agradável ao sistema de bicicletas partilhadas de Lisboa.
 
+<p align="center">
+  <img src="assets/screenshots/screenshot-1.png" width="200">
+  <img src="assets/screenshots/screenshot-2.png" width="200">
+  <img src="assets/screenshots/screenshot-3.png" width="200">
+  <img src="assets/screenshots/screenshot-4.png" width="200">
+</p>
+
+### Funcionalidades extra
+- Cálculo da distância percorrida e velocidade média durante uma viagem
+
+### Não implementado
+- Criação de contas
+- Carregamento de saldo
+- Compra de passes
+- Histórico de passes e carregamentos
+- Submissão de descrição na avaliação de viagem
+
 ### Desenvolvimento
 A aplicação está a ser desenvolvida em **SvelteKit**, juntamente com a biblioteca **Capacitor** para compilar para Android.
 A versão para iOS está pendente, aguardando a criação de uma conta de developer da Apple, que tem um custo anual de 100€.
