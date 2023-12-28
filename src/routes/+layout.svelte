@@ -14,7 +14,7 @@
 	import { App } from '@capacitor/app';
 	import { refreshToken } from '$lib/auth';
 
-	if (Capacitor.getPlatform() === 'android') {
+	if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') {
 		StatusBar.setOverlaysWebView({ overlay: true });
 		StatusBar.setStyle({ style: Style.Light });
 		NavigationBar.setTransparency({ isTransparent: true });
