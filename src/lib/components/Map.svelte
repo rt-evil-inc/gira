@@ -245,7 +245,7 @@
 	onMount(() => {
 		map = new Map({
 			container: mapElem,
-			style: 'https://tiles2.intermodal.pt/styles/iml/style.json',
+			style: 'assets/map-style.json',
 			center: [-9.15, 38.744],
 			zoom: 11,
 			attributionControl: false,

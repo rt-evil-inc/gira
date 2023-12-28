@@ -14,4 +14,7 @@
 		"editor.defaultFormatter": "vscode.html-language-features"
 	},
 	"files.eol": "\n",
+	"[json]": {
+		"editor.defaultFormatter": "vscode.json-language-features"
+	},
 }
