@@ -44,12 +44,12 @@
 		<div class="flex flex-col justify-between items-center h-full gap-10 col-start-1 col-end-2 row-start-1 row-end-2 p-4 overflow-x-hidden"
 			style:padding-top="{Math.max($safeInsets.top, 16)}px" style:padding-bottom="{Math.max($safeInsets.bottom, 24)}px"
 		>
-			<div class="flex flex-col justify-center items-center w-full gap-6 mt-8">
+			<div class="flex flex-col justify-center items-center w-full gap-6 mt-9">
 				<div class="flex flex-col items-center">
-					<div class="font-bold text-primary text-3xl">
+					<div class="font-bold text-primary text-3xl text-center leading-none">
 						{$user?.name ? `${$user.name.split(' ').shift()} ${$user.name.split(' ').pop()}` : 'Utilizador'}
 					</div>
-					<div class="text-sm font-medium text-label -mt-[2px]">{$user?.email}</div>
+					<div class="text-sm font-medium text-label">{$user?.email}</div>
 				</div>
 				<div class="flex gap-16">
 					<Metric value={$accountInfo?.balance ?? 0} unit={'€'} label={'Saldo'} color={'info'} />
