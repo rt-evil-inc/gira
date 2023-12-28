@@ -33,7 +33,10 @@ As builds de teste para iOS estão funcionais.
 ## Instalação e Compilação
 
 ### Android
-Em breve, estará disponível uma versão pré-compilada para Android. Até lá, a aplicação pode ser compilada seguindo estes passos:
+É possível descarregar a versão mais recente da aplicação [aqui](https://github.com/rt-evil-inc/gira/releases/tag/v1.0.0).
+
+
+Se preferir compilar por si, ou se quiser contribuir para o projeto, siga os seguintes passos:
 
 1. Preparação:
  - Garantir que o Android SDK está instalado.
