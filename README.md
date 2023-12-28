@@ -14,6 +14,7 @@ Com um olhar atento ao design, à experiência do utilizador (UX) e à estabilid
 </p>
 
 ### Funcionalidades extra
+- Mapa com ciclovias
 - Cálculo da distância percorrida e velocidade média durante uma viagem
 
 ### Não implementado
