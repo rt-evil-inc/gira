@@ -9,7 +9,6 @@
 	import { currentPos } from '$lib/location';
 	import { distanceBetweenCoords, formatDistance } from '$lib/utils';
 	import { fade } from 'svelte/transition';
-	import { App } from '@capacitor/app';
 	import BikeSkeleton from './BikeSkeleton.svelte';
 
 	export let bikeListHeight = 0;
@@ -106,18 +105,9 @@
 	}
 
 	onMount(() => {
-		let backListener = App.addListener('backButton', () => {
-			if ($selectedStation != null) {
-				dismiss();
-			}
-		});
-
 		pos.set(dragged.clientHeight, { duration: 0 });
 		if ($selectedStation == null) return;
 		updateInfo($selectedStation);
-		return () => {
-			if (backListener) backListener.remove();
-		};
 	});
 
 	$: if ($selectedStation != null) {

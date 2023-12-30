@@ -8,7 +8,7 @@
 	import StationMenu from '$lib/components/StationMenu.svelte';
 	import TripStatus from '$lib/components/TripStatus.svelte';
 	import TripRating from '$lib/components/TripRating.svelte';
-	import { token, currentTrip, tripRating, safeInsets } from '$lib/stores';
+	import { token, currentTrip, tripRating, safeInsets, selectedStation } from '$lib/stores';
 	import { Geolocation } from '@capacitor/geolocation';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { fade } from 'svelte/transition';
@@ -16,6 +16,7 @@
 	import { onMount } from 'svelte';
 	import Compass from '$lib/components/Compass.svelte';
 	import ErrorMessage from '$lib/components/ErrorMessage.svelte';
+	import { App } from '@capacitor/app';
 
 	let menuHeight = 0;
 	let following:{active:boolean} = { active: false };
@@ -35,6 +36,20 @@
 				}
 			}, 500);
 		});
+
+		let backListener = App.addListener('backButton', () => {
+			if (!profileOpen) {
+				if ($selectedStation != null) {
+					$selectedStation = null;
+				} else {
+					App.exitApp();
+				}
+			}
+		});
+
+		return () => {
+			backListener.remove();
+		};
 	});
 </script>
 
