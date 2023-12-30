@@ -26,17 +26,17 @@ Com um olhar atento ao design, à experiência do utilizador (UX) e à estabilid
 
 ### Desenvolvimento
 A aplicação está a ser desenvolvida em **SvelteKit**, juntamente com a biblioteca **Capacitor** para compilar para Android.
-A versão para iOS está pendente, aguardando a criação de uma conta de developer da Apple, que tem um custo anual de 100€.
+A versão para iOS está pendente, aguardando a criação de uma conta de developer da Apple, que tem um custo anual de $99.
 As builds de teste para iOS estão funcionais.
 
 
 ## Instalação e Compilação
 
 ### Android
-É possível descarregar a versão mais recente da aplicação [aqui](https://github.com/rt-evil-inc/gira/releases/tag/v1.0.0).
+É possível descarregar a versão mais recente da aplicação [aqui](https://github.com/rt-evil-inc/gira/releases/latest).
 
 
-Se preferir compilar por si, ou se quiser contribuir para o projeto, siga os seguintes passos:
+Alternativamente, a aplicação pode ser compilada através dos seguintes passos:
 
 1. Preparação:
  - Garantir que o Android SDK está instalado.
@@ -85,5 +85,5 @@ bunx cap run ios
 
 ## Misc
 Cumprimentos ao [@afonsosousah](https://github.com/afonsosousah), que inspirou o projeto com o [mGira](https://github.com/afonsosousah/mgira).  
-Obrigado ao [@joaodcp](https://github.com/joaodcp), que ajudou com esforços de reverse engineering na do sistema original.  
+Obrigado ao [@joaodcp](https://github.com/joaodcp), que ajudou com esforços de reverse engineering do sistema original.  
 Agradecimentos à Inês Freitas pelo design do logo da aplicação.
