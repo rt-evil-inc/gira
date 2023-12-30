@@ -114,8 +114,8 @@
 		$pos = 0;
 		bikeInfo = [];
 		updateInfo($selectedStation);
-	} else {
-		$pos = windowHeight ?? 5000;
+	} else if (dragged) {
+		dismiss();
 	}
 
 	function transition(_: HTMLElement) {
