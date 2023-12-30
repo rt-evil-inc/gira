@@ -26,15 +26,13 @@ Com um olhar atento ao design, à experiência do utilizador (UX) e à estabilid
 
 ### Desenvolvimento
 A aplicação está a ser desenvolvida em **SvelteKit**, juntamente com a biblioteca **Capacitor** para compilar para Android.
-A versão para iOS está pendente, aguardando a criação de uma conta de developer da Apple, que tem um custo anual de $99.
-As builds de teste para iOS estão funcionais.
-
 
 ## Instalação e Compilação
 
 ### Android
 É possível descarregar a versão mais recente da aplicação [aqui](https://github.com/rt-evil-inc/gira/releases/latest).
 
+A aplicação irá ser disponibilizada na PlayStore. Aguardamos validação da Google.
 
 Alternativamente, a aplicação pode ser compilada através dos seguintes passos:
 
@@ -63,6 +61,11 @@ bun run build-app
 O ficheiro .apk será criado em `android/app/build/outputs/apk/debug/app-debug.apk`
 
 ### iOS
+
+A aplicação irá ser disponibilizada na App Store.
+
+De momento, a aplicação pode ser compilada através dos seguintes passos:
+
 1. Preparação:
  - Garantir que o Xcode está instalado.
  - Instalar Cocoapods, caso necessário: `brew install cocoapods`
