@@ -65,6 +65,7 @@ O ficheiro .apk será criado em `android/app/build/outputs/apk/debug/app-debug.a
 ### iOS
 1. Preparação:
  - Garantir que o Xcode está instalado.
+ - Instalar Cocoapods, caso necessário: `brew install cocoapods`
 2. Configuração:
 ```sh
 git clone git@github.com:rt-evil-inc/gira.git
@@ -74,12 +75,16 @@ cd gira
 ```sh
 npm install
 npm run build
+cd ios/App
+pod install
 npx cap run ios
 ```
   ou
 ```bash
 bun install
 bun run build
+cd ios/App
+pod install
 bunx cap run ios
 ```
 
