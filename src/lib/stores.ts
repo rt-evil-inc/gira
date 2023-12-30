@@ -1,7 +1,7 @@
+import { Preferences } from '@capacitor/preferences';
 import { get, writable, type Writable } from 'svelte/store';
 import { login, refreshToken, updateUserInfo } from './auth';
-import { updateAccountInfo, updateStations, updateSubscriptions, updateActiveTripInfo, getTripHistory, getTrip, getUnratedTrips, updateLastUnratedTrip, updateOnetimeInfo } from './gira-api';
-import { Preferences } from '@capacitor/preferences';
+import { updateOnetimeInfo } from './gira-api';
 import { startWS, ws } from './gira-api/ws';
 import { currentPos } from './location';
 import { distanceBetweenCoords } from './utils';

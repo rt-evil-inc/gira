@@ -405,12 +405,12 @@ export async function tripPayWithPoints(tripCode:string) {
 
 export async function updateOnetimeInfo() {
 	let megaQuery = `query {`;
-	megaQuery += `getStations {code, description, latitude, longitude, name, bikes, docks, serialNumber, assetStatus }`;
-	megaQuery += `client { balance, bonus }`;
-	megaQuery += `activeUserSubscriptions { expirationDate subscriptionStatus name type active }`;
-	megaQuery += `activeTrip { user, startDate, endDate, startLocation, endLocation, distance, rating, photo, cost, startOccupation, endOccupation, totalBonus, client, costBonus, comment, compensationTime, endTripDock, tripStatus, code, name, description, creationDate, createdBy, updateDate, updatedBy, defaultOrder, version }`;
-	megaQuery += `unratedTrips(pageInput: { _pageNum: 0, _pageSize: 1 }) { code, startDate, endDate, rating, startLocation, endLocation, cost, costBonus, asset }`;
-	megaQuery += `tripHistory(pageInput: { _pageNum: 0, _pageSize: 1 }) { code, startDate, endDate, rating, bikeName, startLocation, endLocation, bonus, usedPoints, cost, bikeType }`;
+	megaQuery += `getStations {code, description, latitude, longitude, name, bikes, docks, serialNumber, assetStatus } `;
+	megaQuery += `client { balance, bonus } `;
+	megaQuery += `activeUserSubscriptions { expirationDate subscriptionStatus name type active } `;
+	megaQuery += `activeTrip { user, startDate, endDate, startLocation, endLocation, distance, rating, photo, cost, startOccupation, endOccupation, totalBonus, client, costBonus, comment, compensationTime, endTripDock, tripStatus, code, name, description, creationDate, createdBy, updateDate, updatedBy, defaultOrder, version } `;
+	megaQuery += `unratedTrips(pageInput: { _pageNum: 0, _pageSize: 1 }) { code, startDate, endDate, rating, startLocation, endLocation, cost, costBonus, asset } `;
+	megaQuery += `tripHistory(pageInput: { _pageNum: 0, _pageSize: 1 }) { code, startDate, endDate, rating, bikeName, startLocation, endLocation, bonus, usedPoints, cost, bikeType } `;
 	megaQuery += `}`;
 
 	const req = await query<['getStations', 'client', 'activeUserSubscriptions', 'activeTrip', 'unratedTrips', 'tripHistory']>({
