@@ -1,8 +1,8 @@
-import { writable, type Writable } from 'svelte/store';
+import { get, writable, type Writable } from 'svelte/store';
 import { login, refreshToken, updateUserInfo } from './auth';
-import { updateAccountInfo, updateStations, updateSubscriptions, updateActiveTripInfo, getTripHistory, getTrip, getUnratedTrips, updateLastUnratedTrip } from './gira-api';
+import { updateAccountInfo, updateStations, updateSubscriptions, updateActiveTripInfo, getTripHistory, getTrip, getUnratedTrips, updateLastUnratedTrip, updateOnetimeInfo } from './gira-api';
 import { Preferences } from '@capacitor/preferences';
-import { startWS } from './gira-api/ws';
+import { startWS, ws } from './gira-api/ws';
 import { currentPos } from './location';
 import { distanceBetweenCoords } from './utils';
 
@@ -120,13 +120,12 @@ token.subscribe(async v => {
 	if (!v) return;
 	const jwt:JWT = JSON.parse(window.atob(v.accessToken.split('.')[1]));
 
-	startWS();
-	updateUserInfo();
-	updateStations();
-	updateAccountInfo();
-	updateSubscriptions();
-	updateActiveTripInfo();
-	updateLastUnratedTrip();
+	if (!ws || ws.readyState === ws.CLOSED) startWS();
+	if (get(user) === null) {
+		updateOnetimeInfo();
+		updateUserInfo();
+	}
+
 	if (tokenRefreshTimeout) clearTimeout(tokenRefreshTimeout);
 	tokenRefreshTimeout = setTimeout(refreshToken, jwt.exp * 1000 - Date.now() - 1000 * 30);
 });

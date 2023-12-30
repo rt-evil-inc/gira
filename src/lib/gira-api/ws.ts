@@ -1,9 +1,9 @@
-import { currentTrip, stations, token, type ActiveTrip, tripRating } from '$lib/stores';
+import { currentTrip, stations, token, tripRating } from '$lib/stores';
 import { get } from 'svelte/store';
 import type { ActiveTripSubscription, WSEvent } from './ws-types';
 import { tripPayWithNoPoints, tripPayWithPoints } from '.';
 import { currentPos } from '$lib/location';
-let ws: WebSocket;
+export let ws: WebSocket;
 
 function randomUUID() {
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
