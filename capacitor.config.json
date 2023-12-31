@@ -6,7 +6,9 @@
 		"SplashScreen": {
 			"launchShowDuration": 0
 		},
-		"CapacitorHttp": {
+		"CapacitorHttp": {},
+		"Keyboard": {
+			"resize": "none"
 		}
 	}
 }
