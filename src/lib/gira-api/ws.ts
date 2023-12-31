@@ -135,7 +135,7 @@ function ingestOtherTripUpdate(recvTrip:ActiveTripSubscription) {
 		finished: recvTrip.finished,
 		startPos: null,
 		destination: null,
-		travelledDistanceKm: 0,
+		traveledDistanceKm: 0,
 		distanceLeft: null,
 		speed: 0,
 		predictedEndDate: null,

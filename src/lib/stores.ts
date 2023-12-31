@@ -35,7 +35,7 @@ export type ActiveTrip = {
 	bikePlate: string|null,
 	startPos: {lat: number, lng: number}|null,
 	destination: {lat: number, lng: number}|null,
-	travelledDistanceKm: number,
+	traveledDistanceKm: number,
 	distanceLeft: number|null,
 	speed: number,
 	startDate: Date,
@@ -170,9 +170,9 @@ currentPos.subscribe(async v => {
 
 		if (trip.pathTaken.length > 1) {
 			const lastLocation = trip.pathTaken[trip.pathTaken.length - 2];
-			const travelledDistance = distanceBetweenCoords(lastLocation.lat, lastLocation.lng, v.coords.latitude, v.coords.longitude);
-			trip.travelledDistanceKm += travelledDistance;
-			const speed = (trip.travelledDistanceKm / ((v.timestamp - trip.startDate.getTime()) / 1000)) * 3600;
+			const traveledDistance = distanceBetweenCoords(lastLocation.lat, lastLocation.lng, v.coords.latitude, v.coords.longitude);
+			trip.traveledDistanceKm += traveledDistance;
+			const speed = (trip.traveledDistanceKm / ((v.timestamp - trip.startDate.getTime()) / 1000)) * 3600;
 			trip.speed = speed;
 		}
 		return trip;

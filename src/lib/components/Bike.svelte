@@ -44,7 +44,7 @@
 						code: '',
 						arrivalTime: null,
 						bikePlate: id,
-						travelledDistanceKm: 0,
+						traveledDistanceKm: 0,
 						destination: null,
 						distanceLeft: null,
 						speed: 0,
