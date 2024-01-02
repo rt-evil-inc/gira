@@ -12,7 +12,7 @@
 	import { cubicOut } from 'svelte/easing';
 	import { reserveBike, startTrip, type ThrownError } from '../gira-api';
 	import { accountInfo, addErrorMessage, appSettings, currentTrip, type StationInfo } from '$lib/stores';
-	import { currentPos } from '$lib/location';
+	import { currentPos, watchPosition } from '$lib/location';
 	import { fade } from 'svelte/transition';
 	import { distanceBetweenCoords } from '$lib/utils';
 	import { LOCK_DISTANCE_m } from '$lib/constants';
@@ -61,6 +61,7 @@
 							time: new Date,
 						}] : [],
 					};
+					watchPosition();
 					return true;
 				} else {
 					addErrorMessage('Não foi possível desbloquear a bicicleta');

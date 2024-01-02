@@ -37,6 +37,10 @@
 			}, 500);
 		});
 
+		currentTrip.subscribe(trip => {
+			if (trip === null) watchPosition(); // Remove background watcher when trip is over
+		});
+
 		let backListener = App.addListener('backButton', () => {
 			if (!profileOpen) {
 				if ($selectedStation != null) {

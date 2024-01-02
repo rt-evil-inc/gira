@@ -32,6 +32,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@capacitor-community/background-geolocation": "^1.2.15",
     "@capacitor/android": "^5.5.1",
     "@capacitor/app": "^5.0.6",
     "@capacitor/cli": "^5.5.1",
