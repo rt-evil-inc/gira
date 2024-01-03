@@ -8,7 +8,7 @@
 	import StationMenu from '$lib/components/StationMenu.svelte';
 	import TripStatus from '$lib/components/TripStatus.svelte';
 	import TripRating from '$lib/components/TripRating.svelte';
-	import { token, currentTrip, tripRating, safeInsets, selectedStation } from '$lib/stores';
+	import { token, currentTrip, tripRating, safeInsets, selectedStation, following } from '$lib/stores';
 	import { Geolocation } from '@capacitor/geolocation';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { fade } from 'svelte/transition';
@@ -19,7 +19,6 @@
 	import { App } from '@capacitor/app';
 
 	let menuHeight = 0;
-	let following:{active:boolean} = { active: false };
 	let currentMode:'map'|'trip' = 'map';
 	let stationMenuPos:number|undefined = 0;
 	let tripStatusPos:number = 0;
@@ -31,7 +30,7 @@
 			locationPermission = location == 'granted';
 			setTimeout(() => {
 				if (locationPermission) {
-					following.active = true;
+					$following = true;
 					watchPosition();
 				}
 			}, 500);
@@ -59,7 +58,7 @@
 			<Login />
 		</div>
 	{/if}
-	<Map loading={!$token} bind:bottomPadding={menuHeight} bind:topPadding={tripStatusPos} bind:following />
+	<Map loading={!$token} bind:bottomPadding={menuHeight} bind:topPadding={tripStatusPos} />
 
 	{#if $currentTrip !== null}
 		<TripStatus bind:posBottom={tripStatusPos} />
@@ -71,7 +70,7 @@
 	{/if}
 
 	<Floating right={20} y={stationMenuPos} bottom offset={20}>
-		<LocationButton bind:locationPermission bind:following={following}/>
+		<LocationButton bind:locationPermission />
 	</Floating>
 
 	<Floating right={16} y={tripStatusPos} offset={16}>
