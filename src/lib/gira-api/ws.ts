@@ -100,6 +100,8 @@ function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
 	currentTrip.update(trip => {
 		// if trip finished, rate, else, update trip stuff
 		if (recvTrip.finished) {
+			currentTrip.set(null);
+
 			if (recvTrip.canUsePoints) tripPayWithPoints(recvTrip.code);
 			else if (recvTrip.canPayWithMoney) tripPayWithNoPoints(recvTrip.code);
 
