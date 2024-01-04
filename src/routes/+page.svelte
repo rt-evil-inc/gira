@@ -19,7 +19,6 @@
 	import { App } from '@capacitor/app';
 
 	let menuHeight = 0;
-	let currentMode:'map'|'trip' = 'map';
 	let stationMenuPos:number|undefined = 0;
 	let tripStatusPos:number = 0;
 	let profileOpen = false;
@@ -62,7 +61,7 @@
 
 	{#if $currentTrip !== null}
 		<TripStatus bind:posBottom={tripStatusPos} />
-	{:else if currentMode == 'map'}
+	{:else}
 		<StationMenu bind:posTop={stationMenuPos} bind:bikeListHeight={menuHeight} />
 		{#if $tripRating.currentRating != null}
 			<TripRating code={$tripRating.currentRating.code} />
