@@ -33,12 +33,11 @@
 				if (locationPermission) {
 					following.active = true;
 					watchPosition();
+					currentTrip.subscribe(trip => {
+						if (trip === null) watchPosition(); // Remove background watcher when no trip is active
+					});
 				}
 			}, 500);
-		});
-
-		currentTrip.subscribe(trip => {
-			if (trip === null) watchPosition(); // Remove background watcher when trip is over
 		});
 
 		let backListener = App.addListener('backButton', () => {
