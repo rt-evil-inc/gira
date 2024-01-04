@@ -78,7 +78,7 @@
 			let dock = info.getDocks?.filter(v => v != null).find(d => d!.code == bike!.parent);
 			if (dock == null || !dock.name) console.error('Dock not found', bike, info.getDocks);
 			return {
-				type: bike!.type == 'electric' ? 'electric' : 'classic',
+				type: bike?.type == 'electric' ? 'electric' : bike?.type == null ? bike?.name?.[0] == 'E' ? 'electric' : 'classic' : 'classic',
 				id: bike!.name!,
 				battery: parseInt(bike!.battery!) ?? null,
 				dock: dock!.name!,
