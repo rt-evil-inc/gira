@@ -187,5 +187,6 @@ export async function logOut() {
 	currentTrip.set(null);
 	user.set(null);
 	selectedStation.set(null);
+	tripRating.set({ currentRating: null });
 	// purposefully not settings settings distancelock, since thats annoying when you swap accounts
 }
