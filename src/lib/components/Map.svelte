@@ -2,7 +2,7 @@
 	import { onMount, tick } from 'svelte';
 	import { AttributionControl, GeoJSONSource, Map } from 'maplibre-gl';
 	import type { GeoJSON } from 'geojson';
-	import { currentTrip, stations, selectedStation, token } from '$lib/stores';
+	import { currentTrip, stations, selectedStation, token, following } from '$lib/stores';
 	import type { Position } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
 	import { pulsingDot } from '$lib/pulsing-dot';
@@ -10,7 +10,6 @@
 	import type { Unsubscriber } from 'svelte/motion';
 
 	export let loading = true;
-	export let following:{active:boolean} = { active: false };
 	export let bottomPadding = 0;
 	export let topPadding = 0;
 
@@ -139,7 +138,7 @@
 	function addEventListeners() {
 		map.on('click', 'points', async function (e) {
 			if (e.features === undefined) return;
-			following.active = false;
+			$following = false;
 			const feature = e.features[0] as GeoJSON.Feature<GeoJSON.Point>;
 			const props = feature.properties as { serialNumber: string, name: string, bikes: number };
 			$selectedStation = props.serialNumber;
@@ -153,7 +152,7 @@
 		});
 		// on dragging map, remove user tracking
 		map.on('dragstart', () => {
-			following.active = false;
+			$following = false;
 		});
 		map.on('click', e => {
 			const features = map.queryRenderedFeatures(e.point, { layers: ['points'] });
@@ -217,7 +216,7 @@
 
 	async function handleLocUpdate(pos: Position|null) {
 		if (pos && pos.coords) {
-			if (following.active && !blurred) centerMap(pos);
+			if ($following && !blurred) centerMap(pos);
 			const src = map.getSource('user-location') as GeoJSONSource|null;
 			// dont change to GeoJSONSource as building breaks for no apparent reason
 			if (src !== null) {
@@ -268,7 +267,6 @@
 
 	currentTrip.subscribe(trip => {
 		if (trip) {
-			following.active = true;
 			// change visibility of layers
 			if (mapLoaded) {
 				map.setLayoutProperty('points', 'visibility', 'none');
@@ -282,7 +280,7 @@
 		}
 	});
 
-	$: if (following.active && !blurred && $currentPos) centerMap($currentPos);
+	$: if ($following && !blurred && $currentPos && topPadding !== null && bottomPadding !== null) centerMap($currentPos);
 
 	$: if ($selectedStation == null) bottomPadding = 0;
 </script>

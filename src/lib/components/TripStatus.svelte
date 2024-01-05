@@ -4,6 +4,7 @@
 	import { cubicInOut } from 'svelte/easing';
 	import { safeInsets, currentTrip as t } from '$lib/stores';
 	import { onMount } from 'svelte';
+	import { KeepAwake } from '@capacitor-community/keep-awake';
 
 	let height:number;
 	export { height as posBottom };
@@ -22,8 +23,10 @@
 		inter = setInterval(() => {
 			seconds = (Date.now() - startTime) / 1000;
 		}, 1000);
+		KeepAwake.keepAwake();
 		return () => {
 			clearInterval(inter);
+			KeepAwake.allowSleep();
 		};
 	});
 

@@ -11,7 +11,7 @@
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { reserveBike, startTrip, type ThrownError } from '../gira-api';
-	import { accountInfo, addErrorMessage, appSettings, currentTrip, type StationInfo } from '$lib/stores';
+	import { accountInfo, addErrorMessage, appSettings, currentTrip, following, type StationInfo } from '$lib/stores';
 	import { currentPos } from '$lib/location';
 	import { fade } from 'svelte/transition';
 	import { distanceBetweenCoords } from '$lib/utils';
@@ -39,6 +39,7 @@
 			let reservedBike = (await reserveBike(serial)).reserveBike;
 			if (reservedBike) {
 				let success = (await startTrip()).startTrip;
+				$following = true;
 				if (success) {
 					$currentTrip = {
 						code: '',

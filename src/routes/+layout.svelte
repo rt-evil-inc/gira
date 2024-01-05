@@ -13,6 +13,7 @@
 	import '../app.css';
 	import { App } from '@capacitor/app';
 	import { refreshToken } from '$lib/auth';
+	import { updateActiveTripInfo } from '$lib/gira-api';
 
 	if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') {
 		StatusBar.setOverlaysWebView({ overlay: true });
@@ -30,6 +31,7 @@
 				console.debug('Refreshing token because app was reopened');
 				refreshToken();
 			}
+			updateActiveTripInfo();
 		});
 		return () => {
 			App.removeAllListeners();

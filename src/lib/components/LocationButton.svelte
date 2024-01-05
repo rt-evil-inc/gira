@@ -1,24 +1,24 @@
 <script lang="ts">
 	import { currentPos, watchPosition } from '$lib/location';
+	import { following } from '$lib/stores';
 	import { Capacitor } from '@capacitor/core';
 	import { Geolocation } from '@capacitor/geolocation';
 	import { draw } from 'svelte/transition';
 
-	export let following = { active: false };
 	export let locationPermission = false;
 </script>
 
 <button class="bg-background p-2 rounded-full grid grid-cols-1 grid-rows-1 w-12 h-12 active:bg-background transition-colors" style:box-shadow="0px 0px 20px 0px var(--color-shadow)"
 	on:click={ () => {
 		if (locationPermission) {
-			following.active = !following.active;
-			if (following.active) watchPosition();
+			$following = !$following;
+			if ($following) watchPosition();
 		} else {
 			if (Capacitor.getPlatform() !== 'web') {
 				Geolocation.requestPermissions().then(({ location }) => {
 					locationPermission = location == 'granted';
 					if (locationPermission) {
-						following.active = true;
+						$following = true;
 						watchPosition();
 					}
 				});
@@ -30,7 +30,7 @@
 	{#if locationPermission}
 		<div style="grid-row: 1;grid-column: 1;" >
 			<svg
-				xmlns="http://www.w3.org/2000/svg" class="transition-all {$currentPos ? '' : 'animate-[spin_3s_linear_infinite]'} {following.active ? 'text-primary' : 'text-label'}" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+				xmlns="http://www.w3.org/2000/svg" class="transition-all {$currentPos ? '' : 'animate-[spin_3s_linear_infinite]'} {$following ? 'text-primary' : 'text-label'}" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
 				<path transition:draw={{ duration: 150 }} stroke="none" d="M0 0h24v24H0z" fill="none"/>
 				<path transition:draw={{ duration: 150 }} class:animate-searching={!$currentPos} d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
 				<path transition:draw={{ duration: 150 }} d="M12 12m-8 0a8 8 0 1 0 16 0a8 8 0 1 0 -16 0" />
