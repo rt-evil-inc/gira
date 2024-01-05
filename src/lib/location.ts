@@ -2,7 +2,7 @@ import { registerPlugin } from '@capacitor/core';
 import { get, writable } from 'svelte/store';
 import { type Position, Geolocation } from '@capacitor/geolocation';
 import type { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
-import { currentTrip } from './stores';
+import { appSettings, currentTrip } from './stores';
 
 export const currentPos = writable<Position|null>(null);
 export const bearingNorth = writable<boolean>(false);
@@ -14,7 +14,7 @@ let watchId: string|null = null;
 let backgroundWatchId: string|null = null;
 
 export async function watchPosition() {
-	if (get(currentTrip) !== null) {
+	if (get(currentTrip) !== null && get(appSettings).backgroundLocation) {
 		if (backgroundWatchId !== null) return;
 		if (watchId !== null) {
 			await Geolocation.clearWatch({ id: watchId });
