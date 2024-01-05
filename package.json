@@ -10,7 +10,7 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "eslint .",
     "build-app": "vite build && npx cap sync && cd android && ((CALL .\\gradlew build --info) || (./gradlew build --info))",
-    "build-app-dev": "node scripts/syncnetworkconfig.js && cd android && ((CALL .\\gradlew build --info) || (./gradlew build --info)) && cd .. && vite dev --host"
+    "build-app-dev": "node scripts/syncnetworkconfig.js && node scripts/update-appId.js --dev && cd android && ((CALL .\\gradlew build --info) || (./gradlew build --info)) && cd .. && node scripts/update-appId.js && vite dev --host"
   },
   "devDependencies": {
     "@fontsource/poppins": "^5.0.8",
@@ -33,6 +33,7 @@
   "type": "module",
   "dependencies": {
     "@capacitor-community/background-geolocation": "^1.2.15",
+    "@capacitor-community/keep-awake": "^4.0.0",
     "@capacitor/android": "^5.5.1",
     "@capacitor/app": "^5.0.6",
     "@capacitor/cli": "^5.5.1",

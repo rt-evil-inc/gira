@@ -88,6 +88,7 @@ export const selectedStation = writable<string|null>(null);
 export const safeInsets = writable<Insets>({ top: 0, bottom: 0, left: 0, right: 0 });
 export const appSettings = writable<AppSettings>({ distanceLock: true, mockUnlock: true, backgroundLocation: true });
 export const tripRating = writable<TripRating>({ currentRating: null });
+export const following = writable<boolean>(false);
 
 export const errorMessages:Writable<{msg:string, id:number}[]> = writable([]);
 export function addErrorMessage(msg:string, delay = 3000) {
@@ -189,5 +190,6 @@ export async function logOut() {
 	currentTrip.set(null);
 	user.set(null);
 	selectedStation.set(null);
+	tripRating.set({ currentRating: null });
 	// purposefully not settings settings distancelock, since thats annoying when you swap accounts
 }
