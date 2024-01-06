@@ -1,0 +1,58 @@
+name: Build Mobile
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        required: false
+        type: string
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-sign-android:
+    name: Build and sign Android
+    # Skip when PR from a fork
+    if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+    runs-on: macos-13
+
+    steps:
+      - name: Determine ref
+        id: get-ref
+        run: |
+          input_ref="${{ inputs.ref }}"
+          github_ref="${{ github.sha }}"
+          ref="${input_ref:-$github_ref}"
+          echo "ref=$ref" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.get-ref.outputs.ref }}
+
+      - name: Create the Keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        working-directory: ./mobile
+        run: echo $KEYSTORE_B64 | base64 -d > android/key.keystore
+
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install
+
+      - name: Build Android App Bundle
+        working-directory: ./mobile
+        env:
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+        run: ./misc/release/release-android.sh
+
+      - name: Publish Android Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk-signed
+          path: android/app/build/outputs/apk/release/*.apk
