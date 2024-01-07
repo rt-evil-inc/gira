@@ -48,7 +48,7 @@
 				{/if}
 				<span class="text-5xl text-primary font-bold">{msToMinuteSeconds(deltaSeconds)}</span>
 				<div class="absolute top-[92px] transition-all {$t.destination ? 'left-12' : 'left-20'}">
-					<Metric value={$t.traveledDistanceKm >= 1 ? $t.traveledDistanceKm : $t.traveledDistanceKm * 1000} unit={$t.traveledDistanceKm >= 1 ? 'km' : 'm'} label="Distância Percorrida" />
+					<Metric value={$t.traveledDistanceKm >= 1 ? $t.traveledDistanceKm : Math.round($t.traveledDistanceKm * 1000)} unit={$t.traveledDistanceKm >= 1 ? 'km' : 'm'} label="Distância Percorrida" />
 				</div>
 				<div class="absolute top-[92px] transition-all {$t.destination ? 'right-1/2 translate-x-1/2' : 'right-20 translate-x-0'}">
 					<Metric value={$t.speed < 0 ? 0 : $t.speed} unit="km/h" label="Velocidade Média" />
