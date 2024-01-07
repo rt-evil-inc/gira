@@ -20,7 +20,7 @@ jobs:
     name: Build and sign Android
     # Skip when PR from a fork
     if: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
-    runs-on: macos-13
+    runs-on: ubuntu-latest
 
     steps:
       - name: Determine ref
@@ -35,24 +35,36 @@ jobs:
         with:
           ref: ${{ steps.get-ref.outputs.ref }}
 
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "zulu"
+          java-version: "17.x"
+          cache: "gradle"
       - name: Create the Keystore
         env:
           KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
-        working-directory: ./mobile
-        run: echo $KEYSTORE_B64 | base64 -d > android/key.keystore
+        run: echo "$KEYSTORE_B64" | base64 -d > android/key.keystore
 
       - uses: oven-sh/setup-bun@v1
       - run: bun install
 
+      - run: bun run build
+      - run: bunx cap sync android
+
       - name: Build Android App Bundle
-        working-directory: ./mobile
         env:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
-        run: ./misc/release/release-android.sh
+        run: ./gradlew assembleRelease bundleRelease
+        working-directory: android
 
-      - name: Publish Android Artifact
+      - name: Publish Android APK
         uses: actions/upload-artifact@v4
         with:
           name: release-apk-signed
           path: android/app/build/outputs/apk/release/*.apk
+      - name: Publish Android AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-aab-signed
+          path: android/app/build/outputs/bundle/release/*.aab

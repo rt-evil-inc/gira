@@ -79,14 +79,15 @@ else
   exit 1
 fi
 
-if [ "$CURRENT_SEMANTIC" != "$NEXT_SEMANTIC" ]; then
-  echo "Pumping Semantic: $CURRENT_SEMANTIC => $NEXT_SEMANTIC"
-  npm version $SEMANTIC_PUMP
-fi
 
 if [ "$CURRENT_MOBILE" != "$NEXT_MOBILE" ]; then
   echo "Pumping Mobile: $CURRENT_MOBILE => $NEXT_MOBILE"
   npx -y capacitor-set-version -b $NEXT_MOBILE -v $NEXT_SEMANTIC
+fi
+
+if [ "$CURRENT_SEMANTIC" != "$NEXT_SEMANTIC" ]; then
+  echo "Pumping Semantic: $CURRENT_SEMANTIC => $NEXT_SEMANTIC"
+  npm --no-git-tag-version version $SEMANTIC_PUMP
 fi
 
 
