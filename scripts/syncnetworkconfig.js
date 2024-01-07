@@ -32,7 +32,7 @@ function getIp() {
 	Object.keys(ifaces).forEach(ifname => {
 		let alias = 0;
 		const iface = ifaces[ifname];
-		if (!iface || ifname.includes('vEthernet')) return;
+		if (!iface || ifname.includes('vEthernet') || ifname.startsWith('veth') || ifname.startsWith('tailscale') || ifname.startsWith('docker') || ifname.startsWith('br-')) return;
 		iface.forEach(iface2 => {
 			if ('IPv4' !== iface2.family || iface2.internal !== false) return;
 			if (alias >= 1) ip = iface2.address;
