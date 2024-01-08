@@ -10,5 +10,8 @@
 		"Keyboard": {
 			"resize": "none"
 		}
+  },
+  "android": {
+    "useLegacyBridge": true
 	}
 }

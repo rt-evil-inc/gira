@@ -31,6 +31,9 @@
 				if (locationPermission) {
 					$following = true;
 					watchPosition();
+					currentTrip.subscribe(trip => {
+						if (trip === null) watchPosition(); // Remove background watcher when no trip is active
+					});
 				}
 			}, 500);
 		});
