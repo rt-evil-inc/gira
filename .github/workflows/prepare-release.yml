@@ -69,6 +69,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: release-apk-signed
+        
+      - name: Rename APK
+        run: mv release-apk-signed.apk Gira+.apk
+      
+      - name: Get commit messages
+        id: get_commits
+        run: |
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${{ env.GIRA_VERSION }}^)
+          echo "::set-output name=commits::$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s")"
 
       - name: Create draft release
         uses: softprops/action-gh-release@v1
