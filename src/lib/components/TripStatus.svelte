@@ -2,7 +2,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import Metric from '$lib/components/Metric.svelte';
 	import { cubicInOut } from 'svelte/easing';
-	import { safeInsets, currentTrip as t } from '$lib/stores';
+	import { following, safeInsets, currentTrip as t } from '$lib/stores';
 	import { onMount } from 'svelte';
 	import { KeepAwake } from '@capacitor-community/keep-awake';
 
@@ -23,6 +23,7 @@
 		inter = setInterval(() => {
 			seconds = (Date.now() - startTime) / 1000;
 		}, 1000);
+		$following = true;
 		KeepAwake.keepAwake();
 		return () => {
 			clearInterval(inter);

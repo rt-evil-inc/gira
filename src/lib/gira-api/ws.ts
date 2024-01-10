@@ -90,7 +90,12 @@ export function startWS() {
 }
 function ingestTripMessage(recvTrip:ActiveTripSubscription) {
 	console.debug('ingesting trip message from ws', recvTrip);
-	if (recvTrip.code === 'no_trip' || recvTrip.bike === 'dummy') return;
+	if (recvTrip.code === 'no_trip' || recvTrip.bike === 'dummy') {
+		if (Date.now() - (get(currentTrip)?.startDate?.getTime() ?? 0) > 30000) {
+			currentTrip.set(null);
+		}
+		return;
+	}
 	const ctrip = get(currentTrip);
 	if (recvTrip.code === ctrip?.code) ingestCurrentTripUpdate(recvTrip);
 	else ingestOtherTripUpdate(recvTrip);

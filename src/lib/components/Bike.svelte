@@ -10,12 +10,14 @@
 	import IconSettings from '@tabler/icons-svelte/dist/svelte/icons/IconSettings.svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import { reserveBike, startTrip, type ThrownError } from '../gira-api';
-	import { accountInfo, addErrorMessage, appSettings, currentTrip, following, type StationInfo } from '$lib/stores';
+	import { reserveBike, startTrip, updateActiveTripInfo, type ThrownError } from '../gira-api';
+	import { accountInfo, addErrorMessage, appSettings, currentTrip, type StationInfo } from '$lib/stores';
 	import { currentPos } from '$lib/location';
 	import { fade } from 'svelte/transition';
 	import { distanceBetweenCoords } from '$lib/utils';
 	import { LOCK_DISTANCE_m } from '$lib/constants';
+
+	let tripTimeout:ReturnType<typeof setTimeout>;
 
 	export let type:'classic'|'electric'|null = null, id:string = '', battery:number|null = null, dock:string, disabled = false, serial:string, station:StationInfo;
 	const action = async () => {
@@ -39,8 +41,9 @@
 			let reservedBike = (await reserveBike(serial)).reserveBike;
 			if (reservedBike) {
 				let success = (await startTrip()).startTrip;
-				$following = true;
 				if (success) {
+					clearTimeout(tripTimeout);
+					tripTimeout = setTimeout(updateActiveTripInfo, 30000);
 					$currentTrip = {
 						code: '',
 						arrivalTime: null,
