@@ -17,8 +17,6 @@
 	import { distanceBetweenCoords } from '$lib/utils';
 	import { LOCK_DISTANCE_m } from '$lib/constants';
 
-	let tripTimeout:ReturnType<typeof setTimeout>;
-
 	export let type:'classic'|'electric'|null = null, id:string = '', battery:number|null = null, dock:string, disabled = false, serial:string, station:StationInfo;
 	const action = async () => {
 		if (serial == null) return;
@@ -42,8 +40,10 @@
 			if (reservedBike) {
 				let success = (await startTrip()).startTrip;
 				if (success) {
-					clearTimeout(tripTimeout);
-					tripTimeout = setTimeout(updateActiveTripInfo, 30000);
+					setTimeout(() => { if (!$currentTrip?.confirmed) updateActiveTripInfo(); }, 15000);
+					setTimeout(() => { if (!$currentTrip?.confirmed) updateActiveTripInfo(); }, 20000);
+					setTimeout(() => { if (!$currentTrip?.confirmed) updateActiveTripInfo(); }, 25000);
+					setTimeout(() => { if (!$currentTrip?.confirmed) updateActiveTripInfo(); }, 30000);
 					$currentTrip = {
 						code: '',
 						arrivalTime: null,
