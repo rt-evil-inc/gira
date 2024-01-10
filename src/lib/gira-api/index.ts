@@ -245,7 +245,7 @@ export async function updateActiveTripInfo() {
 }
 function ingestActiveTripInfo(maybeTrips:Q<['activeTrip']>) {
 	if (maybeTrips.activeTrip === null || maybeTrips.activeTrip === undefined || maybeTrips.activeTrip.code === 'no_trip' || maybeTrips.activeTrip.asset === 'dummy') {
-		if (Date.now() - (get(currentTrip)?.startDate?.getTime() ?? 0) > 30000) {
+		if (get(currentTrip)?.confirmed || Date.now() - (get(currentTrip)?.startDate?.getTime() ?? 0) > 30000) {
 			currentTrip.set(null);
 		}
 		return;
@@ -291,6 +291,7 @@ function ingestActiveTripInfo(maybeTrips:Q<['activeTrip']>) {
 		predictedEndDate: ct.predictedEndDate,
 		arrivalTime: ct.predictedEndDate,
 		finished: false,
+		confirmed: true,
 		pathTaken: ct.pathTaken,
 	} : {
 		code: code!,
@@ -304,6 +305,7 @@ function ingestActiveTripInfo(maybeTrips:Q<['activeTrip']>) {
 		predictedEndDate: null,
 		arrivalTime: null,
 		finished: false,
+		confirmed: true,
 		pathTaken: [],
 	});
 }

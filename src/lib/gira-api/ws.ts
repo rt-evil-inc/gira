@@ -91,7 +91,7 @@ export function startWS() {
 function ingestTripMessage(recvTrip:ActiveTripSubscription) {
 	console.debug('ingesting trip message from ws', recvTrip);
 	if (recvTrip.code === 'no_trip' || recvTrip.bike === 'dummy') {
-		if (Date.now() - (get(currentTrip)?.startDate?.getTime() ?? 0) > 30000) {
+		if (get(currentTrip)?.confirmed || Date.now() - (get(currentTrip)?.startDate?.getTime() ?? 0) > 30000) {
 			currentTrip.set(null);
 		}
 		return;
@@ -130,6 +130,7 @@ function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
 				startDate: new Date(recvTrip.startDate),
 				bikePlate: recvTrip.bike,
 				code: recvTrip.code,
+				confirmed: true,
 			};
 		}
 	});
@@ -149,6 +150,7 @@ function ingestOtherTripUpdate(recvTrip:ActiveTripSubscription) {
 		speed: 0,
 		predictedEndDate: null,
 		arrivalTime: null,
+		confirmed: true,
 		pathTaken: p ? [{
 			lat: p.coords.latitude,
 			lng: p.coords.longitude,

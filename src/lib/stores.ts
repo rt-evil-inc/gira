@@ -42,6 +42,7 @@ export type ActiveTrip = {
 	predictedEndDate: Date|null,
 	arrivalTime: Date|null,
 	finished: boolean,
+	confirmed: boolean,
 	pathTaken : {lat: number, lng: number, time:Date}[]
 }
 

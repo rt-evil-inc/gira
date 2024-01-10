@@ -59,6 +59,7 @@
 						} : null,
 						predictedEndDate: null,
 						finished: false,
+						confirmed: false,
 						pathTaken: $currentPos ? [{
 							lng: $currentPos.coords.longitude,
 							lat: $currentPos.coords.latitude,
