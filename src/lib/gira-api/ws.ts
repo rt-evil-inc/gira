@@ -96,6 +96,12 @@ function ingestTripMessage(recvTrip:ActiveTripSubscription) {
 		}
 		return;
 	}
+
+	if (recvTrip.finished) {
+		if (recvTrip.canUsePoints) tripPayWithPoints(recvTrip.code);
+		else if (recvTrip.canPayWithMoney) tripPayWithNoPoints(recvTrip.code);
+	}
+
 	const ctrip = get(currentTrip);
 	if (recvTrip.code === ctrip?.code) ingestCurrentTripUpdate(recvTrip);
 	else ingestOtherTripUpdate(recvTrip);
@@ -106,10 +112,6 @@ function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
 		// if trip finished, rate, else, update trip stuff
 		if (recvTrip.finished) {
 			currentTrip.set(null);
-
-			if (recvTrip.canUsePoints) tripPayWithPoints(recvTrip.code);
-			else if (recvTrip.canPayWithMoney) tripPayWithNoPoints(recvTrip.code);
-
 			tripRating.update(rating => {
 				rating.currentRating = {
 					code: recvTrip.code,
