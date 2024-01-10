@@ -27,6 +27,7 @@ jobs:
 
     outputs:
       ref: ${{ steps.push-tag.outputs.commit_long_sha }}
+      gira_version: ${{ env.GIRA_VERSION }}
 
     steps:
       - name: Checkout
@@ -64,26 +65,29 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.ORG_RELEASE_TOKEN }}
+          fetch-depth: 0
 
       - name: Download APK
         uses: actions/download-artifact@v4
         with:
           name: release-apk-signed
-        
+
       - name: Rename APK
-        run: mv release-apk-signed.apk Gira+.apk
-      
+        run: mv *.apk Gira+.apk
+
       - name: Get commit messages
         id: get_commits
         run: |
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${{ env.GIRA_VERSION }}^)
-          echo "::set-output name=commits::$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s")"
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^)
+          git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s" > commit_messages.txt
 
       - name: Create draft release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          tag_name: ${{ env.GIRA_VERSION }}
+          tag_name: ${{ needs.bump_version.outputs.gira_version }}
           files: |
             *.apk
           token: ${{ secrets.ORG_RELEASE_TOKEN }}
+          body_path: commit_messages.txt
+          
