@@ -18,9 +18,10 @@
 	import { LOCK_DISTANCE_m } from '$lib/constants';
 
 	async function checkTripStarted() {
-		if ($currentTrip !== null && (await reserveBike(serial)).reserveBike) {
+		if ($currentTrip === null) return;
+		if ((await reserveBike(serial)).reserveBike) {
 			$currentTrip = null;
-		} else if (!$currentTrip?.confirmed) {
+		} else if (!$currentTrip.confirmed) {
 			updateActiveTripInfo();
 		}
 	}
