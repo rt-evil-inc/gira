@@ -108,20 +108,24 @@
 	let moved = false;
 	let waiting = false;
 
-	function onTouchStart(event: TouchEvent) {
+	function onPointerDown(event: PointerEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		dragging = true;
-		initPos = event.touches[0].clientX - $pos;
+		// lock to this event
+		event.currentTarget.setPointerCapture(event.pointerId);
+
+		initPos = event.clientX - $pos;
 		clearTimeout(timeout);
 	}
-	function onTouchMove(event: TouchEvent) {
+	function onPointerMove(event: PointerEvent) {
 		if (dragging && !disabled) {
-			pos.set(event.touches[0].clientX - initPos, { duration: 0 });
+			pos.set(event.clientX - initPos, { duration: 0 });
 			moved = true;
 		} else {
 			pos.set(0);
 		}
 	}
-	function onTouchEnd() {
+	function onPointerUp(event: PointerEvent&{currentTarget:EventTarget&HTMLDivElement}) {
+		event.currentTarget.releasePointerCapture(event.pointerId);
 		dragging = false;
 		if ($pos == 0 && !moved && !disabled) {
 			pos.set(50);
@@ -153,7 +157,14 @@
 			</div>
 		{/if}
 	</div>
-	<div class="absolute flex items-center bg-background rounded-2xl h-full w-full px-5 gap-5" style:box-shadow="0px 0px 12px 0px var(--color-shadow)" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove} style:left="{$pos}px">
+	<div class="absolute flex items-center bg-background rounded-2xl h-full w-full px-5 gap-5 touch-pan-y" style:box-shadow="0px 0px 12px 0px var(--color-shadow)"
+
+		on:pointerdown={onPointerDown}
+		on:pointerup={onPointerUp}
+		on:pointermove={onPointerMove}
+		on:pointercancel={onPointerUp}
+
+		style:left="{$pos}px">
 		{#if type === 'electric'}
 			<IconBolt size={42} stroke={1.7} class="text-primary -mx-3" />
 		{:else}
