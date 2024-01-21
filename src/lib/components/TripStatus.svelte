@@ -2,7 +2,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import Metric from '$lib/components/Metric.svelte';
 	import { cubicInOut } from 'svelte/easing';
-	import { following, safeInsets, currentTrip as t } from '$lib/stores';
+	import { following, safeInsets, currentTrip as t } from '$lib/state';
 	import { onMount } from 'svelte';
 	import { KeepAwake } from '@capacitor-community/keep-awake';
 

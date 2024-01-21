@@ -8,7 +8,7 @@
 	import StationMenu from '$lib/components/StationMenu.svelte';
 	import TripStatus from '$lib/components/TripStatus.svelte';
 	import TripRating from '$lib/components/TripRating.svelte';
-	import { token, currentTrip, tripRating, safeInsets, selectedStation, following } from '$lib/stores';
+	import { token, currentTrip, tripRating, safeInsets, selectedStation, following } from '$lib/state';
 	import { Geolocation } from '@capacitor/geolocation';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { fade } from 'svelte/transition';

@@ -1,10 +1,11 @@
 import { Preferences } from '@capacitor/preferences';
 import { get, writable, type Writable } from 'svelte/store';
-import { login, refreshToken, updateUserInfo } from './auth';
-import { updateOnetimeInfo } from './gira-api';
-import { startWS, ws } from './gira-api/ws';
-import { currentPos } from './location';
-import { distanceBetweenCoords } from './utils';
+import { login, refreshToken, updateUserInfo } from '../auth';
+import { api } from '../gira-api';
+import { startWS, ws } from '../gira-api/ws';
+import { currentPos } from '../location';
+import { distanceBetweenCoords } from '../utils';
+import { updateOnetimeInfo } from './helper';
 
 export type User = {
 	email: string;
@@ -180,14 +181,3 @@ currentPos.subscribe(async v => {
 		return trip;
 	});
 });
-
-export async function logOut() {
-	token.set(null);
-	userCredentials.set(null);
-	accountInfo.set(null);
-	currentTrip.set(null);
-	user.set(null);
-	selectedStation.set(null);
-	tripRating.set({ currentRating: null });
-	// purposefully not settings settings distancelock, since thats annoying when you swap accounts
-}

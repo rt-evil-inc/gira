@@ -1,6 +1,6 @@
 import { get } from 'svelte/store';
 import { getTokensLogin, getTokensRefresh, getUserInfo } from './emel-api/emel-api';
-import { token, user, userCredentials } from './stores';
+import { token, user, userCredentials } from './state';
 
 export async function login(email: string, password: string) {
 	const response = await getTokensLogin(email, password);

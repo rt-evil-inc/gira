@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { loadUserCreds, safeInsets, token } from '$lib/stores';
+	import { loadUserCreds, safeInsets, token } from '$lib/state';
 	import '@fontsource/inter/latin-400.css';
 	import '@fontsource/inter/latin-500.css';
 	import '@fontsource/inter/latin-600.css';
@@ -13,7 +13,7 @@
 	import '../app.css';
 	import { App } from '@capacitor/app';
 	import { refreshToken } from '$lib/auth';
-	import { updateActiveTripInfo } from '$lib/gira-api';
+	import { updateActiveTripInfo } from '$lib/state/helper';
 
 	if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') {
 		StatusBar.setOverlaysWebView({ overlay: true });

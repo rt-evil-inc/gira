@@ -10,16 +10,17 @@
 	import IconSettings from '@tabler/icons-svelte/dist/svelte/icons/IconSettings.svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import { reserveBike, startTrip, updateActiveTripInfo, type ThrownError } from '../gira-api';
-	import { accountInfo, addErrorMessage, appSettings, currentTrip, type StationInfo } from '$lib/stores';
+	import { api, type ThrownError } from '../gira-api';
+	import { accountInfo, addErrorMessage, appSettings, currentTrip, type StationInfo } from '$lib/state';
 	import { currentPos } from '$lib/location';
 	import { fade } from 'svelte/transition';
 	import { distanceBetweenCoords } from '$lib/utils';
 	import { LOCK_DISTANCE_m } from '$lib/constants';
+	import { updateActiveTripInfo } from '$lib/state/helper';
 
 	async function checkTripStarted() {
 		if ($currentTrip === null) return;
-		if ((await reserveBike(serial)).reserveBike) {
+		if ((await api.reserveBike(serial)).reserveBike) {
 			$currentTrip = null;
 		} else if (!$currentTrip.confirmed) {
 			updateActiveTripInfo();
@@ -45,9 +46,9 @@
 					}
 				}
 			}
-			let reservedBike = (await reserveBike(serial)).reserveBike;
+			let reservedBike = (await api.reserveBike(serial)).reserveBike;
 			if (reservedBike) {
-				let success = (await startTrip()).startTrip;
+				let success = (await api.startTrip()).startTrip;
 				if (success) {
 					for (let i = 15000; i <= 30000; i += 5000) {
 						setTimeout(checkTripStarted, i);

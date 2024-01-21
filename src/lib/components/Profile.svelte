@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
-	import { fade } from 'svelte/transition';
-	import { accountInfo, logOut, safeInsets, user } from '$lib/stores';
 	import IconHistory from '@tabler/icons-svelte/dist/svelte/icons/IconHistory.svelte';
 	import IconX from '@tabler/icons-svelte/dist/svelte/icons/IconX.svelte';
 	import IconTool from '@tabler/icons-svelte/dist/svelte/icons/IconTool.svelte';
@@ -10,6 +7,10 @@
 	import IconTicket from '@tabler/icons-svelte/dist/svelte/icons/IconTicket.svelte';
 	import IconLogout2 from '@tabler/icons-svelte/dist/svelte/icons/IconLogout2.svelte';
 	import IconMessageReport from '@tabler/icons-svelte/dist/svelte/icons/IconMessageReport.svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
+	import { accountInfo, safeInsets, user } from '$lib/state';
+	import { logOut } from '$lib/state/helper';
 	import SettingsEntry from './SettingsEntry.svelte';
 	import Metric from './Metric.svelte';
 	import History from './settings/History.svelte';

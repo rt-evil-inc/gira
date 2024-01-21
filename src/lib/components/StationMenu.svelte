@@ -2,9 +2,9 @@
 	import { tweened } from 'svelte/motion';
 	import Bike from '$lib/components/Bike.svelte';
 	import { cubicOut } from 'svelte/easing';
-	import { getStationInfo } from '$lib/gira-api';
+	import { api } from '$lib/gira-api';
 	import { onMount } from 'svelte';
-	import { stations, selectedStation, type StationInfo } from '$lib/stores';
+	import { stations, selectedStation, type StationInfo } from '$lib/state';
 	import { tick } from 'svelte';
 	import { currentPos } from '$lib/location';
 	import { distanceBetweenCoords, formatDistance } from '$lib/utils';
@@ -73,7 +73,7 @@
 		}
 		await tick();
 		bikeListHeight = bikeList.clientHeight;
-		let info = await getStationInfo(stationId);
+		let info = await api.getStationInfo(stationId);
 		let tmpBikeInfo = info.getBikes?.filter(v => v != null).map<typeof bikeInfo[number]>(bike => {
 			let dock = info.getDocks?.filter(v => v != null).find(d => d!.code == bike!.parent);
 			if (dock == null || !dock.name) console.error('Dock not found', bike, info.getDocks);

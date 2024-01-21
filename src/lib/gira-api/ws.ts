@@ -1,7 +1,7 @@
-import { currentTrip, stations, token, tripRating } from '$lib/stores';
+import { currentTrip, stations, token, tripRating } from '$lib/state';
 import { get } from 'svelte/store';
 import type { ActiveTripSubscription, WSEvent } from './ws-types';
-import { tripPayWithNoPoints, tripPayWithPoints } from '.';
+import { api } from '$lib/gira-api';
 import { currentPos } from '$lib/location';
 export let ws: WebSocket;
 
@@ -98,8 +98,8 @@ function ingestTripMessage(recvTrip:ActiveTripSubscription) {
 	}
 
 	if (recvTrip.finished) {
-		if (recvTrip.canUsePoints) tripPayWithPoints(recvTrip.code);
-		else if (recvTrip.canPayWithMoney) tripPayWithNoPoints(recvTrip.code);
+		if (recvTrip.canUsePoints) api.tripPayWithPoints(recvTrip.code);
+		else if (recvTrip.canPayWithMoney) api.tripPayWithNoPoints(recvTrip.code);
 	}
 
 	const ctrip = get(currentTrip);

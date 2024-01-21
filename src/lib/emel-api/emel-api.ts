@@ -1,4 +1,4 @@
-import type { Token } from '$lib/stores';
+import type { Token } from '$lib/state';
 import type { ApiResponse, TokenOpt, UserInfo } from './types';
 
 export async function getTokensLogin(email: string, password: string) {

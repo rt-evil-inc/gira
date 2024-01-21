@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { currentPos, watchPosition } from '$lib/location';
-	import { following } from '$lib/stores';
+	import { following } from '$lib/state';
 	import { Capacitor } from '@capacitor/core';
 	import { Geolocation } from '@capacitor/geolocation';
 	import { draw } from 'svelte/transition';
