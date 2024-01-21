@@ -10,5 +10,8 @@
 		"Keyboard": {
 			"resize": "none"
 		}
+	},
+	"ios": {
+		"scheme": "GiraPlus"
 	}
 }
