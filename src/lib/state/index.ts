@@ -1,11 +1,10 @@
 import { Preferences } from '@capacitor/preferences';
 import { get, writable, type Writable } from 'svelte/store';
 import { login, refreshToken, updateUserInfo } from '../auth';
-import { api } from '../gira-api';
-import { startWS, ws } from '../gira-api/ws';
 import { currentPos } from '../location';
 import { distanceBetweenCoords } from '../utils';
 import { updateOnetimeInfo } from './helper';
+import { startWS } from '$lib/gira-api/ws';
 
 export type User = {
 	email: string;
@@ -123,7 +122,7 @@ token.subscribe(async v => {
 	if (!v) return;
 	const jwt:JWT = JSON.parse(window.atob(v.accessToken.split('.')[1]));
 
-	if (!ws || ws.readyState === ws.CLOSED) startWS();
+	startWS();
 	if (get(user) === null) {
 		updateOnetimeInfo();
 		updateUserInfo();

@@ -10,14 +10,14 @@
 	import IconMoodHappy from '@tabler/icons-svelte/dist/svelte/icons/IconMoodHappy.svelte';
 	import IconMoodHappyFilled from '@tabler/icons-svelte/dist/svelte/icons/IconMoodHappyFilled.svelte';
 	import { fade, fly } from 'svelte/transition';
-	import { api } from '$lib/gira-api';
 	import { tripRating } from '$lib/state';
+	import { rateTrip } from '$lib/gira-api/api';
 
 	export let code:string;
 	let rating:number;
 
 	async function rate(code:string, rating:number) {
-		return (await api.rateTrip(code, rating)).rateTrip;
+		return (await rateTrip(code, rating)).rateTrip;
 	}
 
 	let timeout:ReturnType<typeof setTimeout>;

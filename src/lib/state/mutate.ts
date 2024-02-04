@@ -1,6 +1,8 @@
 import type { Q } from '$lib/gira-api';
 import { get } from 'svelte/store';
 import { stations, type StationInfo, tripRating, currentTrip, accountInfo } from '.';
+import type { ActiveTripSubscription } from '$lib/gira-api/ws-types';
+import { currentPos } from '$lib/location';
 
 export function ingestStations(maybeStations:Q<['getStations']>) {
 	if (maybeStations.getStations === null || maybeStations.getStations === undefined) return;
@@ -132,5 +134,58 @@ export function ingestLastUnratedTrip(lastTripData:Q<['unratedTrips', 'tripHisto
 			endDate: new Date(unratedTrip.endDate),
 			tripPoints: unratedTrip.costBonus || 0,
 		},
+	});
+}
+
+export function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
+	currentTrip.update(trip => {
+		// if trip finished, rate, else, update trip stuff
+		if (recvTrip.finished) {
+			currentTrip.set(null);
+			tripRating.update(rating => {
+				rating.currentRating = {
+					code: recvTrip.code,
+					bikePlate: recvTrip.bike,
+					startDate: new Date(recvTrip.startDate),
+					endDate: new Date(recvTrip.endDate ?? 0),
+					tripPoints: recvTrip.tripPoints ?? 0,
+				};
+				return rating;
+			});
+			return null;
+		} else {
+			if (trip === null) throw new Error('trip is null in impossible place');
+			return {
+				...trip,
+				startDate: new Date(recvTrip.startDate),
+				bikePlate: recvTrip.bike,
+				code: recvTrip.code,
+				confirmed: true,
+			};
+		}
+	});
+}
+
+export function ingestOtherTripUpdate(recvTrip:ActiveTripSubscription) {
+	if (recvTrip.finished) return;
+	const p = get(currentPos);
+	currentTrip.set({
+		startDate: new Date(recvTrip.startDate),
+		bikePlate: recvTrip.bike,
+		code: recvTrip.code,
+		finished: recvTrip.finished,
+		startPos: null,
+		destination: null,
+		traveledDistanceKm: 0,
+		distanceLeft: null,
+		speed: 0,
+		predictedEndDate: null,
+		arrivalTime: null,
+		confirmed: true,
+		pathTaken: p ? [{
+			lat: p.coords.latitude,
+			lng: p.coords.longitude,
+			time: new Date,
+		}] : [],
 	});
 }

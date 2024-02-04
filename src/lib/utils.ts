@@ -16,3 +16,10 @@ export function formatDistance(distance:number) {
 	if (distance < 1) return `${(distance * 1000).toFixed(0)}m`;
 	return `${distance.toLocaleString(undefined, { maximumFractionDigits: 2, useGrouping: false })}km`;
 }
+
+export function randomUUID() {
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+		const r = Math.random() * 16 | 0, v = c == 'x' ? r : r & 0x3 | 0x8;
+		return v.toString(16);
+	});
+}

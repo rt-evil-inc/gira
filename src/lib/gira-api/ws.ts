@@ -1,27 +1,22 @@
-import { currentTrip, stations, token, tripRating } from '$lib/state';
+import { currentTrip, stations, token } from '$lib/state';
 import { get } from 'svelte/store';
-import type { ActiveTripSubscription, WSEvent } from './ws-types';
-import { api } from '$lib/gira-api';
-import { currentPos } from '$lib/location';
-export let ws: WebSocket;
+import type { WSEvent } from './ws-types';
+import { randomUUID } from '$lib/utils';
+import { updateWithTripMessage } from '$lib/state/helper';
+import { ingestStations } from '$lib/state/mutate';
+import type { GiraWSInterface } from '.';
 
-function randomUUID() {
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-		const r = Math.random() * 16 | 0, v = c == 'x' ? r : r & 0x3 | 0x8;
-		return v.toString(16);
-	});
-}
-
+let ws:WebSocket;
 export function startWS() {
 	console.debug('starting ws');
 	const tokens = get(token);
 	const access = tokens?.accessToken;
 	if (!access) return;
-
 	if (ws) {
-		ws.onclose = () => {};
-		if (ws.readyState === WebSocket.OPEN) ws.close();
+		if (ws.readyState === WebSocket.CONNECTING) return;
+		if (ws.readyState === WebSocket.OPEN) return;
 	}
+
 	ws = new WebSocket('wss://apigira.emel.pt/graphql', 'graphql-ws');
 	ws.onopen = () => {
 		backoff = 0;
@@ -60,10 +55,10 @@ export function startWS() {
 				const data = payload.data;
 				if (data.operationalStationsSubscription) {
 					console.debug('updated stations with websocket');
-					stations.set(data.operationalStationsSubscription);
+					ingestStations({ getStations: data.operationalStationsSubscription });
 				} else if (data.activeTripSubscription) {
 					const recvTrip = data.activeTripSubscription;
-					ingestTripMessage(recvTrip);
+					updateWithTripMessage(recvTrip);
 				} else if (data.serverDate) {
 					console.debug('serverdate', data.serverDate.date);
 					console.debug('serverdate diff', new Date(data.serverDate.date).getTime() - Date.now(), 'ms');
@@ -73,12 +68,12 @@ export function startWS() {
 	};
 
 	let backoff = 0;
-	function restartWS() {
+	const restartWS = () => {
 		setTimeout(() => {
 			startWS();
 			backoff += 1000;
 		}, backoff);
-	}
+	};
 	ws.onclose = e => {
 		console.debug('ws closed', e);
 		restartWS();
@@ -87,74 +82,4 @@ export function startWS() {
 		console.debug('ws error', e);
 		restartWS();
 	};
-}
-function ingestTripMessage(recvTrip:ActiveTripSubscription) {
-	console.debug('ingesting trip message from ws', recvTrip);
-	if (recvTrip.code === 'no_trip' || recvTrip.bike === 'dummy') {
-		if (get(currentTrip)?.confirmed || Date.now() - (get(currentTrip)?.startDate?.getTime() ?? 0) > 30000) {
-			currentTrip.set(null);
-		}
-		return;
-	}
-
-	if (recvTrip.finished) {
-		if (recvTrip.canUsePoints) api.tripPayWithPoints(recvTrip.code);
-		else if (recvTrip.canPayWithMoney) api.tripPayWithNoPoints(recvTrip.code);
-	}
-
-	const ctrip = get(currentTrip);
-	if (recvTrip.code === ctrip?.code) ingestCurrentTripUpdate(recvTrip);
-	else ingestOtherTripUpdate(recvTrip);
-}
-
-function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
-	currentTrip.update(trip => {
-		// if trip finished, rate, else, update trip stuff
-		if (recvTrip.finished) {
-			currentTrip.set(null);
-			tripRating.update(rating => {
-				rating.currentRating = {
-					code: recvTrip.code,
-					bikePlate: recvTrip.bike,
-					startDate: new Date(recvTrip.startDate),
-					endDate: new Date(recvTrip.endDate ?? 0),
-					tripPoints: recvTrip.tripPoints ?? 0,
-				};
-				return rating;
-			});
-			return null;
-		} else {
-			if (trip === null) throw new Error('trip is null in impossible place');
-			return {
-				...trip,
-				startDate: new Date(recvTrip.startDate),
-				bikePlate: recvTrip.bike,
-				code: recvTrip.code,
-				confirmed: true,
-			};
-		}
-	});
-}
-function ingestOtherTripUpdate(recvTrip:ActiveTripSubscription) {
-	if (recvTrip.finished) return;
-	const p = get(currentPos);
-	currentTrip.set({
-		startDate: new Date(recvTrip.startDate),
-		bikePlate: recvTrip.bike,
-		code: recvTrip.code,
-		finished: recvTrip.finished,
-		startPos: null,
-		destination: null,
-		traveledDistanceKm: 0,
-		distanceLeft: null,
-		speed: 0,
-		predictedEndDate: null,
-		arrivalTime: null,
-		confirmed: true,
-		pathTaken: p ? [{
-			lat: p.coords.latitude,
-			lng: p.coords.longitude,
-			time: new Date,
-		}] : [],
-	});
 }

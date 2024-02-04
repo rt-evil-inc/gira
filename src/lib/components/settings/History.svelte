@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { api } from '$lib/gira-api';
-	import type { TripHistory_TripDetail } from '$lib/gira-api/types';
+	import type { TripHistory_TripDetail } from '$lib/gira-api/api-types';
 	import { onMount } from 'svelte';
 	import HistoryItem from './HistoryItem.svelte';
 	import { safeInsets } from '$lib/state';
 	import { fly } from 'svelte/transition';
 	import MenuPage from '../MenuPage.svelte';
+	import { getTripHistory } from '$lib/gira-api/api';
 
 	let trips:TripHistory_TripDetail[] = [];
 	let observed:HTMLDivElement;
@@ -17,7 +17,7 @@
 	async function loadMoreTripHistory() {
 		if (loading) return;
 		loading = true;
-		const res = await api.getTripHistory(Math.floor(trips.length / loadedPerPage) + 1, loadedPerPage);
+		const res = await getTripHistory(Math.floor(trips.length / loadedPerPage) + 1, loadedPerPage);
 		didFirstRequest = true;
 		if (res.tripHistory == null) return;
 		if (res.tripHistory.length < loadedPerPage) loadedAll = true;

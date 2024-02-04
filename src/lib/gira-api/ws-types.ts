@@ -20,7 +20,7 @@ export type ActiveTripSubscription = {
     bike: string;
     startDate: Date;
     endDate: Date|null;
-    cost: null;
+    cost: null|number;
     finished: boolean;
     canPayWithMoney: boolean|null;
     canUsePoints: boolean|null;
