@@ -1,4 +1,4 @@
-import type { M, Q } from '..';
+import type { M, Q } from '../api-types';
 
 export async function reserveBike(serialNumber: string): Promise<M<['reserveBike']>> {
 	return {

@@ -1,10 +1,10 @@
 import { dev } from '$app/environment';
-import { accountInfo, currentTrip, stations, token, tripRating, type StationInfo } from '$lib/state';
 import { CapacitorHttp, type HttpResponse } from '@capacitor/core';
 import { get } from 'svelte/store';
 import { Preferences } from '@capacitor/preferences';
-import type { M, Q, ThrownError } from '.';
+import type { M, Q, ThrownError } from './api-types';
 import type { Mutation, Query } from './api-types';
+import { token } from '$lib/state';
 const RETRY_DELAY = 1000;
 const RETRIES = 5;
 let backoff = 0;

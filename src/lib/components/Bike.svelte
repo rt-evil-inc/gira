@@ -10,7 +10,7 @@
 	import IconSettings from '@tabler/icons-svelte/dist/svelte/icons/IconSettings.svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import type { ThrownError } from '../gira-api';
+	import type { ThrownError } from '../gira-api/api-types';
 	import { accountInfo, addErrorMessage, appSettings, currentTrip, type StationInfo } from '$lib/state';
 	import { currentPos } from '$lib/location';
 	import { fade } from 'svelte/transition';

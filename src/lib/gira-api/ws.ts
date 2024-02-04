@@ -1,10 +1,9 @@
-import { currentTrip, stations, token } from '$lib/state';
+import { token } from '$lib/state';
 import { get } from 'svelte/store';
 import type { WSEvent } from './ws-types';
 import { randomUUID } from '$lib/utils';
 import { updateWithTripMessage } from '$lib/state/helper';
 import { ingestStations } from '$lib/state/mutate';
-import type { GiraWSInterface } from '.';
 
 let ws:WebSocket;
 export function startWS() {
