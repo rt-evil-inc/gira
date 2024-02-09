@@ -1,9 +1,16 @@
 <script lang="ts">
 	import type { TripHistory_TripDetail } from '$lib/gira-api/api-types';
-	import Metric from '../Metric.svelte';
 
 	export let trip: TripHistory_TripDetail|null;
 
+	function getMinutesDiff(date1:Date, date2:Date) {
+		const diff = Math.abs(date2.getTime() - date1.getTime());
+		return Math.floor((diff / 1000) / 60) % 60;
+	}
+	function getHoursDiff(date1:Date, date2:Date) {
+		const diff = Math.abs(date2.getTime() - date1.getTime());
+		return Math.floor((diff / 1000) / 60 / 60);
+	}
 	function formatHours(date:Date) {
 		const hour = date.getHours().toString().padStart(2, '0');
 		const minute = date.getMinutes().toString().padStart(2, '0');
@@ -48,7 +55,23 @@
 			</div>
 		</div>
 		<div class="flex flex-col items-center justify-center gap-5 justify-self-end">
-			<Metric value={new Date(new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()).getMinutes()} unit="min" label="Duração" />
+			<div class="flex flex-col">
+				<div class="flex flex-col items-center">
+					<div class="text-nowrap">
+						{#if getHoursDiff(new Date(trip.endDate), new Date(trip.startDate)) > 0}
+							<span class="text-2xl font-bold text-primary pr-px">{getHoursDiff(new Date(trip.endDate), new Date(trip.startDate))}</span><span class="text-sm font-semibold text-label">
+								h
+							</span>
+						{/if}
+						<span class="text-2xl font-bold text-primary pr-px">{getMinutesDiff(new Date(trip.endDate), new Date(trip.startDate))}</span><span class="text-sm font-semibold text-label">
+							min
+						</span>
+					</div>
+					<span class="text-2xs font-semibold text-label text-center -mt-1 leading-none max-w-[70px]">DURAÇÃO</span>
+				</div>
+				<!-- <Metric value={formatDateDiffMinutes(new Date(trip.endDate), new Date(trip.startDate))} unit="min" label="Duração" /> -->
+
+			</div>
 			<div class="flex flex-col items-center">
 				<svg class="w-9 h-6" width="101" height="62" viewBox="0 0 101 62" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<path d="M17.6281 43.8324L30.1299 34.3483C25.5527 28.2782 15.9614 30.0396 11.8001 30.8144C21.0715 32.5001 17.6281 43.8324 17.6281 43.8324Z" fill="#79C000"/>
