@@ -1,7 +1,7 @@
 <script>
 	import { dev } from '$app/environment';
 	import { LOCK_DISTANCE_m } from '$lib/constants';
-	import { appSettings } from '$lib/stores';
+	import { appSettings } from '$lib/state';
 	import MenuPage from '../MenuPage.svelte';
 	import Toggle from '../Toggle.svelte';
 </script>

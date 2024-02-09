@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { addErrorMessage, safeInsets } from '$lib/stores';
+	import { addErrorMessage, safeInsets } from '$lib/state';
 	import IconMoodWrrr from '@tabler/icons-svelte/dist/svelte/icons/IconMoodWrrr.svelte';
 	import IconMoodConfuzed from '@tabler/icons-svelte/dist/svelte/icons/IconMoodConfuzed.svelte';
 	import IconMoodConfuzedFilled from '@tabler/icons-svelte/dist/svelte/icons/IconMoodConfuzedFilled.svelte';
@@ -10,8 +10,8 @@
 	import IconMoodHappy from '@tabler/icons-svelte/dist/svelte/icons/IconMoodHappy.svelte';
 	import IconMoodHappyFilled from '@tabler/icons-svelte/dist/svelte/icons/IconMoodHappyFilled.svelte';
 	import { fade, fly } from 'svelte/transition';
-	import { rateTrip } from '$lib/gira-api';
-	import { tripRating } from '$lib/stores';
+	import { tripRating } from '$lib/state';
+	import { rateTrip } from '$lib/gira-api/api';
 
 	export let code:string;
 	let rating:number;

@@ -2,14 +2,14 @@
 	import { tweened } from 'svelte/motion';
 	import Bike from '$lib/components/Bike.svelte';
 	import { cubicOut } from 'svelte/easing';
-	import { getStationInfo } from '$lib/gira-api';
 	import { onMount } from 'svelte';
-	import { stations, selectedStation, type StationInfo } from '$lib/stores';
+	import { stations, selectedStation, type StationInfo } from '$lib/state';
 	import { tick } from 'svelte';
 	import { currentPos } from '$lib/location';
 	import { distanceBetweenCoords, formatDistance } from '$lib/utils';
 	import { fade } from 'svelte/transition';
 	import BikeSkeleton from './BikeSkeleton.svelte';
+	import { getStationInfo } from '$lib/gira-api/api';
 
 	export let bikeListHeight = 0;
 	export let posTop:number|undefined = 0;

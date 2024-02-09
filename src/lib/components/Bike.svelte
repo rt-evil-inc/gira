@@ -10,12 +10,14 @@
 	import IconSettings from '@tabler/icons-svelte/dist/svelte/icons/IconSettings.svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import { reserveBike, startTrip, updateActiveTripInfo, type ThrownError } from '../gira-api';
-	import { accountInfo, addErrorMessage, appSettings, currentTrip, type StationInfo } from '$lib/stores';
+	import type { ThrownError } from '../gira-api/api-types';
+	import { accountInfo, addErrorMessage, appSettings, currentTrip, type StationInfo } from '$lib/state';
 	import { currentPos } from '$lib/location';
 	import { fade } from 'svelte/transition';
 	import { distanceBetweenCoords } from '$lib/utils';
 	import { LOCK_DISTANCE_m } from '$lib/constants';
+	import { updateActiveTripInfo } from '$lib/state/helper';
+	import { reserveBike, startTrip } from '$lib/gira-api/api';
 
 	async function checkTripStarted() {
 		if ($currentTrip === null) return;

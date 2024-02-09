@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { getTripHistory } from '$lib/gira-api';
-	import type { TripHistory_TripDetail } from '$lib/gira-api/types';
+	import type { TripHistory_TripDetail } from '$lib/gira-api/api-types';
 	import { onMount } from 'svelte';
 	import HistoryItem from './HistoryItem.svelte';
-	import { safeInsets } from '$lib/stores';
+	import { safeInsets } from '$lib/state';
 	import { fly } from 'svelte/transition';
 	import MenuPage from '../MenuPage.svelte';
+	import { getTripHistory } from '$lib/gira-api/api';
 
 	let trips:TripHistory_TripDetail[] = [];
 	let observed:HTMLDivElement;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TripHistory_TripDetail } from '$lib/gira-api/types';
+	import type { TripHistory_TripDetail } from '$lib/gira-api/api-types';
 	import Metric from '../Metric.svelte';
 
 	export let trip: TripHistory_TripDetail|null;

@@ -2,7 +2,7 @@
 	import { onMount, tick } from 'svelte';
 	import { AttributionControl, GeoJSONSource, Map } from 'maplibre-gl';
 	import type { GeoJSON } from 'geojson';
-	import { currentTrip, stations, selectedStation, token, following } from '$lib/stores';
+	import { currentTrip, stations, selectedStation, token, following } from '$lib/state';
 	import type { Position } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
 	import { pulsingDot } from '$lib/pulsing-dot';
