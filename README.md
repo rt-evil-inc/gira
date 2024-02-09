@@ -80,6 +80,7 @@ npm install
 npm run build
 cd ios/App
 pod install
+cd ../..
 npx cap run ios
 ```
   ou
@@ -88,6 +89,7 @@ bun install
 bun run build
 cd ios/App
 pod install
+cd ../..
 bunx cap run ios
 ```
 

@@ -23,7 +23,7 @@ def capacitor_pods
   pod 'CapacitorPluginSafeArea', :path => '../../node_modules/capacitor-plugin-safe-area'
 end
 
-target 'App' do
+target 'GiraPlus' do
   capacitor_pods
   # Add your Pods here
 end
