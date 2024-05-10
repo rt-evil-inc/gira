@@ -58,6 +58,7 @@
     "@sveltejs/adapter-static": "^2.0.3",
     "@tabler/icons-svelte": "^2.42.0",
     "capacitor-plugin-safe-area": "^2.0.6",
-    "maplibre-gl": "^3.6.2"
+    "maplibre-gl": "^3.6.2",
+    "posthog-js": "^1.131.3"
   }
 }
