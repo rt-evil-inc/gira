@@ -18,6 +18,7 @@
 	import { LOCK_DISTANCE_m } from '$lib/constants';
 	import { updateActiveTripInfo } from '$lib/state/helper';
 	import { reserveBike, startTrip } from '$lib/gira-api/api';
+    import { captureEvent } from '$lib/analytics';
 
 	async function checkTripStarted() {
 		if ($currentTrip === null) return;
@@ -76,6 +77,7 @@
 							time: new Date,
 						}] : [],
 					};
+					captureEvent('bike_unlocked');
 					return true;
 				} else {
 					addErrorMessage('Não foi possível desbloquear a bicicleta');

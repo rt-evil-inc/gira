@@ -14,7 +14,7 @@
 	import { App } from '@capacitor/app';
 	import { refreshToken } from '$lib/auth';
 	import { updateActiveTripInfo } from '$lib/state/helper';
-	import posthog from 'posthog-js';
+	import { initAnalytics } from '$lib/analytics';
 
 	if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') {
 		StatusBar.setOverlaysWebView({ overlay: true });
@@ -26,11 +26,8 @@
 	}
 
 	onMount(() => {
-		posthog.init(
-			'phc_mtzeOvajYaS57DQd4fvwbRpBwYFGHto4CDcBBHGzlGo',
-			{ api_host: 'https://posthog.tteles.dev' },
-		);
 		loadUserCreds();
+		initAnalytics();
 		App.addListener('resume', () => {
 			if ($token != null && $token.refreshToken != null) {
 				console.debug('Refreshing token because app was reopened');

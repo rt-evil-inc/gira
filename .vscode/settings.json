@@ -18,4 +18,7 @@
 		"editor.defaultFormatter": "vscode.json-language-features"
 	},
 	"java.configuration.updateBuildConfiguration": "disabled",
+	"[svelte]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+	},
 }

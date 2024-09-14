@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { version } from '$app/environment';
+    import { captureEvent } from '$lib/analytics';
 	import { safeInsets } from '$lib/state';
 	import MenuPage from '../MenuPage.svelte';
 	async function wait(ms:number) {
@@ -20,6 +21,8 @@
 	let move = false;
 	async function animate() {
 		if (animating) return;
+
+		captureEvent('easter_egg');
 		animating = true;
 		rotatedOutside = true;
 		await wait(2000);
