@@ -1,12 +1,12 @@
 <script lang="ts">
-	import IconHistory from '@tabler/icons-svelte/dist/svelte/icons/IconHistory.svelte';
-	import IconX from '@tabler/icons-svelte/dist/svelte/icons/IconX.svelte';
-	import IconTool from '@tabler/icons-svelte/dist/svelte/icons/IconTool.svelte';
-	import IconInfoCircle from '@tabler/icons-svelte/dist/svelte/icons/IconInfoCircle.svelte';
-	import IconArrowLeft from '@tabler/icons-svelte/dist/svelte/icons/IconArrowLeft.svelte';
-	import IconTicket from '@tabler/icons-svelte/dist/svelte/icons/IconTicket.svelte';
-	import IconLogout2 from '@tabler/icons-svelte/dist/svelte/icons/IconLogout2.svelte';
-	import IconMessageReport from '@tabler/icons-svelte/dist/svelte/icons/IconMessageReport.svelte';
+	import IconHistory from '@tabler/icons-svelte/icons/history';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconTool from '@tabler/icons-svelte/icons/tool';
+	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
+	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
+	import IconTicket from '@tabler/icons-svelte/icons/ticket';
+	import IconLogout2 from '@tabler/icons-svelte/icons/logout-2';
+	import IconMessageReport from '@tabler/icons-svelte/icons/message-report';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { accountInfo, safeInsets, user } from '$lib/state';

@@ -1,13 +1,13 @@
 <script lang="ts">
-	import IconBattery from '@tabler/icons-svelte/dist/svelte/icons/IconBattery.svelte';
-	import IconBattery1 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery1.svelte';
-	import IconBattery2 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery2.svelte';
-	import IconBattery3 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery3.svelte';
-	import IconBattery4 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery4.svelte';
-	import IconBolt from '@tabler/icons-svelte/dist/svelte/icons/IconBolt.svelte';
-	import IconLockOpen from '@tabler/icons-svelte/dist/svelte/icons/IconLockOpen.svelte';
-	import IconLock from '@tabler/icons-svelte/dist/svelte/icons/IconLock.svelte';
-	import IconSettings from '@tabler/icons-svelte/dist/svelte/icons/IconSettings.svelte';
+	import IconBattery from '@tabler/icons-svelte/icons/battery';
+	import IconBattery1 from '@tabler/icons-svelte/icons/battery-1';
+	import IconBattery2 from '@tabler/icons-svelte/icons/battery-2';
+	import IconBattery3 from '@tabler/icons-svelte/icons/battery-3';
+	import IconBattery4 from '@tabler/icons-svelte/icons/battery-4';
+	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconLockOpen from '@tabler/icons-svelte/icons/lock-open';
+	import IconLock from '@tabler/icons-svelte/icons/lock';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import type { ThrownError } from '../gira-api/api-types';
@@ -18,7 +18,7 @@
 	import { LOCK_DISTANCE_m } from '$lib/constants';
 	import { updateActiveTripInfo } from '$lib/state/helper';
 	import { reserveBike, startTrip } from '$lib/gira-api/api';
-    import { captureEvent } from '$lib/analytics';
+	import { captureEvent } from '$lib/analytics';
 
 	async function checkTripStarted() {
 		if ($currentTrip === null) return;

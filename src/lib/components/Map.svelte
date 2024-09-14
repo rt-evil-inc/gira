@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { AttributionControl, GeoJSONSource, Map } from 'maplibre-gl';
-	import type { GeoJSON } from 'geojson';
+	import maplibregl from 'maplibre-gl';
+	const { AttributionControl, GeoJSONSource, Map } = maplibregl;
 	import { currentTrip, stations, selectedStation, token, following } from '$lib/state';
 	import type { Position } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
@@ -14,7 +14,7 @@
 	export let topPadding = 0;
 
 	let mapElem: HTMLDivElement;
-	let map : Map;
+	let map : maplibregl.Map;
 	let mapLoaded = false;
 	let ready = false;
 	let blurred = true;
@@ -25,7 +25,7 @@
 	$: if ($bearingNorth) map.flyTo({ bearing: 0 });
 
 	function setSourceData() {
-		const src = map.getSource('points') as GeoJSONSource|null;
+		const src = map.getSource('points');
 		if (src instanceof GeoJSONSource) {
 			const data:GeoJSON.GeoJSON = {
 				'type': 'FeatureCollection',
@@ -54,7 +54,7 @@
 				'data': { type: 'FeatureCollection', features: [] },
 			});
 		}
-		const userSrc = map.getSource('user-location') as GeoJSONSource|null;
+		const userSrc = map.getSource('user-location');
 		if (!(userSrc instanceof GeoJSONSource)) {
 			map.addSource('user-location', {
 				'type': 'geojson',
@@ -217,9 +217,9 @@
 	async function handleLocUpdate(pos: Position|null) {
 		if (pos && pos.coords) {
 			if ($following && !blurred) centerMap(pos);
-			const src = map.getSource('user-location') as GeoJSONSource|null;
+			const src = map.getSource<maplibregl.GeoJSONSource>('user-location');
 			// dont change to GeoJSONSource as building breaks for no apparent reason
-			if (src !== null) {
+			if (src != null) {
 				const data:GeoJSON.GeoJSON = {
 					'type': 'FeatureCollection',
 					'features': [{

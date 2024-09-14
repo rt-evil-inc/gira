@@ -18,8 +18,9 @@
   "devDependencies": {
     "@fontsource/poppins": "^5.0.8",
     "@playwright/test": "^1.40.1",
-    "@sveltejs/adapter-auto": "^2.0.0",
-    "@sveltejs/kit": "^1.27.4",
+    "@sveltejs/adapter-auto": "^3.0.0",
+    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@tailwindcss/forms": "^0.5.7",
     "@types/node": "^20.11.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -33,7 +34,7 @@
     "tailwindcss": "^3.3.6",
     "tslib": "^2.4.1",
     "typescript": "^5.3.3",
-    "vite": "^4.4.2",
+    "vite": "^5.0.0",
     "vitest": "^1.2.2"
   },
   "type": "module",
@@ -55,13 +56,14 @@
     "@fontsource/inter": "^5.0.16",
     "@fontsource/roboto-mono": "^5.0.16",
     "@mauricewegner/capacitor-navigation-bar": "^2.0.1",
-    "@sveltejs/adapter-static": "^2.0.3",
-    "@tabler/icons-svelte": "^2.42.0",
+    "@sveltejs/adapter-static": "^3.0.0",
+    "@tabler/icons-svelte": "^3.16.0",
     "capacitor-plugin-safe-area": "^2.0.6",
-    "maplibre-gl": "^3.6.2",
+    "maplibre-gl": "^4.7.0",
     "posthog-js": "^1.161.3"
   },
   "trustedDependencies": [
+    "@sveltejs/kit",
     "svelte-preprocess"
   ]
 }

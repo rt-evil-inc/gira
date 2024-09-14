@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { addErrorMessage, safeInsets } from '$lib/state';
-	import IconMoodWrrr from '@tabler/icons-svelte/dist/svelte/icons/IconMoodWrrr.svelte';
-	import IconMoodConfuzed from '@tabler/icons-svelte/dist/svelte/icons/IconMoodConfuzed.svelte';
-	import IconMoodConfuzedFilled from '@tabler/icons-svelte/dist/svelte/icons/IconMoodConfuzedFilled.svelte';
-	import IconMoodEmpty from '@tabler/icons-svelte/dist/svelte/icons/IconMoodEmpty.svelte';
-	import IconMoodEmptyFilled from '@tabler/icons-svelte/dist/svelte/icons/IconMoodEmptyFilled.svelte';
-	import IconMoodSmile from '@tabler/icons-svelte/dist/svelte/icons/IconMoodSmile.svelte';
-	import IconMoodSmileFilled from '@tabler/icons-svelte/dist/svelte/icons/IconMoodSmileFilled.svelte';
-	import IconMoodHappy from '@tabler/icons-svelte/dist/svelte/icons/IconMoodHappy.svelte';
-	import IconMoodHappyFilled from '@tabler/icons-svelte/dist/svelte/icons/IconMoodHappyFilled.svelte';
+
+	import IconMoodWrrr from '@tabler/icons-svelte/icons/mood-wrrr';
+	import IconMoodConfuzed from '@tabler/icons-svelte/icons/mood-confuzed';
+	import IconMoodConfuzedFilled from '@tabler/icons-svelte/icons/mood-confuzed-filled';
+	import IconMoodEmpty from '@tabler/icons-svelte/icons/mood-empty';
+	import IconMoodEmptyFilled from '@tabler/icons-svelte/icons/mood-empty-filled';
+	import IconMoodSmile from '@tabler/icons-svelte/icons/mood-smile';
+	import IconMoodSmileFilled from '@tabler/icons-svelte/icons/mood-smile-filled';
+	import IconMoodHappy from '@tabler/icons-svelte/icons/mood-happy';
+	import IconMoodHappyFilled from '@tabler/icons-svelte/icons/mood-happy-filled';
 	import { fade, fly } from 'svelte/transition';
 	import { tripRating } from '$lib/state';
 	import { rateTrip } from '$lib/gira-api/api';
