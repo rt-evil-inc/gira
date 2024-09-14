@@ -6,6 +6,7 @@ import os from 'os';
 const dev = process.argv.includes('--dev');
 const install = process.argv.includes('--install');
 const gradlew = path.join('gradlew');
+console.log(gradlew);
 
 (async () => {
 	try {
@@ -15,7 +16,7 @@ const gradlew = path.join('gradlew');
 		} else {
 			await execCommand('vite build && npx cap sync');
 		}
-		await execCommand(`cd android && ${gradlew} ${install ? 'installDebug' : 'assembleDebug'}`);
+		await execCommand(`cd android && ./gradlew ${install ? 'installDebug' : 'assembleDebug'}`);
 		if (dev) await updateAppId();
 	} catch (e) {
 		updateAppId();
