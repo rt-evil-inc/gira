@@ -27,7 +27,7 @@
 </script>
 
 {#if trip != null}
-	<div class="flex bg-white rounded-2xl py-4 px-6 gap-5 text-info justify-between" style:box-shadow="0px 0px 12px 0px var(--color-shadow)">
+	<div class="flex bg-background rounded-2xl py-4 px-6 gap-5 text-info justify-between dark:bg-background-secondary" style:box-shadow="0px 0px 12px 0px var(--color-shadow)">
 		<div class="flex flex-col items-center justify-center gap-[6px]">
 			<div class="rounded-full border-[3px] w-4 h-4 border-primary shrink-0"></div>
 			<div class="bg-primary w-[3px] h-2 rounded-full"></div>
@@ -85,5 +85,5 @@
 		</div>
 	</div>
 {:else}
-	<div class="bg-neutral-50 animate-pulse h-32 rounded-2xl py-4 px-6 gap-5" style:box-shadow="0px 0px 12px 0px var(--color-shadow)"></div>
+	<div class="bg-neutral-50 animate-pulse h-32 rounded-2xl py-4 px-6 gap-5 dark:bg-background-secondary" style:box-shadow="0px 0px 12px 0px var(--color-shadow)"></div>
 {/if}

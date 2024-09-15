@@ -161,7 +161,7 @@
 			</div>
 		{/if}
 	</div>
-	<div class="absolute flex items-center bg-background rounded-2xl h-full w-full px-5 gap-5 touch-pan-y" style:box-shadow="0px 0px 12px 0px var(--color-shadow)"
+	<div class="absolute flex items-center bg-background rounded-2xl h-full w-full px-5 gap-5 touch-pan-y dark:bg-background-secondary" style:box-shadow="0px 0px 12px 0px var(--color-shadow)"
 
 		on:pointerdown={onPointerDown}
 		on:pointerup={onPointerUp}

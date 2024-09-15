@@ -8,6 +8,7 @@
 	import { pulsingDot } from '$lib/pulsing-dot';
 	import { currentPos, bearingNorth, bearing } from '$lib/location';
 	import type { Unsubscriber } from 'svelte/motion';
+    import { getMapStyle } from '$lib/mapStyle';
 
 	export let loading = true;
 	export let bottomPadding = 0;
@@ -244,7 +245,7 @@
 	onMount(() => {
 		map = new Map({
 			container: mapElem,
-			style: 'assets/map-style.json',
+			style: getMapStyle(),
 			center: [-9.15, 38.744],
 			zoom: 11,
 			attributionControl: false,

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { SvelteComponent } from 'svelte';
+	import type { SvelteComponent, SvelteComponentTyped } from 'svelte';
 
 	export let text = '';
-	export let icon: typeof SvelteComponent;
+	export let icon: typeof SvelteComponentTyped;
 	export let subtext = '';
 </script>
 
-<button class="flex items-center text-left w-full min-h-[70px] rounded-2xl bg-background active:bg-background-secondary transition-colors px-3 gap-3" style:box-shadow="0px 0px 12px 0px var(--color-shadow)" on:click >
+<button class="flex items-center text-left w-full min-h-[70px] rounded-2xl bg-background active:bg-background-secondary transition-colors px-3 gap-3 dark:bg-background-secondary" style:box-shadow="0px 0px 12px 0px var(--color-shadow)" on:click >
 	<svelte:component this={icon} class="text-primary" size={32} stroke={2} />
 	<div>
 		<div class="font-bold text-base text-primary">{text}</div>

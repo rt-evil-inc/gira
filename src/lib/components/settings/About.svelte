@@ -35,7 +35,7 @@
 </script>
 
 <MenuPage>
-	<div class="flex flex-col p-5 relative grow" style:padding-bottom="{Math.max($safeInsets.bottom, 20)}px">
+	<div class="flex flex-col p-5 relative grow overflow-hidden" style:padding-bottom="{Math.max($safeInsets.bottom, 20)}px">
 		<div class="text-3xl font-bold text-info pl-2">Sobre</div>
 		<div class="flex flex-col h-full px-5 py-10 gap-10 items-center">
 			<div class="flex flex-col w-full gap-3 font-medium text-info leading-tight">
