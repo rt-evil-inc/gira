@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { SvelteComponent, SvelteComponentTyped } from 'svelte';
+	import type { SvelteComponent} from 'svelte';
 
 	export let text = '';
-	export let icon: typeof SvelteComponentTyped;
+	export let icon: typeof SvelteComponent;
 	export let subtext = '';
 </script>
 
