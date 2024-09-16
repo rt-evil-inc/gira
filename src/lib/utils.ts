@@ -23,3 +23,7 @@ export function randomUUID() {
 		return v.toString(16);
 	});
 }
+
+export function getCssVariable(name:string) {
+	return getComputedStyle(document.documentElement).getPropertyValue(name);
+}

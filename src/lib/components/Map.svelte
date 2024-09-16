@@ -9,6 +9,7 @@
 	import { currentPos, bearingNorth, bearing } from '$lib/location';
 	import type { Unsubscriber } from 'svelte/motion';
     import { getMapStyle } from '$lib/mapStyle';
+    import { getCssVariable } from '$lib/utils';
 
 	export let loading = true;
 	export let bottomPadding = 0;
@@ -173,8 +174,9 @@
 		map.addImage('bike_inactive_selected', await loadSvg('./assets/bike_marker_inactive_selected.svg'));
 		map.addImage('dock_inactive', await loadSvg('./assets/dock_marker_inactive.svg'));
 		map.addImage('dock_inactive_selected', await loadSvg('./assets/dock_marker_inactive_selected.svg'));
-
-		const imgs = [['bike', './assets/bike_marker.svg', '#79c000'], ['bike_selected', './assets/bike_marker_selected.svg', '#fff'], ['dock', './assets/dock_marker.svg', '#79c000'], ['dock_selected', './assets/dock_marker_selected.svg', '#fff']];
+		
+		const primaryColor = `hsl(${getCssVariable('--color-primary')})`;
+		const imgs = [['bike', './assets/bike_marker.svg', primaryColor], ['bike_selected', './assets/bike_marker_selected.svg', '#fff'], ['dock', './assets/dock_marker.svg', primaryColor], ['dock_selected', './assets/dock_marker_selected.svg', '#fff']];
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext('2d', { willReadFrequently: true })!;
 		const start = performance.now();

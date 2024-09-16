@@ -1,5 +1,141 @@
+// import oldStyle from '../../static/assets/old-style.json'
+import type { DataDrivenPropertyValueSpecification } from "maplibre-gl";
+import { getCssVariable } from "./utils";
 
 export function getMapStyle(): maplibregl.StyleSpecification {
+  const primaryColorHsl = getCssVariable("--color-primary");
+  const colors = {
+    base: {
+      background: "#f6f6f6",
+      park: "#e1f1e0",
+      water: "#d0e9f4",
+      waterway: "#d0e9f4"
+    },
+    landUse: {
+      school: "#f8f1e1",
+      hospital: "#f6ecef",
+      residential: "#f5f5f5",
+      cemetery: "#eaeaea"
+    },
+    landCover: {
+      wood: "#d3e6d2",
+      grass: "#e1f1e0"
+    },
+    general: {
+      casing: "#d5d5d5",
+    },
+    motorway: {
+      tunnel: {
+        inner: "#EAEAEA"
+      }
+    },
+    railway: {
+      dashline: "#fafafa",
+    },
+    path: {
+      casing: "#ffffff",
+      inner: "#DCE3EE"
+    },
+    cycleway: {
+      casing: "#CCE79D",
+      inner: "#DDEFBF"
+    },
+    aeroway: {
+      taxiway: "#e0e0e0",
+      runway: {
+        casing: "#e0e0e0",
+        fill: "#ffffff"
+      }
+    },
+    landcover: {
+      iceShelf: "hsl(0,0%,98%)",
+      sand: "#f8f1e1",
+      glacier: "hsl(0,0%,98%)"
+    },
+    highway: {
+      minor: "#fff",
+      major: {
+        casing: "#d5d5d5",
+        inner: [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          5.8,
+          "hsla(0,0%,85%,0.53)",
+          6,
+          "#fff"
+        ] satisfies DataDrivenPropertyValueSpecification<string>,
+        subtle: "hsla(0,0%,85%,0.69)"
+      },
+      motorway: {
+        casing: "#d5d5d5",
+        inner: [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          5.8,
+          "hsla(0,0%,85%,0.53)",
+          6,
+          "#fff"
+        ] satisfies DataDrivenPropertyValueSpecification<string>,
+        subtle: "hsla(0,0%,85%,0.53)",
+        bridge: {
+          casing: "#d5d5d5",
+          inner: "#fff"
+        }
+      }
+    },
+    ferry: {
+      lineColor: "rgba(161, 191, 255, 0.49)"
+    },
+    boundary: {
+      state: "rgb(230, 204, 207)",
+      country: {
+        z0_4: "rgb(230, 204, 207)",
+        z5: "rgb(230, 204, 207)"
+      }
+    },
+    building: {
+      outline: "rgba(219, 219, 219, 1)",
+      fill: "rgba(231, 231, 231, 1)",
+      fill3D: "rgba(249, 249, 249, 1)"
+    },
+    place: {
+      suburb: {
+        text: "rgb(117, 129, 145)",
+        halo: "rgb(242,243,240)"
+      },
+      village: {
+        text: "rgb(117, 129, 145)",
+        halo: "rgb(242,243,240)"
+      },
+      town: {
+        text: "rgb(117, 129, 145)",
+        halo: "rgb(242,243,240)"
+      },
+      city: {
+        regular: {
+          text: "rgb(117, 129, 145)",
+          halo: "rgb(242,243,240)",
+        },
+        large: {
+          text: "rgb(117, 129, 145)",
+          halo: "rgb(242,243,240)"
+        },
+        capital: {
+          text: "rgb(117, 129, 145)",
+          halo: "rgb(242,243,240)"
+        }
+      },
+      state: "rgb(113, 129, 144)",
+      country: {
+        other: "rgb(157, 169, 177)",
+        minor: "rgb(157,169,177)",
+        major: "rgb(157,169,177)"
+      }
+    }
+  };
+
   return {
     "version": 8,
     "name": "Gira+",
@@ -16,7 +152,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
       {
         "id": "background",
         "type": "background",
-        "paint": { "background-color": "#f6f6f6" }
+        "paint": { "background-color": colors.base.background }
       },
       {
         "id": "park",
@@ -25,7 +161,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         "source-layer": "park",
         "filter": ["==", ["geometry-type"], "Polygon"],
         "layout": { "visibility": "visible" },
-        "paint": { "fill-color": "#e1f1e0" }
+        "paint": { "fill-color": colors.base.park }
       },
       {
         "id": "water",
@@ -38,7 +174,10 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           ["!=", ["get", "brunnel"], "tunnel"]
         ],
         "layout": { "visibility": "visible" },
-        "paint": { "fill-antialias": true, "fill-color": "#d0e9f4" }
+        "paint": {
+          "fill-antialias": true,
+          "fill-color": colors.base.water
+        }
       },
       {
         "id": "landcover_ice_shelf",
@@ -52,7 +191,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           ["==", ["get", "subclass"], "ice_shelf"]
         ],
         "layout": { "visibility": "visible" },
-        "paint": { "fill-color": "hsl(0,0%,98%)", "fill-opacity": 0.7 }
+        "paint": { "fill-color": colors.landcover.iceShelf, "fill-opacity": 0.7 }
       },
       {
         "id": "landcover_sand",
@@ -68,7 +207,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         ],
         "layout": { "visibility": "visible" },
         "paint": {
-          "fill-color": "#f8f1e1",
+          "fill-color": colors.landcover.sand,
           "fill-opacity": 1,
           "fill-antialias": false
         }
@@ -86,7 +225,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         ],
         "layout": { "visibility": "visible" },
         "paint": {
-          "fill-color": "hsl(0,0%,98%)",
+          "fill-color": colors.landcover.glacier,
           "fill-opacity": ["interpolate", ["linear"], ["zoom"], 0, 1, 8, 0.5]
         }
       },
@@ -112,7 +251,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
             9,
             0.6
           ],
-          "fill-color": "#f5f5f5"
+          "fill-color": colors.landUse.residential
         }
       },
       {
@@ -125,7 +264,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         "layout": { "visibility": "visible" },
         "paint": {
           "fill-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0, 13.5, 1],
-          "fill-color": "#f8f1e1"
+          "fill-color": colors.landUse.school
         }
       },
       {
@@ -141,7 +280,10 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           ["==", ["get", "class"], "cemetery"]
         ],
         "layout": { "visibility": "visible" },
-        "paint": { "fill-color": "rgba(234, 234, 234, 1)", "fill-opacity": 1 }
+        "paint": {
+          "fill-color": colors.landUse.cemetery,
+          "fill-opacity": 1
+        }
       },
       {
         "id": "landuse_hospital",
@@ -153,7 +295,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         "layout": { "visibility": "visible" },
         "paint": {
           "fill-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0, 12, 1],
-          "fill-color": "#f6ecef"
+          "fill-color": colors.landUse.hospital
         }
       },
       {
@@ -170,7 +312,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         "layout": { "visibility": "visible" },
         "paint": {
           "fill-opacity": ["interpolate", ["linear"], ["zoom"], 14, 0, 14.5, 1],
-          "fill-color": "#d3e6d2"
+          "fill-color": colors.landCover.wood
         }
       },
       {
@@ -187,7 +329,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         "layout": { "visibility": "visible" },
         "paint": {
           "fill-opacity": ["interpolate", ["linear"], ["zoom"], 14, 0, 14.5, 1],
-          "fill-color": "#e1f1e0"
+          "fill-color": colors.landCover.grass
         }
       },
       {
@@ -199,7 +341,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         "filter": ["==", ["geometry-type"], "LineString"],
         "layout": { "visibility": "visible" },
         "paint": {
-          "line-color": "#d0e9f4",
+          "line-color": colors.base.waterway,
           "line-width": 3,
           "line-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0, 13.5, 1]
         }
@@ -251,7 +393,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": "rgb(213, 213, 213)",
+          "line-color": colors.general.casing,
           "line-opacity": 1,
           "line-width": [
             "interpolate",
@@ -287,7 +429,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": "rgb(234,234,234)",
+          "line-color": colors.motorway.tunnel.inner,
           "line-width": [
             "interpolate",
             ["exponential", 1.4],
@@ -314,7 +456,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": "hsl(0,0%,88%)",
+          "line-color": colors.aeroway.taxiway,
           "line-opacity": 1,
           "line-width": [
             "interpolate",
@@ -340,7 +482,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": "hsl(0,0%,88%)",
+          "line-color": colors.aeroway.runway.casing,
           "line-opacity": 1,
           "line-width": [
             "interpolate",
@@ -366,7 +508,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         ],
         "layout": { "visibility": "visible" },
         "paint": {
-          "fill-color": "rgba(255, 255, 255, 1)",
+          "fill-color": colors.aeroway.runway.fill,
           "fill-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0, 14, 1]
         }
       },
@@ -458,7 +600,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": "rgba(255, 255, 255, 1)",
+          "line-color": colors.path.casing,
           "line-dasharray": [12, 0],
           "line-width": [
             "interpolate",
@@ -500,7 +642,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
             20,
             6
           ],
-          "line-color": "rgba(220, 227, 238, 1)",
+          "line-color": colors.path.inner,
           "line-dasharray": [1, 2]
         }
       },
@@ -531,7 +673,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
             20,
             20
           ],
-          "line-color": "#fff"
+          "line-color": colors.highway.minor
         }
       },
       {
@@ -557,7 +699,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": "rgb(213, 213, 213)",
+          "line-color": colors.highway.major.casing,
           "line-dasharray": [12, 0],
           "line-width": [
             "interpolate",
@@ -593,7 +735,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": "#fff",
+          "line-color": colors.highway.major.inner,
           "line-width": [
             "interpolate",
             ["exponential", 1.3],
@@ -650,7 +792,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": "rgb(213, 213, 213)",
+          "line-color": colors.highway.motorway.casing,
           "line-dasharray": [2, 0],
           "line-opacity": 1,
           "line-width": [
@@ -687,15 +829,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            5.8,
-            "hsla(0,0%,85%,0.53)",
-            6,
-            "#fff"
-          ],
+          "line-color": colors.highway.motorway.inner,
           "line-width": [
             "interpolate",
             ["exponential", 1.4],
@@ -726,7 +860,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": "hsla(0,0%,85%,0.53)",
+          "line-color": colors.highway.motorway.subtle,
           "line-width": [
             "interpolate",
             ["exponential", 1.4],
@@ -771,7 +905,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         ],
         "layout": { "line-join": "round", "visibility": "visible" },
         "paint": {
-          "line-color": "#fafafa",
+          "line-color": colors.railway.dashline,
           "line-dasharray": [3, 3],
           "line-width": 1
         }
@@ -893,8 +1027,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
             45
           ]
         }
-      },
-      {
+      }, {
         "id": "highway_motorway_bridge_inner",
         "type": "line",
         "source": "openmaptiles",
@@ -950,7 +1083,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": "rgba(161, 191, 255, 0.49)",
+          "line-color": colors.ferry.lineColor,
           "line-width": 2,
           "line-dasharray": [2, 2]
         }
@@ -1032,7 +1165,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         },
         "paint": {
           "line-blur": 0.4,
-          "line-color": "rgb(230, 204, 207)",
+          "line-color": colors.boundary.state,
           "line-dasharray": [2, 2],
           "line-opacity": 1,
           "line-width": [
@@ -1060,7 +1193,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         "layout": { "line-cap": "round", "line-join": "round" },
         "paint": {
           "line-blur": ["interpolate", ["linear"], ["zoom"], 0, 0.4, 22, 4],
-          "line-color": "rgb(230, 204, 207)",
+          "line-color": colors.boundary.country.z0_4,
           "line-opacity": 1,
           "line-width": [
             "interpolate",
@@ -1083,7 +1216,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         "layout": { "line-cap": "round", "line-join": "round" },
         "paint": {
           "line-blur": ["interpolate", ["linear"], ["zoom"], 0, 0.4, 22, 4],
-          "line-color": "rgb(230, 204, 207)",
+          "line-color": colors.boundary.country.z5,
           "line-opacity": 1,
           "line-width": [
             "interpolate",
@@ -1162,9 +1295,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "text-color": "rgb(117, 129, 145)",
+          "text-color": colors.place.suburb.text,
           "text-halo-blur": 1,
-          "text-halo-color": "rgb(242,243,240)",
+          "text-halo-color": colors.place.suburb.halo,
           "text-halo-width": 1
         }
       },
@@ -1197,9 +1330,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         },
         "paint": {
           "icon-opacity": 0.7,
-          "text-color": "rgb(117, 129, 145)",
+          "text-color": colors.place.village.text,
           "text-halo-blur": 1,
-          "text-halo-color": "rgb(242,243,240)",
+          "text-halo-color": colors.place.village.halo,
           "text-halo-width": 1
         }
       },
@@ -1233,9 +1366,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         },
         "paint": {
           "icon-opacity": 0.7,
-          "text-color": "rgb(117, 129, 145)",
+          "text-color": colors.place.town.text,
           "text-halo-blur": 1,
-          "text-halo-color": "rgb(242,243,240)",
+          "text-halo-color": colors.place.town.halo,
           "text-halo-width": 1
         }
       },
@@ -1274,9 +1407,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         },
         "paint": {
           "icon-opacity": 0.7,
-          "text-color": "rgb(117, 129, 145)",
+          "text-color": colors.place.city.regular.text,
           "text-halo-blur": 1,
-          "text-halo-color": "rgb(242,243,240)",
+          "text-halo-color": colors.place.city.regular.halo,
           "text-halo-width": 1
         }
       },
@@ -1310,9 +1443,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         },
         "paint": {
           "icon-opacity": 0.7,
-          "text-color": "rgb(117, 129, 145)",
+          "text-color": colors.place.city.capital.text,
           "text-halo-blur": 1,
-          "text-halo-color": "rgb(242,243,240)",
+          "text-halo-color": colors.place.city.capital.halo,
           "text-halo-width": 1
         }
       },
@@ -1351,9 +1484,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         },
         "paint": {
           "icon-opacity": 0.7,
-          "text-color": "rgb(117, 129, 145)",
+          "text-color": colors.place.city.large.text,
           "text-halo-blur": 1,
-          "text-halo-color": "rgb(242,243,240)",
+          "text-halo-color": colors.place.city.large.halo,
           "text-halo-width": 1
         }
       },
@@ -1528,7 +1661,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
             20,
             20
           ],
-          "line-color": "rgba(204, 231, 157, 1)",
+          "line-color": colors.cycleway.casing,
           "line-opacity": ["interpolate", ["linear"], ["zoom"], 14, 0, 15, 1]
         }
       },
@@ -1562,7 +1695,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
             20,
             16
           ],
-          "line-color": "rgb(221, 239, 191)"
+          "line-color": colors.cycleway.inner
         }
       },
       {
@@ -1575,8 +1708,8 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         "layout": { "visibility": "visible" },
         "paint": {
           "fill-antialias": true,
-          "fill-outline-color": "rgba(219, 219, 219, 1)",
-          "fill-color": "rgba(231, 231, 231, 1)",
+          "fill-outline-color": colors.building.outline,
+          "fill-color": colors.building.fill,
           "fill-opacity": ["interpolate", ["linear"], ["zoom"], 14.5, 0, 15, 1]
         }
       },
@@ -1590,8 +1723,8 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         "layout": { "visibility": "visible" },
         "paint": {
           "fill-antialias": true,
-          "fill-outline-color": "rgba(219, 219, 219, 1)",
-          "fill-color": "rgba(231, 231, 231, 1)",
+          "fill-outline-color": colors.building.outline,
+          "fill-color": colors.building.fill,
           "fill-opacity": ["interpolate", ["linear"], ["zoom"], 15.5, 1, 22, 0.1]
         }
       },
@@ -1604,7 +1737,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         "filter": ["!", ["has", "hide_3d"]],
         "layout": { "visibility": "visible" },
         "paint": {
-          "fill-extrusion-color": "rgba(249, 249, 249, 1)",
+          "fill-extrusion-color": colors.building.fill3D,
           "fill-extrusion-height": ["get", "render_height"],
           "fill-extrusion-opacity": [
             "interpolate",
@@ -1619,6 +1752,6 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "fill-extrusion-base": ["get", "render_min_height"]
         }
       }
-    ],
+    ]
   };
 }
