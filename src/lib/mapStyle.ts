@@ -1,25 +1,39 @@
 // import oldStyle from '../../static/assets/old-style.json'
 import type { DataDrivenPropertyValueSpecification } from "maplibre-gl";
 import { getCssVariable } from "./utils";
+import { base } from "$service-worker";
 
 export function getMapStyle(): maplibregl.StyleSpecification {
   const primaryColorHsl = getCssVariable("--color-primary");
+
+  const c = {
+    neutral100: "#ffffff",
+    green100: "#e1f1e0",
+    green200: "#d3e6d2",
+    gira100: "#DDEFBF",
+    gira200: "#CCE79D",
+    red100: "#f6ecef",
+    yellow100: "#f8f1e1",
+    blue100: "#d0e9f4",
+
+
+  }
+
   const colors = {
     base: {
       background: "#f6f6f6",
-      park: "#e1f1e0",
-      water: "#d0e9f4",
-      waterway: "#d0e9f4"
+      park: c.green100,
+      water: c.blue100
     },
     landUse: {
-      school: "#f8f1e1",
-      hospital: "#f6ecef",
+      school: c.yellow100,
+      hospital: c.red100,
       residential: "#f5f5f5",
       cemetery: "#eaeaea"
     },
     landCover: {
-      wood: "#d3e6d2",
-      grass: "#e1f1e0"
+      wood: c.green200,
+      grass: c.green100
     },
     general: {
       casing: "#d5d5d5",
@@ -37,18 +51,18 @@ export function getMapStyle(): maplibregl.StyleSpecification {
       line: "#dddddd"
     },
     path: {
-      casing: "#ffffff",
+      casing: c.neutral100,
       inner: "#DCE3EE"
     },
     cycleway: {
-      casing: "#CCE79D",
-      inner: "#DDEFBF"
+      casing: c.gira200,
+      inner: c.gira100
     },
     aeroway: {
       taxiway: "#e0e0e0",
       runway: {
         casing: "#e0e0e0",
-        fill: "#ffffff"
+        fill: c.neutral100,
       }
     },
     landcover: {
@@ -57,7 +71,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
       glacier: "#fafafa"
     },
     highway: {
-      minor: "#ffffff",
+      minor: c.neutral100,
       major: {
         casing: "#d5d5d5",
         inner: [
@@ -67,7 +81,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           5.8,
           "#d9d9d987",
           6,
-          "#ffffff"
+          c.neutral100,
         ] satisfies DataDrivenPropertyValueSpecification<string>,
         subtle: "#d9d9d9b0"
       },
@@ -80,29 +94,17 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           5.8,
           "#d9d9d987",
           6,
-          "#ffffff"
+          c.neutral100,
         ] satisfies DataDrivenPropertyValueSpecification<string>,
         subtle: "#d9d9d987",
-        bridge: {
-          casing: "#d5d5d5",
-          inner: [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            5.8,
-            "#d9d9d987",
-            6,
-            "#ffffff"
-          ] satisfies DataDrivenPropertyValueSpecification<string>
-        },
         name: {
           text: "#758191",
-          halo: "#ffffff"
+          halo: c.neutral100,
         }
       },
       other: {
         text: "#bbbbbb",
-        halo: "#ffffff"
+        halo: c.neutral100,
       }
     },
     ferry: {
@@ -347,7 +349,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         "filter": ["==", ["geometry-type"], "LineString"],
         "layout": { "visibility": "visible" },
         "paint": {
-          "line-color": colors.base.waterway,
+          "line-color": colors.base.water,
           "line-width": 3,
           "line-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0, 13.5, 1]
         }
@@ -1018,7 +1020,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": colors.highway.motorway.bridge.casing,
+          "line-color": colors.highway.motorway.casing,
           "line-dasharray": [2, 0],
           "line-opacity": 1,
           "line-width": [
@@ -1054,7 +1056,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "line-color": colors.highway.motorway.bridge.inner,
+          "line-color": colors.highway.motorway.inner,
           "line-width": [
             "interpolate",
             ["exponential", 1.4],
