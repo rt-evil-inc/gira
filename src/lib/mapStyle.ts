@@ -101,37 +101,20 @@ export function getMapStyle(): maplibregl.StyleSpecification {
       fill3D: "rgba(249, 249, 249, 1)"
     },
     place: {
-      suburb: {
-        text: "rgb(117, 129, 145)",
-        halo: "rgb(242,243,240)"
-      },
-      village: {
-        text: "rgb(117, 129, 145)",
-        halo: "rgb(242,243,240)"
-      },
-      town: {
-        text: "rgb(117, 129, 145)",
-        halo: "rgb(242,243,240)"
-      },
-      city: {
-        regular: {
-          text: "rgb(117, 129, 145)",
-          halo: "rgb(242,243,240)",
-        },
-        large: {
-          text: "rgb(117, 129, 145)",
-          halo: "rgb(242,243,240)"
-        },
-        capital: {
-          text: "rgb(117, 129, 145)",
-          halo: "rgb(242,243,240)"
-        }
-      },
+      text: "rgb(117, 129, 145)",
+      halo: "rgb(242,243,240)",
       state: "rgb(113, 129, 144)",
       country: {
-        other: "rgb(157, 169, 177)",
-        minor: "rgb(157,169,177)",
-        major: "rgb(157,169,177)"
+        text: [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            3,
+            "rgb(157,169,177)",
+            4,
+            "rgb(153, 153, 153)"
+          ] satisfies DataDrivenPropertyValueSpecification<string>,
+        halo: "rgba(236,236,234,0.7)",
       }
     }
   };
@@ -1295,9 +1278,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "text-color": colors.place.suburb.text,
+          "text-color": colors.place.text,
           "text-halo-blur": 1,
-          "text-halo-color": colors.place.suburb.halo,
+          "text-halo-color": colors.place.halo,
           "text-halo-width": 1
         }
       },
@@ -1330,9 +1313,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         },
         "paint": {
           "icon-opacity": 0.7,
-          "text-color": colors.place.village.text,
+          "text-color": colors.place.text,
           "text-halo-blur": 1,
-          "text-halo-color": colors.place.village.halo,
+          "text-halo-color": colors.place.halo,
           "text-halo-width": 1
         }
       },
@@ -1366,9 +1349,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         },
         "paint": {
           "icon-opacity": 0.7,
-          "text-color": colors.place.town.text,
+          "text-color": colors.place.text,
           "text-halo-blur": 1,
-          "text-halo-color": colors.place.town.halo,
+          "text-halo-color": colors.place.halo,
           "text-halo-width": 1
         }
       },
@@ -1407,9 +1390,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         },
         "paint": {
           "icon-opacity": 0.7,
-          "text-color": colors.place.city.regular.text,
+          "text-color": colors.place.text,
           "text-halo-blur": 1,
-          "text-halo-color": colors.place.city.regular.halo,
+          "text-halo-color": colors.place.halo,
           "text-halo-width": 1
         }
       },
@@ -1443,9 +1426,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         },
         "paint": {
           "icon-opacity": 0.7,
-          "text-color": colors.place.city.capital.text,
+          "text-color": colors.place.text,
           "text-halo-blur": 1,
-          "text-halo-color": colors.place.city.capital.halo,
+          "text-halo-color": colors.place.halo,
           "text-halo-width": 1
         }
       },
@@ -1484,9 +1467,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         },
         "paint": {
           "icon-opacity": 0.7,
-          "text-color": colors.place.city.large.text,
+          "text-color": colors.place.text,
           "text-halo-blur": 1,
-          "text-halo-color": colors.place.city.large.halo,
+          "text-halo-color": colors.place.halo,
           "text-halo-width": 1
         }
       },
@@ -1514,9 +1497,9 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "text-color": "rgb(113, 129, 144)",
+          "text-color": colors.place.state,
           "text-halo-blur": 1,
-          "text-halo-color": "rgb(242,243,240)",
+          "text-halo-color": colors.place.halo,
           "text-halo-width": 1
         }
       },
@@ -1540,16 +1523,8 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "text-color": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            3,
-            "rgb(157,169,177)",
-            4,
-            "rgb(153, 153, 153)"
-          ],
-          "text-halo-color": "rgba(236,236,234,0.7)",
+          "text-color": colors.place.country.text,
+          "text-halo-color": colors.place.country.halo,
           "text-halo-width": 1.4
         }
       },
@@ -1574,16 +1549,8 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "text-color": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            3,
-            "rgb(157,169,177)",
-            4,
-            "rgb(153, 153, 153)"
-          ],
-          "text-halo-color": "rgba(236,236,234,0.7)",
+          "text-color": colors.place.country.text,
+          "text-halo-color": colors.place.country.halo,
           "text-halo-width": 1.4
         }
       },
@@ -1619,16 +1586,8 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           "visibility": "visible"
         },
         "paint": {
-          "text-color": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            3,
-            "rgb(157,169,177)",
-            4,
-            "rgb(153, 153, 153)"
-          ],
-          "text-halo-color": "rgba(236,236,234,0.7)",
+          "text-color": colors.place.country.text,
+          "text-halo-color": colors.place.country.halo,
           "text-halo-width": 1.4
         }
       },
