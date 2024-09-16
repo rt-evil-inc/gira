@@ -7,140 +7,160 @@ export function getMapStyle(): maplibregl.StyleSpecification {
 
   const c = {
     neutral100: "#ffffff",
+    neutral200: "#fafafa",
+    neutral300: "#f5f5f5",
+    neutral400: "#eaeaea",
+    neutral500: "#e7e7e7",
+    neutral600: "#e0e0e0",
+    neutral700: "#dddddd",
+    neutral800: "#d9d9d9",
+    neutral900: "#d5d5d5",
+    neutral1000: "#bbbbbb",
+    neutral1100: "#999999",
+
+    green000: "#f2f3f0",
     green100: "#e1f1e0",
     green200: "#d3e6d2",
+
     gira100: "#DDEFBF",
     gira200: "#CCE79D",
+
     red100: "#f6ecef",
+    red200: "#e6cccf",
+
     yellow100: "#f8f1e1",
+
+    blue000: "#DCE3EE",
     blue100: "#d0e9f4",
+    blue200: "#a1bfff",
 
-
+    slate100: "#9da9b1",
+    slate200: "#738191"
   }
 
   const colors = {
     base: {
-      background: "#f6f6f6",
+      background: c.neutral300,
       park: c.green100,
       water: c.blue100
     },
     landUse: {
       school: c.yellow100,
       hospital: c.red100,
-      residential: "#f5f5f5",
-      cemetery: "#eaeaea"
+      residential: c.neutral300,
+      cemetery: c.neutral400
     },
     landCover: {
       wood: c.green200,
       grass: c.green100
     },
     general: {
-      casing: "#d5d5d5",
+      casing: c.neutral900,
     },
     motorway: {
       tunnel: {
-        inner: "#EAEAEA"
+        inner: c.neutral400
       },
       bridge: {
-        casing: "#d5d5d5",
+        casing: c.neutral900,
       }
     },
     railway: {
-      dashline: "#fafafa",
-      line: "#dddddd"
+      dashline: c.neutral200,
+      line: c.neutral700
     },
     path: {
       casing: c.neutral100,
-      inner: "#DCE3EE"
+      inner: c.blue000
     },
     cycleway: {
       casing: c.gira200,
       inner: c.gira100
     },
     aeroway: {
-      taxiway: "#e0e0e0",
+      taxiway: c.neutral600,
       runway: {
-        casing: "#e0e0e0",
+        casing: c.neutral600,
         fill: c.neutral100,
       }
     },
     landcover: {
-      iceShelf: "#fafafa",
-      sand: "#f8f1e1",
-      glacier: "#fafafa"
+      iceShelf: c.neutral200,
+      sand: c.yellow100,
+      glacier: c.neutral200
     },
     highway: {
       minor: c.neutral100,
       major: {
-        casing: "#d5d5d5",
+        casing: c.neutral900,
         inner: [
           "interpolate",
           ["linear"],
           ["zoom"],
           5.8,
-          "#d9d9d987",
+          c.neutral800+"87",
           6,
           c.neutral100,
         ] satisfies DataDrivenPropertyValueSpecification<string>,
-        subtle: "#d9d9d9b0"
+        subtle: c.neutral800+"b0"
       },
       motorway: {
-        casing: "#d5d5d5",
+        casing: c.neutral900,
         inner: [
           "interpolate",
           ["linear"],
           ["zoom"],
           5.8,
-          "#d9d9d987",
+          c.neutral800+"87",
           6,
           c.neutral100,
         ] satisfies DataDrivenPropertyValueSpecification<string>,
-        subtle: "#d9d9d987",
+        subtle: c.neutral800+"87",
         name: {
-          text: "#758191",
+          text: c.slate200,
           halo: c.neutral100,
         }
       },
       other: {
-        text: "#bbbbbb",
+        text: c.neutral1000,
         halo: c.neutral100,
       }
     },
     ferry: {
-      lineColor: "#a1bfff7d"
+      lineColor: c.blue200+"7d"
     },
     boundary: {
-      line: "#e6cccf",
+      line: c.red200,
     },
     building: {
-      outline: "#dbdbdbff",
-      fill: "#e7e7e7ff",
-      fill3D: "#f9f9f9ff"
+      outline: c.neutral800,
+      fill: c.neutral500,
+      fill3D: c.neutral200
     },
     place: {
-      text: "#758191",
-      halo: "#f2f3f0",
-      state: "#718190",
+      text: c.slate200,
+      halo: c.green000,
+      state: c.slate200,
       country: {
         text: [
           "interpolate",
           ["linear"],
           ["zoom"],
           3,
-          "#9da9b1",
+          c.slate100,
           4,
-          "#999999"
+          c.neutral1100
         ] satisfies DataDrivenPropertyValueSpecification<string>,
-        halo: "#ececeab2",
+        halo: c.neutral400+"b2",
       }
     },
     water: {
       name: {
-        text: "#9da9b1",
-        halo: "#f2f3f0"
+        text: c.slate100,
+        halo: c.green000
       }
     },
-    road: "#f2f3f0"
+    road: c.green000
   };
 
   return {

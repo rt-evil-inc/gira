@@ -175,7 +175,7 @@
 		map.addImage('dock_inactive', await loadSvg('./assets/dock_marker_inactive.svg'));
 		map.addImage('dock_inactive_selected', await loadSvg('./assets/dock_marker_inactive_selected.svg'));
 		
-		const primaryColor = `hsl(${getCssVariable('--color-primary')})`;
+		const primaryColor = getCssVariable('--color-primary');
 		const imgs = [['bike', './assets/bike_marker.svg', primaryColor], ['bike_selected', './assets/bike_marker_selected.svg', '#fff'], ['dock', './assets/dock_marker.svg', primaryColor], ['dock_selected', './assets/dock_marker_selected.svg', '#fff']];
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext('2d', { willReadFrequently: true })!;
