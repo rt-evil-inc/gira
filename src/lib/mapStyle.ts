@@ -1,7 +1,6 @@
 // import oldStyle from '../../static/assets/old-style.json'
 import type { DataDrivenPropertyValueSpecification } from "maplibre-gl";
 import { getCssVariable } from "./utils";
-import { base } from "$service-worker";
 
 export function getMapStyle(): maplibregl.StyleSpecification {
   const primaryColorHsl = getCssVariable("--color-primary");
