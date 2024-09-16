@@ -29,7 +29,7 @@ export function getMapStyle(): maplibregl.StyleSpecification {
         inner: "#EAEAEA"
       },
       bridge: {
-        casing: "rgb(213, 213, 213)",
+        casing: "#d5d5d5",
       }
     },
     railway: {
@@ -52,12 +52,12 @@ export function getMapStyle(): maplibregl.StyleSpecification {
       }
     },
     landcover: {
-      iceShelf: "hsl(0,0%,98%)",
+      iceShelf: "#fafafa",
       sand: "#f8f1e1",
-      glacier: "hsl(0,0%,98%)"
+      glacier: "#fafafa"
     },
     highway: {
-      minor: "#fff",
+      minor: "#ffffff",
       major: {
         casing: "#d5d5d5",
         inner: [
@@ -65,11 +65,11 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           ["linear"],
           ["zoom"],
           5.8,
-          "hsla(0,0%,85%,0.53)",
+          "#d9d9d987",
           6,
-          "#fff"
+          "#ffffff"
         ] satisfies DataDrivenPropertyValueSpecification<string>,
-        subtle: "hsla(0,0%,85%,0.69)"
+        subtle: "#d9d9d9b0"
       },
       motorway: {
         casing: "#d5d5d5",
@@ -78,11 +78,11 @@ export function getMapStyle(): maplibregl.StyleSpecification {
           ["linear"],
           ["zoom"],
           5.8,
-          "hsla(0,0%,85%,0.53)",
+          "#d9d9d987",
           6,
-          "#fff"
+          "#ffffff"
         ] satisfies DataDrivenPropertyValueSpecification<string>,
-        subtle: "hsla(0,0%,85%,0.53)",
+        subtle: "#d9d9d987",
         bridge: {
           casing: "#d5d5d5",
           inner: [
@@ -90,56 +90,56 @@ export function getMapStyle(): maplibregl.StyleSpecification {
             ["linear"],
             ["zoom"],
             5.8,
-            "hsla(0,0%,85%,0.53)",
+            "#d9d9d987",
             6,
-            "#fff"
+            "#ffffff"
           ] satisfies DataDrivenPropertyValueSpecification<string>
         },
         name: {
-          text: "rgb(117, 129, 145)",
-          halo: "#fff"
+          text: "#758191",
+          halo: "#ffffff"
         }
       },
       other: {
-        text: "#bbb",
-        halo: "#fff"
+        text: "#bbbbbb",
+        halo: "#ffffff"
       }
     },
     ferry: {
-      lineColor: "rgba(161, 191, 255, 0.49)"
+      lineColor: "#a1bfff7d"
     },
     boundary: {
-      line: "rgb(230, 204, 207)",
+      line: "#e6cccf",
     },
     building: {
-      outline: "rgba(219, 219, 219, 1)",
-      fill: "rgba(231, 231, 231, 1)",
-      fill3D: "rgba(249, 249, 249, 1)"
+      outline: "#dbdbdbff",
+      fill: "#e7e7e7ff",
+      fill3D: "#f9f9f9ff"
     },
     place: {
-      text: "rgb(117, 129, 145)",
-      halo: "rgb(242,243,240)",
-      state: "rgb(113, 129, 144)",
+      text: "#758191",
+      halo: "#f2f3f0",
+      state: "#718190",
       country: {
         text: [
           "interpolate",
           ["linear"],
           ["zoom"],
           3,
-          "rgb(157,169,177)",
+          "#9da9b1",
           4,
-          "rgb(153, 153, 153)"
+          "#999999"
         ] satisfies DataDrivenPropertyValueSpecification<string>,
-        halo: "rgba(236,236,234,0.7)",
+        halo: "#ececeab2",
       }
     },
     water: {
       name: {
-        text: "rgb(157,169,177)",
-        halo: "rgb(242,243,240)"
+        text: "#9da9b1",
+        halo: "#f2f3f0"
       }
     },
-    road: "rgb(242,243,240)"
+    road: "#f2f3f0"
   };
 
   return {
