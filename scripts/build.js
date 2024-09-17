@@ -5,8 +5,6 @@ import os from 'os';
 
 const dev = process.argv.includes('--dev');
 const install = process.argv.includes('--install');
-const gradlew = path.join('gradlew');
-console.log(gradlew);
 
 (async () => {
 	try {
@@ -16,7 +14,7 @@ console.log(gradlew);
 		} else {
 			await execCommand('vite build && npx cap sync');
 		}
-		await execCommand(`cd android && ./gradlew ${install ? 'installDebug' : 'assembleDebug'}`);
+		await execCommand(`cd android && ${os.platform() === 'win32' ? 'gradlew' : './gradlew'} ${install ? 'installDebug' : 'assembleDebug'}`);
 		if (dev) await updateAppId();
 	} catch (e) {
 		updateAppId();
@@ -70,7 +68,7 @@ async function syncNetworkConfig() {
 	config.server.url = `http://${getIp()}:${await getPort()}/`;
 	config.server.cleartext = true;
 	await fs.writeFile('./capacitor.config.json', JSON.stringify(config));
-	execCommand('npx cap sync');
+	await execCommand('npx cap sync');
 	cleanupNetworkConfig();
 }
 
