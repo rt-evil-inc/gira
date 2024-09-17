@@ -15,18 +15,16 @@
     --color-selection: #d4d4d4;
   }
 
-  @media screen and (prefers-color-scheme: dark) {
-    :root {
-      --color-primary: #87B43C;
-      --color-background: #202020;
-      --color-background-secondary: #262626;
-      --color-background-tertiary: #3B3B3B;
-      --color-label: #808080;
-      --color-info: #B3B3B3;
-      --color-warning: #ffbc56;
-      --color-shadow: rgba(0, 0, 0, 0.4);
-      --color-selection: #808080;
-    }
+  :root[data-theme='dark'] {
+    --color-primary: #87B43C;
+    --color-background: #202020;
+    --color-background-secondary: #262626;
+    --color-background-tertiary: #3B3B3B;
+    --color-label: #808080;
+    --color-info: #B3B3B3;
+    --color-warning: #ffbc56;
+    --color-shadow: rgba(0, 0, 0, 0.4);
+    --color-selection: #808080;
   }
 }
 
