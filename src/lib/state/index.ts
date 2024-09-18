@@ -146,8 +146,7 @@ export async function loadUserCreds() {
 	const distanceLock = (await Preferences.get({ key: 'settings/distanceLock' })).value !== 'false'; // !== 'false' is so that it defaults to true if the key is not set
 	const mockUnlock = (await Preferences.get({ key: 'settings/mockUnlock' })).value !== 'false';
 	const analytics = (await Preferences.get({ key: 'settings/analytics' })).value !== 'false';
-	let theme = (await Preferences.get({ key: 'settings/theme' })).value as 'light'|'dark'|'system'|null;
-	theme ??= 'system';
+	const theme = ((await Preferences.get({ key: 'settings/theme' })).value || 'system') as 'light'|'dark'|'system';
 	appSettings.set({ distanceLock, mockUnlock, analytics, theme });
 
 	userCredentials.subscribe(async v => {
