@@ -53,7 +53,7 @@
 					<div class="text-sm font-medium text-label">{$user?.email}</div>
 				</div>
 				<div class="flex gap-16">
-					<Metric value={$accountInfo?.balance ?? 0} unit={'€'} label={'Saldo'} color={'info'} />
+					<Metric value={$accountInfo?.balance?.toFixed(2) ?? '0.00'} unit={'€'} label={'Saldo'} color={'info'} />
 					<Metric value={$accountInfo?.bonus ?? 0} unit={''} label={'Pontos'} color={'info'} />
 				</div>
 				<div>
