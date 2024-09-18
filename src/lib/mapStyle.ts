@@ -1,11 +1,12 @@
 // import oldStyle from '../../static/assets/old-style.json'
 import type { DataDrivenPropertyValueSpecification } from "maplibre-gl";
 import { getCssVariable } from "./utils";
+import { appSettings } from "./state";
+import { get } from "svelte/store";
 
-export function getMapStyle(): maplibregl.StyleSpecification {
-  const primaryColorHsl = getCssVariable("--color-primary");
-
-  const c = {
+export function getMapStyle(style:"dark"|"light"): maplibregl.StyleSpecification {
+  
+  const cLight = {
     neutral100: "#ffffff",
     neutral200: "#fafafa",
     neutral300: "#f5f5f5",
@@ -37,130 +38,166 @@ export function getMapStyle(): maplibregl.StyleSpecification {
     slate100: "#9da9b1",
     slate200: "#738191"
   }
+  const cDark = {
+    neutral100: "#121212",
+    neutral200: "#1c1c1c",
+    neutral300: "#242424",
+    neutral400: "#2c2c2c",
+    neutral500: "#343434",
+    neutral600: "#3c3c3c",
+    neutral700: "#444444",
+    neutral800: "#4c4c4c",
+    neutral900: "#545454",
+    neutral1000: "#6c6c6c",
+    neutral1100: "#808080",
+
+    green000: "#222321",
+    green100: "#2e3a2e",
+    green200: "#2b3a2b",
+
+    gira100: "#607244",
+    gira200: "#758c54",
+
+    red100: "#231c1d",
+    red200: "#77333b",
+
+    yellow100: "#332e21",
+
+    blue000: "#1c3344",
+    blue100: "#1f2f3f",
+    blue200: "#335588",
+
+    slate100: "#444c55",//neutral700
+    slate200: "#5a6777"//neutral1000
+
+  }
+
+  // Todo - get system theme
+  const colorscheme = style ==  "dark" ? cDark : cLight;
 
   const colors = {
     base: {
-      background: c.neutral300,
-      park: c.green100,
-      water: c.blue100
+      background: colorscheme.neutral300,
+      park: colorscheme.green100,
+      water: colorscheme.blue100
     },
     landUse: {
-      school: c.yellow100,
-      hospital: c.red100,
-      residential: c.neutral300,
-      cemetery: c.neutral400
+      school: colorscheme.yellow100,
+      hospital: colorscheme.red100,
+      residential: colorscheme.neutral300,
+      cemetery: colorscheme.neutral400
     },
     landCover: {
-      wood: c.green200,
-      grass: c.green100
+      wood: colorscheme.green200,
+      grass: colorscheme.green100
     },
     general: {
-      casing: c.neutral900,
+      casing: colorscheme.neutral900,
     },
     motorway: {
       tunnel: {
-        inner: c.neutral400
+        inner: colorscheme.neutral400
       },
       bridge: {
-        casing: c.neutral900,
+        casing: colorscheme.neutral900,
       }
     },
     railway: {
-      dashline: c.neutral200,
-      line: c.neutral700
+      dashline: colorscheme.neutral200,
+      line: colorscheme.neutral700
     },
     path: {
-      casing: c.neutral100,
-      inner: c.blue000
+      casing: colorscheme.neutral100,
+      inner: colorscheme.blue000
     },
     cycleway: {
-      casing: c.gira200,
-      inner: c.gira100
+      casing: colorscheme.gira200,
+      inner: colorscheme.gira100
     },
     aeroway: {
-      taxiway: c.neutral600,
+      taxiway: colorscheme.neutral600,
       runway: {
-        casing: c.neutral600,
-        fill: c.neutral100,
+        casing: colorscheme.neutral600,
+        fill: colorscheme.neutral100,
       }
     },
     landcover: {
-      iceShelf: c.neutral200,
-      sand: c.yellow100,
-      glacier: c.neutral200
+      iceShelf: colorscheme.neutral200,
+      sand: colorscheme.yellow100,
+      glacier: colorscheme.neutral200
     },
     highway: {
-      minor: c.neutral100,
+      minor: colorscheme.neutral100,
       major: {
-        casing: c.neutral900,
+        casing: colorscheme.neutral900,
         inner: [
           "interpolate",
           ["linear"],
           ["zoom"],
           5.8,
-          c.neutral800+"87",
+          colorscheme.neutral800 + "87",
           6,
-          c.neutral100,
+          colorscheme.neutral100,
         ] satisfies DataDrivenPropertyValueSpecification<string>,
-        subtle: c.neutral800+"b0"
+        subtle: colorscheme.neutral800 + "b0"
       },
       motorway: {
-        casing: c.neutral900,
+        casing: colorscheme.neutral900,
         inner: [
           "interpolate",
           ["linear"],
           ["zoom"],
           5.8,
-          c.neutral800+"87",
+          colorscheme.neutral800 + "87",
           6,
-          c.neutral100,
+          colorscheme.neutral100,
         ] satisfies DataDrivenPropertyValueSpecification<string>,
-        subtle: c.neutral800+"87",
+        subtle: colorscheme.neutral800 + "87",
         name: {
-          text: c.slate200,
-          halo: c.neutral100,
+          text: colorscheme.neutral1000,
+          halo: colorscheme.neutral100,
         }
       },
       other: {
-        text: c.neutral1000,
-        halo: c.neutral100,
+        text: colorscheme.neutral1000,
+        halo: colorscheme.neutral100,
       }
     },
     ferry: {
-      lineColor: c.blue200+"7d"
+      lineColor: colorscheme.blue200 + "7d"
     },
     boundary: {
-      line: c.red200,
+      line: colorscheme.red200,
     },
     building: {
-      outline: c.neutral800,
-      fill: c.neutral500,
-      fill3D: c.neutral200
+      outline: colorscheme.neutral800,
+      fill: colorscheme.neutral500,
+      fill3D: colorscheme.neutral200
     },
     place: {
-      text: c.slate200,
-      halo: c.green000,
-      state: c.slate200,
+      text: colorscheme.neutral1000,
+      halo: colorscheme.green000,
+      state: colorscheme.neutral1000,
       country: {
         text: [
           "interpolate",
           ["linear"],
           ["zoom"],
           3,
-          c.slate100,
+          colorscheme.neutral700,
           4,
-          c.neutral1100
+          colorscheme.neutral1100
         ] satisfies DataDrivenPropertyValueSpecification<string>,
-        halo: c.neutral400+"b2",
+        halo: colorscheme.neutral400 + "b2",
       }
     },
     water: {
       name: {
-        text: c.slate100,
-        halo: c.green000
+        text: colorscheme.neutral700,
+        halo: colorscheme.green000
       }
     },
-    road: c.green000
+    road: colorscheme.green000
   };
 
   return {

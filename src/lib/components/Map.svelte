@@ -2,7 +2,7 @@
 	import { onMount, tick } from 'svelte';
 	import maplibregl from 'maplibre-gl';
 	const { AttributionControl, GeoJSONSource, Map } = maplibregl;
-	import { currentTrip, stations, selectedStation, token, following } from '$lib/state';
+	import { currentTrip, stations, selectedStation, token, following, appSettings } from '$lib/state';
 	import type { Position } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
 	import { pulsingDot } from '$lib/pulsing-dot';
@@ -245,9 +245,11 @@
 	}
 
 	onMount(() => {
+
+		const mode = $appSettings.theme === 'system' ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' : $appSettings.theme;
 		map = new Map({
 			container: mapElem,
-			style: getMapStyle(),
+			style: getMapStyle(mode),
 			center: [-9.15, 38.744],
 			zoom: 11,
 			attributionControl: false,
@@ -267,6 +269,13 @@
 			setSourceData();
 		}
 	}
+
+	appSettings.subscribe(settings => {
+		if (map) {
+			const mode = settings.theme === 'system' ? window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' : settings.theme;
+			map.setStyle(getMapStyle(mode));
+		}
+	});
 
 	currentTrip.subscribe(trip => {
 		if (trip) {
