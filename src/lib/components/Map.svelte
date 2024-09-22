@@ -8,12 +8,13 @@
 	import { pulsingDot } from '$lib/pulsing-dot';
 	import { currentPos, bearingNorth, bearing } from '$lib/location';
 	import type { Unsubscriber } from 'svelte/motion';
-    import { getMapStyle } from '$lib/mapStyle';
-    import { getCssVariable } from '$lib/utils';
+	import { getMapStyle } from '$lib/mapStyle';
+	import { getCssVariable } from '$lib/utils';
 
 	export let loading = true;
 	export let bottomPadding = 0;
 	export let topPadding = 0;
+	export let leftPadding = 0;
 
 	let mapElem: HTMLDivElement;
 	let map : maplibregl.Map;
@@ -148,7 +149,7 @@
 			await tick();
 			map.flyTo({
 				center: feature.geometry.coordinates as [number, number],
-				padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2) },
+				padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2), left: leftPadding },
 				curve: 0,
 			});
 		});
@@ -174,7 +175,7 @@
 		map.addImage('bike_inactive_selected', await loadSvg('./assets/bike_marker_inactive_selected.svg'));
 		map.addImage('dock_inactive', await loadSvg('./assets/dock_marker_inactive.svg'));
 		map.addImage('dock_inactive_selected', await loadSvg('./assets/dock_marker_inactive_selected.svg'));
-		
+
 		const primaryColor = getCssVariable('--color-primary');
 		const imgs = [['bike', './assets/bike_marker.svg', primaryColor], ['bike_selected', './assets/bike_marker_selected.svg', '#fff'], ['dock', './assets/dock_marker.svg', primaryColor], ['dock_selected', './assets/dock_marker_selected.svg', '#fff']];
 		const canvas = document.createElement('canvas');
@@ -212,7 +213,7 @@
 	function centerMap(pos: Position) {
 		map.flyTo({
 			center: [pos.coords.longitude, pos.coords.latitude],
-			padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2) },
+			padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2), left: leftPadding },
 			zoom: 16,
 		});
 	}
@@ -245,7 +246,6 @@
 	}
 
 	onMount(() => {
-
 		const mode = $appSettings.theme === 'system' ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' : $appSettings.theme;
 		map = new Map({
 			container: mapElem,
@@ -292,7 +292,7 @@
 		}
 	});
 
-	$: if ($following && !blurred && $currentPos && topPadding !== null && bottomPadding !== null) centerMap($currentPos);
+	$: if ($following && !blurred && $currentPos && topPadding !== null && bottomPadding !== null && leftPadding !== null) centerMap($currentPos);
 
 	$: if ($selectedStation == null) bottomPadding = 0;
 </script>

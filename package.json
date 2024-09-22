@@ -49,6 +49,7 @@
     "@capacitor/keyboard": "^5.0.7",
     "@capacitor/local-notifications": "^5.0.6",
     "@capacitor/preferences": "^5.0.6",
+    "@capacitor/screen-orientation": "^5.0.8",
     "@capacitor/status-bar": "^5.0.6",
     "@capacitor/toast": "^5.0.6",
     "@fontsource-variable/inter": "^5.0.16",

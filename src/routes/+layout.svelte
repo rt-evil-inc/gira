@@ -15,6 +15,7 @@
 	import { refreshToken } from '$lib/auth';
 	import { updateActiveTripInfo } from '$lib/state/helper';
 	import { initAnalytics } from '$lib/analytics';
+	import { ScreenOrientation } from '@capacitor/screen-orientation';
 
 	if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') {
 		StatusBar.setOverlaysWebView({ overlay: true });
@@ -34,6 +35,8 @@
 			}
 			updateActiveTripInfo();
 		});
+
+		ScreenOrientation.lock({ orientation: 'portrait' });
 
 		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 		const updateTheme = () => {

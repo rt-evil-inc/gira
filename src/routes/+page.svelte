@@ -20,7 +20,8 @@
 
 	let menuHeight = 0;
 	let stationMenuPos:number|undefined = 0;
-	let tripStatusPos:number = 0;
+	let tripStatusHeight:number = 0;
+	let tripStatusWidth:number = 0;
 	let profileOpen = false;
 	let locationPermission = false;
 
@@ -57,10 +58,10 @@
 			<Login />
 		</div>
 	{/if}
-	<Map loading={!$token} bind:bottomPadding={menuHeight} bind:topPadding={tripStatusPos} />
+	<Map loading={!$token} bind:bottomPadding={menuHeight} bind:topPadding={tripStatusHeight} bind:leftPadding={tripStatusWidth} />
 
 	{#if $currentTrip !== null}
-		<TripStatus bind:posBottom={tripStatusPos} />
+		<TripStatus bind:height={tripStatusHeight} bind:width={tripStatusWidth} />
 	{:else}
 		<StationMenu bind:posTop={stationMenuPos} bind:bikeListHeight={menuHeight} />
 		{#if $tripRating.currentRating != null}
@@ -72,11 +73,11 @@
 		<LocationButton bind:locationPermission />
 	</Floating>
 
-	<Floating right={16} y={tripStatusPos} offset={16}>
+	<Floating right={16} y={tripStatusHeight} offset={16}>
 		<ProfileButton on:click={() => profileOpen = true}/>
 	</Floating>
 
-	<Floating right={20} y={Math.max(tripStatusPos + 16, $safeInsets.top)} offset={70}>
+	<Floating right={20} y={Math.max(tripStatusHeight + 16, $safeInsets.top)} offset={70}>
 		<Compass />
 	</Floating>
 
