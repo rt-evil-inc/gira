@@ -28,6 +28,10 @@
   }
 }
 
+body {
+  @apply bg-background;
+}
+
 * {
   user-select: none;
 }
@@ -42,4 +46,14 @@ button,
 select,
 a {
     -webkit-tap-highlight-color: transparent;
+}
+
+.maplibregl-ctrl-attrib.maplibregl-compact {
+  @apply !bg-background;
+}
+.maplibregl-ctrl-attrib.maplibregl-compact * {
+  @apply !text-info;
+}
+.maplibregl-ctrl-attrib.maplibregl-compact summary {
+  @apply dark:invert;
 }
