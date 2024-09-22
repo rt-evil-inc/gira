@@ -1,6 +1,5 @@
 import { spawn } from 'child_process';
 import { promises as fs } from 'fs';
-import path from 'path';
 import os from 'os';
 
 const dev = process.argv.includes('--dev');
@@ -17,8 +16,8 @@ const install = process.argv.includes('--install');
 		await execCommand(`cd android && ${os.platform() === 'win32' ? 'gradlew' : './gradlew'} ${install ? 'installDebug' : 'assembleDebug'}`);
 		if (dev) await updateAppId();
 	} catch (e) {
-		updateAppId();
-		cleanupNetworkConfig();
+		await updateAppId();
+		await cleanupNetworkConfig();
 		if (e instanceof Error) console.error(e.message);
 		else console.error(e);
 		process.exit(-1);
@@ -69,7 +68,7 @@ async function syncNetworkConfig() {
 	config.server.cleartext = true;
 	await fs.writeFile('./capacitor.config.json', JSON.stringify(config));
 	await execCommand('npx cap sync');
-	cleanupNetworkConfig();
+	await cleanupNetworkConfig();
 }
 
 function getIp() {
@@ -92,7 +91,7 @@ function getIp() {
 async function getPort() {
 	const file = await fs.readFile('./vite.config.ts');
 	const match = String(file).match(/port:\s*(\d+)/);
-	return match && match[1] ? match[1] : 5173;
+	return match?.[1] ?? 5173;
 }
 
 async function cleanupNetworkConfig() {
