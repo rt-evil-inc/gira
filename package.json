@@ -1,22 +1,28 @@
 {
   "name": "gira",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "private": true,
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "vitest",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "eslint .",
-    "build-app": "vite build && npx cap sync && cd android && ((CALL .\\gradlew build --info) || (./gradlew build --info))",
-    "build-app-dev": "node scripts/syncnetworkconfig.js && node scripts/update-appId.js --dev && cd android && ((CALL .\\gradlew build --info) || (./gradlew build --info)) && cd .. && node scripts/update-appId.js && vite dev --host"
+    "build-app": "node scripts/build.js",
+    "build-app-dev": "node scripts/build.js --dev",
+    "install-app": "node scripts/build.js --install",
+    "install-app-dev": "node scripts/build.js --dev --install && vite dev --host"
   },
   "devDependencies": {
     "@fontsource/poppins": "^5.0.8",
-    "@sveltejs/adapter-auto": "^2.0.0",
-    "@sveltejs/kit": "^1.27.4",
+    "@playwright/test": "^1.40.1",
+    "@sveltejs/adapter-auto": "^3.0.0",
+    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@tailwindcss/forms": "^0.5.7",
+    "@types/node": "^20.11.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "autoprefixer": "^10.4.16",
@@ -28,7 +34,8 @@
     "tailwindcss": "^3.3.6",
     "tslib": "^2.4.1",
     "typescript": "^5.3.3",
-    "vite": "^4.4.2"
+    "vite": "^5.0.0",
+    "vitest": "^1.2.2"
   },
   "type": "module",
   "dependencies": {
@@ -43,6 +50,7 @@
     "@capacitor/keyboard": "^5.0.7",
     "@capacitor/local-notifications": "^5.0.6",
     "@capacitor/preferences": "^5.0.6",
+    "@capacitor/screen-orientation": "^5.0.8",
     "@capacitor/status-bar": "^5.0.6",
     "@capacitor/toast": "^5.0.6",
     "@fontsource-variable/inter": "^5.0.16",
@@ -50,9 +58,14 @@
     "@fontsource/inter": "^5.0.16",
     "@fontsource/roboto-mono": "^5.0.16",
     "@mauricewegner/capacitor-navigation-bar": "^2.0.1",
-    "@sveltejs/adapter-static": "^2.0.3",
-    "@tabler/icons-svelte": "^2.42.0",
+    "@sveltejs/adapter-static": "^3.0.0",
+    "@tabler/icons-svelte": "^3.16.0",
     "capacitor-plugin-safe-area": "^2.0.6",
-    "maplibre-gl": "^3.6.2"
-  }
+    "maplibre-gl": "^4.7.0",
+    "posthog-js": "^1.161.3"
+  },
+  "trustedDependencies": [
+    "@sveltejs/kit",
+    "svelte-preprocess"
+  ]
 }

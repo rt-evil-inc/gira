@@ -1,15 +1,16 @@
 <script lang="ts">
+	import IconHistory from '@tabler/icons-svelte/icons/history';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconTool from '@tabler/icons-svelte/icons/tool';
+	import IconInfoCircle from '@tabler/icons-svelte/icons/info-circle';
+	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
+	import IconTicket from '@tabler/icons-svelte/icons/ticket';
+	import IconLogout2 from '@tabler/icons-svelte/icons/logout-2';
+	import IconMessageReport from '@tabler/icons-svelte/icons/message-report';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { accountInfo, logOut, safeInsets, user } from '$lib/stores';
-	import IconHistory from '@tabler/icons-svelte/dist/svelte/icons/IconHistory.svelte';
-	import IconX from '@tabler/icons-svelte/dist/svelte/icons/IconX.svelte';
-	import IconTool from '@tabler/icons-svelte/dist/svelte/icons/IconTool.svelte';
-	import IconInfoCircle from '@tabler/icons-svelte/dist/svelte/icons/IconInfoCircle.svelte';
-	import IconArrowLeft from '@tabler/icons-svelte/dist/svelte/icons/IconArrowLeft.svelte';
-	import IconTicket from '@tabler/icons-svelte/dist/svelte/icons/IconTicket.svelte';
-	import IconLogout2 from '@tabler/icons-svelte/dist/svelte/icons/IconLogout2.svelte';
-	import IconMessageReport from '@tabler/icons-svelte/dist/svelte/icons/IconMessageReport.svelte';
+	import { accountInfo, safeInsets, user } from '$lib/state';
+	import { logOut } from '$lib/state/helper';
 	import SettingsEntry from './SettingsEntry.svelte';
 	import Metric from './Metric.svelte';
 	import History from './settings/History.svelte';
@@ -52,7 +53,7 @@
 					<div class="text-sm font-medium text-label">{$user?.email}</div>
 				</div>
 				<div class="flex gap-16">
-					<Metric value={$accountInfo?.balance ?? 0} unit={'€'} label={'Saldo'} color={'info'} />
+					<Metric value={$accountInfo?.balance?.toFixed(2) ?? '0.00'} unit={'€'} label={'Saldo'} color={'info'} />
 					<Metric value={$accountInfo?.bonus ?? 0} unit={''} label={'Pontos'} color={'info'} />
 				</div>
 				<div>
@@ -67,7 +68,7 @@
 			<div class="flex flex-col grow font-semibold px-2 gap-3 w-full">
 				<SettingsEntry icon={IconHistory} text={'Histórico'} subtext={'Lista de viagens anteriores'} on:click={() => openPage = 'history'} />
 				<SettingsEntry icon={IconTool} text={'Configurações'} subtext={'Definições da aplicação'} on:click={() => openPage = 'settings'} />
-				<a href="https://github.com/rt-evil-inc/gira-plus/issues"><SettingsEntry icon={IconMessageReport} text={'Feedback'} subtext={'Problemas e sugestões'} /></a>
+				<a href="https://github.com/rt-evil-inc/gira/issues"><SettingsEntry icon={IconMessageReport} text={'Feedback'} subtext={'Problemas e sugestões'} /></a>
 				<SettingsEntry icon={IconInfoCircle} text={'Sobre'} subtext={'Informação acerca da aplicação'} on:click={() => openPage = 'info'} />
 			</div>
 			<button class="flex flex-col items-center mb-3" on:click={() => { dispatch('close'); logOut(); }}>

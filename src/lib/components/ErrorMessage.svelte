@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { errorMessages } from '$lib/stores';
+	import { errorMessages } from '$lib/state';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
 </script>

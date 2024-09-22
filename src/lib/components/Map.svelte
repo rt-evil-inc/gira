@@ -1,20 +1,23 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { AttributionControl, GeoJSONSource, Map } from 'maplibre-gl';
-	import type { GeoJSON } from 'geojson';
-	import { currentTrip, stations, selectedStation, token, following } from '$lib/stores';
+	import maplibregl from 'maplibre-gl';
+	const { AttributionControl, GeoJSONSource, Map } = maplibregl;
+	import { currentTrip, stations, selectedStation, token, following, appSettings } from '$lib/state';
 	import type { Position } from '@capacitor/geolocation';
 	import { fade } from 'svelte/transition';
 	import { pulsingDot } from '$lib/pulsing-dot';
 	import { currentPos, bearingNorth, bearing } from '$lib/location';
 	import type { Unsubscriber } from 'svelte/motion';
+	import { getMapStyle } from '$lib/mapStyle';
+	import { getCssVariable } from '$lib/utils';
 
 	export let loading = true;
 	export let bottomPadding = 0;
 	export let topPadding = 0;
+	export let leftPadding = 0;
 
 	let mapElem: HTMLDivElement;
-	let map : Map;
+	let map : maplibregl.Map;
 	let mapLoaded = false;
 	let ready = false;
 	let blurred = true;
@@ -25,7 +28,7 @@
 	$: if ($bearingNorth) map.flyTo({ bearing: 0 });
 
 	function setSourceData() {
-		const src = map.getSource('points') as GeoJSONSource|null;
+		const src = map.getSource('points');
 		if (src instanceof GeoJSONSource) {
 			const data:GeoJSON.GeoJSON = {
 				'type': 'FeatureCollection',
@@ -54,7 +57,7 @@
 				'data': { type: 'FeatureCollection', features: [] },
 			});
 		}
-		const userSrc = map.getSource('user-location') as GeoJSONSource|null;
+		const userSrc = map.getSource('user-location');
 		if (!(userSrc instanceof GeoJSONSource)) {
 			map.addSource('user-location', {
 				'type': 'geojson',
@@ -146,7 +149,7 @@
 			await tick();
 			map.flyTo({
 				center: feature.geometry.coordinates as [number, number],
-				padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2) },
+				padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2), left: leftPadding },
 				curve: 0,
 			});
 		});
@@ -173,7 +176,9 @@
 		map.addImage('dock_inactive', await loadSvg('./assets/dock_marker_inactive.svg'));
 		map.addImage('dock_inactive_selected', await loadSvg('./assets/dock_marker_inactive_selected.svg'));
 
-		const imgs = [['bike', './assets/bike_marker.svg', '#79c000'], ['bike_selected', './assets/bike_marker_selected.svg', '#fff'], ['dock', './assets/dock_marker.svg', '#79c000'], ['dock_selected', './assets/dock_marker_selected.svg', '#fff']];
+		const primaryColor = getCssVariable('--color-primary');
+		const backgroundColor = getCssVariable('--color-background');
+		const imgs = [['bike', './assets/bike_marker.svg', primaryColor], ['bike_selected', './assets/bike_marker_selected.svg', backgroundColor], ['dock', './assets/dock_marker.svg', primaryColor], ['dock_selected', './assets/dock_marker_selected.svg', backgroundColor]];
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext('2d', { willReadFrequently: true })!;
 		const start = performance.now();
@@ -209,7 +214,7 @@
 	function centerMap(pos: Position) {
 		map.flyTo({
 			center: [pos.coords.longitude, pos.coords.latitude],
-			padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2) },
+			padding: { top: topPadding, bottom: Math.min(bottomPadding, window.innerHeight / 2), left: leftPadding },
 			zoom: 16,
 		});
 	}
@@ -217,9 +222,9 @@
 	async function handleLocUpdate(pos: Position|null) {
 		if (pos && pos.coords) {
 			if ($following && !blurred) centerMap(pos);
-			const src = map.getSource('user-location') as GeoJSONSource|null;
+			const src = map.getSource<maplibregl.GeoJSONSource>('user-location');
 			// dont change to GeoJSONSource as building breaks for no apparent reason
-			if (src !== null) {
+			if (src != null) {
 				const data:GeoJSON.GeoJSON = {
 					'type': 'FeatureCollection',
 					'features': [{
@@ -242,9 +247,10 @@
 	}
 
 	onMount(() => {
+		const mode = $appSettings.theme === 'system' ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' : $appSettings.theme;
 		map = new Map({
 			container: mapElem,
-			style: 'assets/map-style.json',
+			style: getMapStyle(mode),
 			center: [-9.15, 38.744],
 			zoom: 11,
 			attributionControl: false,
@@ -265,6 +271,13 @@
 		}
 	}
 
+	appSettings.subscribe(settings => {
+		if (map) {
+			const mode = settings.theme === 'system' ? window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' : settings.theme;
+			map.setStyle(getMapStyle(mode));
+		}
+	});
+
 	currentTrip.subscribe(trip => {
 		if (trip) {
 			// change visibility of layers
@@ -280,7 +293,7 @@
 		}
 	});
 
-	$: if ($following && !blurred && $currentPos && topPadding !== null && bottomPadding !== null) centerMap($currentPos);
+	$: if ($following && !blurred && $currentPos && topPadding !== null && bottomPadding !== null && leftPadding !== null) centerMap($currentPos);
 
 	$: if ($selectedStation == null) bottomPadding = 0;
 </script>
@@ -288,20 +301,20 @@
 {#if !ready}
 	<div out:fade={{ duration: 500 }} class="blur fixed bg-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[2000px] h-[2000px] z-10 bg-[url(/assets/map-preview.jpg)]" />
 	<svg out:fade={{ duration: 500 }} class="absolute w-20 h-12 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 transition-opacity {$token === null ? 'opacity-0' : 'opacity-100'}" width="62" height="38" viewBox="0 0 62 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-		<path d="M11.0862 26.6841L18.6347 20.9505C15.871 17.2807 10.0799 18.3456 7.56726 18.814C13.1653 19.8331 11.0862 26.6841 11.0862 26.6841Z" fill="#79C000"/>
-		<path d="M11.0862 26.6848L20.8612 26.8514C20.5211 24.2944 19.7072 22.3752 18.6347 20.9512L11.0862 26.6848Z" fill="#79C000"/>
-		<path d="M28.1018 26.9753L23.685 17.1157M28.1018 26.9753L42.185 10.4097M28.1018 26.9753L20.8612 26.8519M23.685 17.1157L19.7388 8.41601M23.685 17.1157L18.6347 20.9517M42.185 10.4097L46.638 22.118L50.2583 26.6853M42.185 10.4097L40.411 5.11738L44.7192 2L37.4785 2.39874M42.185 10.4097H46.245M20.8612 26.8519L11.0862 26.6853M20.8612 26.8519C20.5211 24.2949 19.7072 22.3757 18.6347 20.9517M19.7388 8.41601H16.6254M19.7388 8.41601H24.0833M11.0862 26.6853C11.0862 26.6853 13.1653 19.8343 7.56725 18.8152M11.0862 26.6853L18.6347 20.9517M7.56725 18.8152C10.0798 18.3468 15.871 17.282 18.6347 20.9517M7.56725 18.8152H2.987" stroke="#79C000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+		<path d="M11.0862 26.6841L18.6347 20.9505C15.871 17.2807 10.0799 18.3456 7.56726 18.814C13.1653 19.8331 11.0862 26.6841 11.0862 26.6841Z" class="fill-primary"/>
+		<path d="M11.0862 26.6848L20.8612 26.8514C20.5211 24.2944 19.7072 22.3752 18.6347 20.9512L11.0862 26.6848Z" class="fill-primary"/>
+		<path d="M28.1018 26.9753L23.685 17.1157M28.1018 26.9753L42.185 10.4097M28.1018 26.9753L20.8612 26.8519M23.685 17.1157L19.7388 8.41601M23.685 17.1157L18.6347 20.9517M42.185 10.4097L46.638 22.118L50.2583 26.6853M42.185 10.4097L40.411 5.11738L44.7192 2L37.4785 2.39874M42.185 10.4097H46.245M20.8612 26.8519L11.0862 26.6853M20.8612 26.8519C20.5211 24.2949 19.7072 22.3757 18.6347 20.9517M19.7388 8.41601H16.6254M19.7388 8.41601H24.0833M11.0862 26.6853C11.0862 26.6853 13.1653 19.8343 7.56725 18.8152M11.0862 26.6853L18.6347 20.9517M7.56725 18.8152C10.0798 18.3468 15.871 17.282 18.6347 20.9517M7.56725 18.8152H2.987" class="stroke-primary" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 		<g class="animate-spin origin-[11.5026px_26.4977px]">
-			<circle cx="11.5026" cy="26.4977" r="9.50259" stroke="#79C000" stroke-width="4"/>
-			<path d="M2.10678 26.582H21.0676" stroke="#79C000"/>
-			<path d="M6.84695 34.793L16.3274 18.3724" stroke="#79C000"/>
-			<path d="M16.3274 34.793L6.84696 18.3724" stroke="#79C000"/>
+			<circle cx="11.5026" cy="26.4977" r="9.50259" class="stroke-primary" stroke-width="4"/>
+			<path d="M2.10678 26.582H21.0676" class="stroke-primary"/>
+			<path d="M6.84695 34.793L16.3274 18.3724" class="stroke-primary"/>
+			<path d="M16.3274 34.793L6.84696 18.3724" class="stroke-primary"/>
 		</g>
 		<g class="animate-spin origin-[50.1864px_26.4903px]">
-			<circle cx="50.1864" cy="26.4903" r="9.49523" stroke="#79C000" stroke-width="4"/>
-			<path d="M40.7966 26.5762H59.7452" stroke="#79C000"/>
-			<path d="M45.5337 34.7793L55.0081 18.3693" stroke="#79C000"/>
-			<path d="M55.0081 34.7793L45.5337 18.3693" stroke="#79C000"/>
+			<circle cx="50.1864" cy="26.4903" r="9.49523" class="stroke-primary" stroke-width="4"/>
+			<path d="M40.7966 26.5762H59.7452" class="stroke-primary"/>
+			<path d="M45.5337 34.7793L55.0081 18.3693" class="stroke-primary"/>
+			<path d="M55.0081 34.7793L45.5337 18.3693" class="stroke-primary"/>
 		</g>
 	</svg>
 {/if}

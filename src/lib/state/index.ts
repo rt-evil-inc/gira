@@ -1,10 +1,10 @@
 import { Preferences } from '@capacitor/preferences';
 import { get, writable, type Writable } from 'svelte/store';
-import { login, refreshToken, updateUserInfo } from './auth';
-import { updateOnetimeInfo } from './gira-api';
-import { startWS, ws } from './gira-api/ws';
-import { currentPos } from './location';
-import { distanceBetweenCoords } from './utils';
+import { login, refreshToken, updateUserInfo } from '../auth';
+import { currentPos } from '../location';
+import { distanceBetweenCoords } from '../utils';
+import { updateOnetimeInfo } from './helper';
+import { startWS } from '$lib/gira-api/ws';
 
 export type User = {
 	email: string;
@@ -42,6 +42,7 @@ export type ActiveTrip = {
 	predictedEndDate: Date|null,
 	arrivalTime: Date|null,
 	finished: boolean,
+	confirmed: boolean,
 	pathTaken : {lat: number, lng: number, time:Date}[]
 }
 
@@ -67,6 +68,8 @@ export type AppSettings = {
 	distanceLock: boolean;
 	mockUnlock: boolean;
 	backgroundLocation: boolean;
+	analytics: boolean;
+	theme: 'light'|'dark'|'system';
 }
 export type TripRating = {
 	currentRating:{
@@ -86,7 +89,7 @@ export const currentTrip = writable<ActiveTrip|null>(null);
 export const accountInfo = writable<AccountInfo|null>(null);
 export const selectedStation = writable<string|null>(null);
 export const safeInsets = writable<Insets>({ top: 0, bottom: 0, left: 0, right: 0 });
-export const appSettings = writable<AppSettings>({ distanceLock: true, mockUnlock: true, backgroundLocation: true });
+export const appSettings = writable<AppSettings>({ distanceLock: true, mockUnlock: true, backgroundLocation: true, analytics: true, theme: 'system' });
 export const tripRating = writable<TripRating>({ currentRating: null });
 export const following = writable<boolean>(false);
 
@@ -122,7 +125,7 @@ token.subscribe(async v => {
 	if (!v) return;
 	const jwt:JWT = JSON.parse(window.atob(v.accessToken.split('.')[1]));
 
-	if (!ws || ws.readyState === ws.CLOSED) startWS();
+	startWS();
 	if (get(user) === null) {
 		updateOnetimeInfo();
 		updateUserInfo();
@@ -144,7 +147,9 @@ export async function loadUserCreds() {
 	const distanceLock = (await Preferences.get({ key: 'settings/distanceLock' })).value !== 'false'; // !== 'false' is so that it defaults to true if the key is not set
 	const mockUnlock = (await Preferences.get({ key: 'settings/mockUnlock' })).value !== 'false';
 	const backgroundLocation = (await Preferences.get({ key: 'settings/backgroundLocation' })).value !== 'false';
-	appSettings.set({ distanceLock, mockUnlock, backgroundLocation });
+	const analytics = (await Preferences.get({ key: 'settings/analytics' })).value !== 'false';
+	const theme = ((await Preferences.get({ key: 'settings/theme' })).value || 'system') as 'light'|'dark'|'system';
+	appSettings.set({ distanceLock, mockUnlock, backgroundLocation, analytics, theme });
 
 	userCredentials.subscribe(async v => {
 		if (!v) {
@@ -164,8 +169,11 @@ export async function loadUserCreds() {
 		Preferences.set({ key: 'settings/distanceLock', value: v.distanceLock.toString() });
 		Preferences.set({ key: 'settings/mockUnlock', value: v.mockUnlock.toString() });
 		Preferences.set({ key: 'settings/backgroundLocation', value: v.backgroundLocation.toString() });
+		Preferences.set({ key: 'settings/analytics', value: v.analytics.toString() });
+		Preferences.set({ key: 'settings/theme', value: v.theme });
 	});
 }
+
 currentPos.subscribe(async v => {
 	if (!v) return;
 	currentTrip.update(trip => {
@@ -182,14 +190,3 @@ currentPos.subscribe(async v => {
 		return trip;
 	});
 });
-
-export async function logOut() {
-	token.set(null);
-	userCredentials.set(null);
-	accountInfo.set(null);
-	currentTrip.set(null);
-	user.set(null);
-	selectedStation.set(null);
-	tripRating.set({ currentRating: null });
-	// purposefully not settings settings distancelock, since thats annoying when you swap accounts
-}

@@ -1,21 +1,33 @@
 <script lang="ts">
-	import IconBattery from '@tabler/icons-svelte/dist/svelte/icons/IconBattery.svelte';
-	import IconBattery1 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery1.svelte';
-	import IconBattery2 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery2.svelte';
-	import IconBattery3 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery3.svelte';
-	import IconBattery4 from '@tabler/icons-svelte/dist/svelte/icons/IconBattery4.svelte';
-	import IconBolt from '@tabler/icons-svelte/dist/svelte/icons/IconBolt.svelte';
-	import IconLockOpen from '@tabler/icons-svelte/dist/svelte/icons/IconLockOpen.svelte';
-	import IconLock from '@tabler/icons-svelte/dist/svelte/icons/IconLock.svelte';
-	import IconSettings from '@tabler/icons-svelte/dist/svelte/icons/IconSettings.svelte';
+	import IconBattery from '@tabler/icons-svelte/icons/battery';
+	import IconBattery1 from '@tabler/icons-svelte/icons/battery-1';
+	import IconBattery2 from '@tabler/icons-svelte/icons/battery-2';
+	import IconBattery3 from '@tabler/icons-svelte/icons/battery-3';
+	import IconBattery4 from '@tabler/icons-svelte/icons/battery-4';
+	import IconBolt from '@tabler/icons-svelte/icons/bolt';
+	import IconLockOpen from '@tabler/icons-svelte/icons/lock-open';
+	import IconLock from '@tabler/icons-svelte/icons/lock';
+	import IconSettings from '@tabler/icons-svelte/icons/settings';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import { reserveBike, startTrip, type ThrownError } from '../gira-api';
-	import { accountInfo, addErrorMessage, appSettings, currentTrip, following, type StationInfo } from '$lib/stores';
+	import type { ThrownError } from '../gira-api/api-types';
+	import { accountInfo, addErrorMessage, appSettings, currentTrip, type StationInfo } from '$lib/state';
 	import { currentPos, watchPosition } from '$lib/location';
 	import { fade } from 'svelte/transition';
 	import { distanceBetweenCoords } from '$lib/utils';
 	import { LOCK_DISTANCE_m } from '$lib/constants';
+	import { updateActiveTripInfo } from '$lib/state/helper';
+	import { reserveBike, startTrip } from '$lib/gira-api/api';
+	import { captureEvent } from '$lib/analytics';
+
+	async function checkTripStarted() {
+		if ($currentTrip === null) return;
+		if ((await reserveBike(serial)).reserveBike) {
+			$currentTrip = null;
+		} else if (!$currentTrip.confirmed) {
+			updateActiveTripInfo();
+		}
+	}
 
 	export let type:'classic'|'electric'|null = null, id:string = '', battery:number|null = null, dock:string, disabled = false, serial:string, station:StationInfo;
 	const action = async () => {
@@ -39,8 +51,10 @@
 			let reservedBike = (await reserveBike(serial)).reserveBike;
 			if (reservedBike) {
 				let success = (await startTrip()).startTrip;
-				$following = true;
 				if (success) {
+					for (let i = 15000; i <= 30000; i += 5000) {
+						setTimeout(checkTripStarted, i);
+					}
 					$currentTrip = {
 						code: '',
 						arrivalTime: null,
@@ -56,6 +70,7 @@
 						} : null,
 						predictedEndDate: null,
 						finished: false,
+						confirmed: false,
 						pathTaken: $currentPos ? [{
 							lng: $currentPos.coords.longitude,
 							lat: $currentPos.coords.latitude,
@@ -63,6 +78,7 @@
 						}] : [],
 					};
 					watchPosition();
+					captureEvent('bike_unlocked');
 					return true;
 				} else {
 					addErrorMessage('Não foi possível desbloquear a bicicleta');
@@ -97,20 +113,24 @@
 	let moved = false;
 	let waiting = false;
 
-	function onTouchStart(event: TouchEvent) {
+	function onPointerDown(event: PointerEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		dragging = true;
-		initPos = event.touches[0].clientX - $pos;
+		// lock to this event
+		event.currentTarget.setPointerCapture(event.pointerId);
+
+		initPos = event.clientX - $pos;
 		clearTimeout(timeout);
 	}
-	function onTouchMove(event: TouchEvent) {
+	function onPointerMove(event: PointerEvent) {
 		if (dragging && !disabled) {
-			pos.set(event.touches[0].clientX - initPos, { duration: 0 });
+			pos.set(event.clientX - initPos, { duration: 0 });
 			moved = true;
 		} else {
 			pos.set(0);
 		}
 	}
-	function onTouchEnd() {
+	function onPointerUp(event: PointerEvent&{currentTarget:EventTarget&HTMLDivElement}) {
+		event.currentTarget.releasePointerCapture(event.pointerId);
 		dragging = false;
 		if ($pos == 0 && !moved && !disabled) {
 			pos.set(50);
@@ -142,7 +162,14 @@
 			</div>
 		{/if}
 	</div>
-	<div class="absolute flex items-center bg-background rounded-2xl h-full w-full px-5 gap-5" style:box-shadow="0px 0px 12px 0px var(--color-shadow)" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove} style:left="{$pos}px">
+	<div class="absolute flex items-center bg-background rounded-2xl h-full w-full px-5 gap-5 touch-pan-y dark:bg-background-secondary" style:box-shadow="0px 0px 12px 0px var(--color-shadow)"
+
+		on:pointerdown={onPointerDown}
+		on:pointerup={onPointerUp}
+		on:pointermove={onPointerMove}
+		on:pointercancel={onPointerUp}
+
+		style:left="{$pos}px">
 		{#if type === 'electric'}
 			<IconBolt size={42} stroke={1.7} class="text-primary -mx-3" />
 		{:else}

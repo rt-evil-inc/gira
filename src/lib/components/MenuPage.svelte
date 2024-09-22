@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { safeInsets } from '$lib/stores';
+	import { safeInsets } from '$lib/state';
 	import { fade } from 'svelte/transition';
 </script>
 
