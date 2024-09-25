@@ -2,7 +2,7 @@ import { registerPlugin } from '@capacitor/core';
 import { get, writable } from 'svelte/store';
 import { type Position, Geolocation } from '@capacitor/geolocation';
 import type { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
-import { appSettings, currentTrip } from './stores';
+import { appSettings, currentTrip } from '$lib/state';
 
 export const currentPos = writable<Position|null>(null);
 export const bearingNorth = writable<boolean>(false);
@@ -21,12 +21,13 @@ export async function watchPosition() {
 			watchId = null;
 		}
 
-		watchId = await BackgroundGeolocation.addWatcher({
+		backgroundWatchId = await BackgroundGeolocation.addWatcher({
 			backgroundTitle: 'Active Trip',
 			backgroundMessage: 'Tracking location in background',
 			distanceFilter: 2,
 		}, position => {
 			if (position) {
+				console.log('BackgroundGeolocation:', position);
 				currentPos.set({ coords: { ...position, heading: position.bearing }, timestamp: (new Date).getTime() });
 			}
 		});
@@ -42,6 +43,7 @@ export async function watchPosition() {
 			timeout: 10000,
 		}, position => {
 			if (position === null) return;
+			console.log('Geolocation:', position);
 			currentPos.set(position);
 		});
 	}

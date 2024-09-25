@@ -39,7 +39,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@capacitor-community/background-geolocation": "^1.2.15",
+    "@capacitor-community/background-geolocation": "^1.2.19",
     "@capacitor-community/keep-awake": "^4.0.0",
     "@capacitor/android": "^5.5.1",
     "@capacitor/app": "^5.0.6",

@@ -5,6 +5,7 @@ import { currentPos } from '../location';
 import { distanceBetweenCoords } from '../utils';
 import { updateOnetimeInfo } from './helper';
 import { startWS } from '$lib/gira-api/ws';
+import { MIN_TRAVEL_DISTANCE_m } from '$lib/constants';
 
 export type User = {
 	email: string;
@@ -185,7 +186,7 @@ currentPos.subscribe(async v => {
 			const traveledDistance = distanceBetweenCoords(lastLocation.lat, lastLocation.lng, v.coords.latitude, v.coords.longitude);
 			trip.traveledDistanceKm += traveledDistance;
 			const speed = (trip.traveledDistanceKm / ((v.timestamp - trip.startDate.getTime()) / 1000)) * 3600;
-			trip.speed = speed;
+			if (traveledDistance >= MIN_TRAVEL_DISTANCE_m / 1000) trip.speed = speed;
 		}
 		return trip;
 	});
