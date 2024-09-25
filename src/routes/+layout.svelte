@@ -41,7 +41,9 @@
 		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 		const updateTheme = () => {
 			document.documentElement.setAttribute('data-theme', $appSettings.theme === 'system' ? mediaQuery.matches ? 'dark' : 'light' : $appSettings.theme);
-			StatusBar.setStyle({ style: $appSettings.theme === 'system' ? mediaQuery.matches ? Style.Dark : Style.Light : $appSettings.theme === 'dark' ? Style.Dark : Style.Light });
+			if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios'){
+				StatusBar.setStyle({ style: $appSettings.theme === 'system' ? mediaQuery.matches ? Style.Dark : Style.Light : $appSettings.theme === 'dark' ? Style.Dark : Style.Light });
+			}
 		};
 		appSettings.subscribe(updateTheme);
 		mediaQuery.addEventListener('change', updateTheme);
