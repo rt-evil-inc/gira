@@ -12,7 +12,7 @@
 	import { cubicOut } from 'svelte/easing';
 	import type { ThrownError } from '../gira-api/api-types';
 	import { accountInfo, addErrorMessage, appSettings, currentTrip, type StationInfo } from '$lib/state';
-	import { currentPos } from '$lib/location';
+	import { currentPos, watchPosition } from '$lib/location';
 	import { fade } from 'svelte/transition';
 	import { distanceBetweenCoords } from '$lib/utils';
 	import { LOCK_DISTANCE_m } from '$lib/constants';
@@ -77,6 +77,7 @@
 							time: new Date,
 						}] : [],
 					};
+					watchPosition();
 					captureEvent('bike_unlocked');
 					return true;
 				} else {

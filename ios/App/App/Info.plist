@@ -24,10 +24,14 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Required to show your position on the map, and check the distance to bike stations</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Required to show your position on the map, and check the distance to bike stations</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Required to show your position on the map, check the distance to bike stations and calculate metrics during trips</string>
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>location</string>
+  </array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

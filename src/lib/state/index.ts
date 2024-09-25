@@ -5,6 +5,7 @@ import { currentPos } from '../location';
 import { distanceBetweenCoords } from '../utils';
 import { updateOnetimeInfo } from './helper';
 import { startWS } from '$lib/gira-api/ws';
+import { MIN_TRAVEL_DISTANCE_m } from '$lib/constants';
 
 export type User = {
 	email: string;
@@ -67,6 +68,7 @@ export type Insets = {
 export type AppSettings = {
 	distanceLock: boolean;
 	mockUnlock: boolean;
+	backgroundLocation: boolean;
 	analytics: boolean;
 	theme: 'light'|'dark'|'system';
 }
@@ -88,7 +90,7 @@ export const currentTrip = writable<ActiveTrip|null>(null);
 export const accountInfo = writable<AccountInfo|null>(null);
 export const selectedStation = writable<string|null>(null);
 export const safeInsets = writable<Insets>({ top: 0, bottom: 0, left: 0, right: 0 });
-export const appSettings = writable<AppSettings>({ distanceLock: true, mockUnlock: true, analytics: true, theme: 'system' });
+export const appSettings = writable<AppSettings>({ distanceLock: true, mockUnlock: true, backgroundLocation: true, analytics: true, theme: 'system' });
 export const tripRating = writable<TripRating>({ currentRating: null });
 export const following = writable<boolean>(false);
 
@@ -145,9 +147,10 @@ export async function loadUserCreds() {
 	}
 	const distanceLock = (await Preferences.get({ key: 'settings/distanceLock' })).value !== 'false'; // !== 'false' is so that it defaults to true if the key is not set
 	const mockUnlock = (await Preferences.get({ key: 'settings/mockUnlock' })).value !== 'false';
+	const backgroundLocation = (await Preferences.get({ key: 'settings/backgroundLocation' })).value !== 'false';
 	const analytics = (await Preferences.get({ key: 'settings/analytics' })).value !== 'false';
 	const theme = ((await Preferences.get({ key: 'settings/theme' })).value || 'system') as 'light'|'dark'|'system';
-	appSettings.set({ distanceLock, mockUnlock, analytics, theme });
+	appSettings.set({ distanceLock, mockUnlock, backgroundLocation, analytics, theme });
 
 	userCredentials.subscribe(async v => {
 		if (!v) {
@@ -166,6 +169,7 @@ export async function loadUserCreds() {
 	appSettings.subscribe(async v => {
 		Preferences.set({ key: 'settings/distanceLock', value: v.distanceLock.toString() });
 		Preferences.set({ key: 'settings/mockUnlock', value: v.mockUnlock.toString() });
+		Preferences.set({ key: 'settings/backgroundLocation', value: v.backgroundLocation.toString() });
 		Preferences.set({ key: 'settings/analytics', value: v.analytics.toString() });
 		Preferences.set({ key: 'settings/theme', value: v.theme });
 	});
@@ -182,7 +186,7 @@ currentPos.subscribe(async v => {
 			const traveledDistance = distanceBetweenCoords(lastLocation.lat, lastLocation.lng, v.coords.latitude, v.coords.longitude);
 			trip.traveledDistanceKm += traveledDistance;
 			const speed = (trip.traveledDistanceKm / ((v.timestamp - trip.startDate.getTime()) / 1000)) * 3600;
-			trip.speed = speed;
+			if (traveledDistance >= MIN_TRAVEL_DISTANCE_m / 1000) trip.speed = speed;
 		}
 		return trip;
 	});
