@@ -1,8 +1,5 @@
 // import oldStyle from '../../static/assets/old-style.json'
 import type { DataDrivenPropertyValueSpecification } from 'maplibre-gl';
-import { getCssVariable } from './utils';
-import { appSettings } from './state';
-import { get } from 'svelte/store';
 
 export function getMapStyle(style:'dark'|'light'): maplibregl.StyleSpecification {
 	const cLight = {

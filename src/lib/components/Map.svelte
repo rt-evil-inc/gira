@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
-	import maplibregl from 'maplibre-gl';
-	const { AttributionControl, GeoJSONSource, Map } = maplibregl;
-	import { currentTrip, stations, selectedStation, token, following, appSettings } from '$lib/state';
-	import type { Position } from '@capacitor/geolocation';
-	import { fade } from 'svelte/transition';
-	import { pulsingDot } from '$lib/pulsing-dot';
-	import { currentPos, bearingNorth, bearing } from '$lib/location';
-	import type { Unsubscriber } from 'svelte/motion';
+	import { bearing, bearingNorth, currentPos } from '$lib/location';
 	import { getMapStyle } from '$lib/mapStyle';
-	import { getCssVariable } from '$lib/utils';
+	import { pulsingDot } from '$lib/pulsing-dot';
+	import type { GeoJSON } from 'geojson';
+	import { appSettings, currentTrip, following, selectedStation, stations, token } from '$lib/state';
+	import { getCssVariable, getTheme } from '$lib/utils';
+	import type { Position } from '@capacitor/geolocation';
+	import maplibregl from 'maplibre-gl';
+	import { onMount, tick } from 'svelte';
+	import type { Unsubscriber } from 'svelte/motion';
+	import { fade } from 'svelte/transition';
 
 	export let loading = true;
 	export let bottomPadding = 0;
@@ -29,36 +29,37 @@
 
 	function setSourceData() {
 		const src = map.getSource('points');
-		if (src instanceof GeoJSONSource) {
-			const data:GeoJSON.GeoJSON = {
-				'type': 'FeatureCollection',
-				'features': $stations.map(station => ({
-					type: 'Feature',
-					properties: {
-						code: station.code,
-						serialNumber: station.serialNumber,
-						name: station.name,
-						bikes: station.bikes,
-						selected: station.serialNumber == $selectedStation,
-						inService: station.assetStatus === 'active',
-						docks: station.docks,
-						freeDocks: station.docks - station.bikes,
-					},
-					geometry: {
-						type: 'Point',
-						coordinates: [station.longitude, station.latitude],
-					},
-				})),
-			};
+
+		const data: GeoJSON = {
+			'type': 'FeatureCollection',
+			'features': $stations.map(station => ({
+				type: 'Feature',
+				properties: {
+					code: station.code,
+					serialNumber: station.serialNumber,
+					name: station.name,
+					bikes: station.bikes,
+					selected: station.serialNumber == $selectedStation,
+					inService: station.assetStatus === 'active',
+					docks: station.docks,
+					freeDocks: station.docks - station.bikes,
+				},
+				geometry: {
+					type: 'Point',
+					coordinates: [station.longitude, station.latitude],
+				},
+			})),
+		};
+		if (src instanceof maplibregl.GeoJSONSource) {
 			src.setData(data);
 		} else {
 			map.addSource('points', {
 				'type': 'geojson',
-				'data': { type: 'FeatureCollection', features: [] },
+				'data': data,
 			});
 		}
 		const userSrc = map.getSource('user-location');
-		if (!(userSrc instanceof GeoJSONSource)) {
+		if (!(userSrc instanceof maplibregl.GeoJSONSource)) {
 			map.addSource('user-location', {
 				'type': 'geojson',
 				'data': { type: 'FeatureCollection', features: [] },
@@ -66,16 +67,23 @@
 		}
 	}
 
-	function loadSvg(url: string): Promise<HTMLImageElement> {
+	async function loadSvg(url: string, replaces?:Record<string, string>): Promise<HTMLImageElement> {
+		let svgData = await (await fetch(url)).text();
 		return new Promise((resolve, reject) => {
+			if (replaces) {
+				for (const [key, value] of Object.entries(replaces)) {
+					svgData = svgData.replace(new RegExp('{' + key + '}', 'g'), value);
+				}
+			}
 			let img = new Image;
 			img.onload = _ => resolve(img);
 			img.onerror = reject;
-			img.src = url;
+			img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgData);
 		});
 	}
 
 	function addLayers() {
+		if (map.getLayer('points') != undefined) return;
 		map.addLayer({
 			'id': 'points',
 			'type': 'symbol',
@@ -170,19 +178,31 @@
 	}
 
 	async function loadImages() {
-		map.addImage('pulsing-dot', pulsingDot(map), { pixelRatio: 2 });
-		map.addImage('bike_inactive', await loadSvg('./assets/bike_marker_inactive.svg'));
-		map.addImage('bike_inactive_selected', await loadSvg('./assets/bike_marker_inactive_selected.svg'));
-		map.addImage('dock_inactive', await loadSvg('./assets/dock_marker_inactive.svg'));
-		map.addImage('dock_inactive_selected', await loadSvg('./assets/dock_marker_inactive_selected.svg'));
+		const accent = getCssVariable('--color-primary');
+		const replaces = {
+			accent,
+			background: getTheme() === 'dark' ? '#000' : '#fff',
+		};
 
-		const primaryColor = getCssVariable('--color-primary');
-		const backgroundColor = getCssVariable('--color-background');
-		const imgs = [['bike', './assets/bike_marker.svg', primaryColor], ['bike_selected', './assets/bike_marker_selected.svg', backgroundColor], ['dock', './assets/dock_marker.svg', primaryColor], ['dock_selected', './assets/dock_marker_selected.svg', backgroundColor]];
+		function addOrReplace(id:string, img: Parameters<typeof map.addImage>[1], options: Parameters<typeof map.addImage>[2] = {}) {
+			if (map.hasImage(id)) {
+				map.updateImage(id, img);
+			} else {
+				map.addImage(id, img, options);
+			}
+		}
+
+		addOrReplace('pulsing-dot', pulsingDot(map), { pixelRatio: 2 });
+		addOrReplace('bike_inactive', await loadSvg('./assets/bike_marker_inactive.svg', replaces));
+		addOrReplace('bike_inactive_selected', await loadSvg('./assets/bike_marker_inactive_selected.svg', replaces));
+		addOrReplace('dock_inactive', await loadSvg('./assets/dock_marker_inactive.svg', replaces));
+		addOrReplace('dock_inactive_selected', await loadSvg('./assets/dock_marker_inactive_selected.svg', replaces));
+
+		const imgs = [['bike', './assets/bike_marker.svg', accent], ['bike_selected', './assets/bike_marker_selected.svg', replaces.background], ['dock', './assets/dock_marker.svg', accent], ['dock_selected', './assets/dock_marker_selected.svg', replaces.background]];
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext('2d', { willReadFrequently: true })!;
 		const start = performance.now();
-		await Promise.all(imgs.map(([name, url, color]) => loadSvg(url).then(img => {
+		await Promise.all(imgs.map(([name, url, color]) => loadSvg(url, replaces).then(img => {
 			context.clearRect(0, 0, img.width, img.height);
 			context.drawImage(img, 0, 0);
 			const imageWithoutNumber = context.getImageData(0, 0, img.width, img.height);
@@ -195,7 +215,7 @@
 				context.putImageData(imageWithoutNumber, 0, 0);
 				context.fillText(i.toString(), img.width / 2, img.height / 1.65);
 				const newImg = context.getImageData(0, 0, img.width, img.height);
-				map.addImage(`${name}-${i}`, newImg);
+				addOrReplace(`${name}-${i}`, newImg);
 			}
 		})));
 		console.debug(`Loaded images in ${performance.now() - start}ms`);
@@ -203,6 +223,7 @@
 
 	let unsubPos:Unsubscriber;
 	async function onMapLoad(loadPromise: Promise<void>) {
+		console.debug('Map loaded');
 		await loadPromise;
 		mapLoaded = true;
 		setSourceData();
@@ -247,17 +268,17 @@
 	}
 
 	onMount(() => {
-		const mode = $appSettings.theme === 'system' ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' : $appSettings.theme;
-		map = new Map({
+		const mode = getTheme();
+		map = new maplibregl.Map({
 			container: mapElem,
 			style: getMapStyle(mode),
 			center: [-9.15, 38.744],
 			zoom: 11,
 			attributionControl: false,
 		});
-		map.addControl(new AttributionControl, 'bottom-left');
+		map.addControl(new maplibregl.AttributionControl, 'bottom-left');
 		const loadPromise = loadImages();
-		map.on('load', () => onMapLoad(loadPromise));
+		map.once('load', () => onMapLoad(loadPromise));
 		return () => {
 			map.remove();
 			if (unsubPos) unsubPos();
@@ -271,10 +292,16 @@
 		}
 	}
 
-	appSettings.subscribe(settings => {
+	appSettings.subscribe(() => {
 		if (map) {
-			const mode = settings.theme === 'system' ? window?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' : settings.theme;
-			map.setStyle(getMapStyle(mode));
+			map.once('styledata', () => {
+				console.debug('style.load fired');
+				loadImages();
+				setSourceData();
+				addLayers();
+				console.debug(map, map.getStyle(), map.getSource('points'));
+			});
+			map.setStyle(getMapStyle(getTheme()), { diff: true });
 		}
 	});
 

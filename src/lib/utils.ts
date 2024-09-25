@@ -1,3 +1,6 @@
+import { get } from 'svelte/store';
+import { appSettings } from './state';
+
 export const deg2rad = (deg:number) => deg * (Math.PI / 180);
 
 export function distanceBetweenCoords(lat1:number, lon1:number, lat2:number, lon2:number) {
@@ -26,4 +29,9 @@ export function randomUUID() {
 
 export function getCssVariable(name:string) {
 	return getComputedStyle(document.documentElement).getPropertyValue(name);
+}
+
+export function getTheme() {
+	const settings = get(appSettings);
+	return settings.theme === 'system' ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' : settings.theme;
 }
