@@ -4,7 +4,6 @@
 	},
 	"eslint.validate": ["javascript", "svelte"],
 	"eslint.options": {
-		"extensions": [".svelte", ".js"],
 	},
 	"editor.defaultFormatter": "dbaeumer.vscode-eslint",
 	"eslint.format.enable": true,

@@ -62,7 +62,8 @@
     "@tabler/icons-svelte": "^3.16.0",
     "capacitor-plugin-safe-area": "^2.0.6",
     "maplibre-gl": "^4.7.0",
-    "posthog-js": "^1.161.3"
+    "posthog-js": "^1.161.3",
+		"typescript-eslint": "^8.0.0"
   },
   "trustedDependencies": [
     "@sveltejs/kit",
