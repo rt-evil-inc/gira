@@ -59,10 +59,23 @@
 			});
 		}
 		const userSrc = map.getSource('user-location');
+
+		const pos = $currentPos;
+		const userLocationData:GeoJSON.GeoJSON = pos ? {
+			'type': 'FeatureCollection',
+			'features': [{
+				type: 'Feature',
+				properties: {},
+				geometry: {
+					type: 'Point',
+					coordinates: [pos.coords.longitude, pos.coords.latitude],
+				},
+			}],
+		} : { type: 'FeatureCollection', features: [] };
 		if (!(userSrc instanceof maplibregl.GeoJSONSource)) {
 			map.addSource('user-location', {
 				'type': 'geojson',
-				'data': { type: 'FeatureCollection', features: [] },
+				'data': userLocationData,
 			});
 		}
 	}
@@ -245,23 +258,23 @@
 			if ($following && !blurred) centerMap(pos);
 			const src = map.getSource<maplibregl.GeoJSONSource>('user-location');
 			// dont change to GeoJSONSource as building breaks for no apparent reason
+			const data:GeoJSON.GeoJSON = {
+				'type': 'FeatureCollection',
+				'features': [{
+					type: 'Feature',
+					properties: {},
+					geometry: {
+						type: 'Point',
+						coordinates: [pos.coords.longitude, pos.coords.latitude],
+					},
+				}],
+			};
 			if (src != null) {
-				const data:GeoJSON.GeoJSON = {
-					'type': 'FeatureCollection',
-					'features': [{
-						type: 'Feature',
-						properties: {},
-						geometry: {
-							type: 'Point',
-							coordinates: [pos.coords.longitude, pos.coords.latitude],
-						},
-					}],
-				};
 				src.setData(data);
 			} else {
 				map.addSource('user-location', {
 					'type': 'geojson',
-					'data': { type: 'FeatureCollection', features: [] },
+					'data': data,
 				});
 			}
 		}
