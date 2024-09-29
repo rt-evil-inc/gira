@@ -194,7 +194,9 @@
 		const accent = getCssVariable('--color-primary');
 		const replaces = {
 			accent,
-			background: getTheme() === 'dark' ? '#000' : '#fff',
+			background: getCssVariable('--color-background'),
+			inactive: getCssVariable('--color-label'),
+			shadow_strength: getTheme() === 'light' ? '0.25' : '1',
 		};
 
 		function addOrReplace(id:string, img: Parameters<typeof map.addImage>[1], options: Parameters<typeof map.addImage>[2] = {}) {

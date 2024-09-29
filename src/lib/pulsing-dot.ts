@@ -1,4 +1,5 @@
 import type { StyleImageInterface } from 'maplibre-gl';
+import { getCssVariable } from '$lib/utils';
 
 // This implements `StyleImageInterface`
 // to draw a pulsing dot icon on the map.
@@ -35,7 +36,7 @@ export function pulsingDot(map: maplibregl.Map, size = 100, animationDuration = 
 				0,
 				Math.PI * 2,
 			);
-			context.fillStyle = `rgba(121, 192, 0, ${(1 - t) / 2})`;
+			context.fillStyle = `${getCssVariable('--color-primary')}${Math.round((1 - t) / 2 * 255).toString(16).padStart(2, '0')}`;
 			context.fill();
 
 			// Draw the inner circle.
@@ -47,7 +48,7 @@ export function pulsingDot(map: maplibregl.Map, size = 100, animationDuration = 
 				0,
 				Math.PI * 2,
 			);
-			context.fillStyle = 'rgba(121, 192, 0, 1)';
+			context.fillStyle = getCssVariable('--color-primary');
 			context.strokeStyle = 'white';
 			context.lineWidth = 2 + 4 * (1 - t);
 			context.fill();

@@ -2,9 +2,8 @@
 <g filter="url(#filter0_d_333_528)">
 <path d="M65.5 144L46.0144 110.25L84.9856 110.25L65.5 144Z" fill="{background}"/>
 <circle cx="65.5" cy="59.5" r="57.5" fill="{background}"/>
-<path d="M55 88V96M56 88L74 70M68 88L81 75M49 83L62 70M75 88V96M51 96H59M71 96H79M75 70V66M55 70V66M49 72C49 71.4696 49.2107 70.9609 49.5858 70.5858C49.9609 70.2107 50.4696 70 51 70H79C79.5304 70 80.0391 70.2107 80.4142 70.5858C80.7893 70.9609 81 71.4696 81 72V86C81 86.5304 80.7893 87.0391 80.4142 87.4142C80.0391 87.7893 79.5304 88 79 88H51C50.4696 88 49.9609 87.7893 49.5858 87.4142C49.2107 87.0391 49 86.5304 49 86V72Z" stroke="#B3B3B3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M66.2623 28.2632H69.3115V23H63.2131V28.2632H66.2623Z" fill="#D9D9D9"/>
-<path d="M50 53H74.3934M81 53H74.3934M74.3934 53L66.2623 28.2632M66.2623 28.2632H69.3115V23H63.2131V28.2632H66.2623Z" stroke="#B3B3B3" stroke-width="6" stroke-linecap="round"/>
+<path d="M55 88V96M56 88L74 70M68 88L81 75M49 83L62 70M75 88V96M51 96H59M71 96H79M75 70V66M55 70V66M49 72C49 71.4696 49.2107 70.9609 49.5858 70.5858C49.9609 70.2107 50.4696 70 51 70H79C79.5304 70 80.0391 70.2107 80.4142 70.5858C80.7893 70.9609 81 71.4696 81 72V86C81 86.5304 80.7893 87.0391 80.4142 87.4142C80.0391 87.7893 79.5304 88 79 88H51C50.4696 88 49.9609 87.7893 49.5858 87.4142C49.2107 87.0391 49 86.5304 49 86V72Z" stroke="{inactive}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M50 53H74.3934M81 53H74.3934M74.3934 53L66.2623 28.2632M66.2623 28.2632H69.3115V23H63.2131V28.2632H66.2623Z" stroke="{inactive}" stroke-width="6" stroke-linecap="round"/>
 </g>
 <defs>
 <filter id="filter0_d_333_528" x="0" y="0" width="131" height="158" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
@@ -13,7 +12,7 @@
 <feOffset dy="6"/>
 <feGaussianBlur stdDeviation="4"/>
 <feComposite in2="hardAlpha" operator="out"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 {shadow_strength} 0"/>
 <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_333_528"/>
 <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_333_528" result="shape"/>
 </filter>
