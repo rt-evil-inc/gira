@@ -8,7 +8,7 @@
 	import IconLogout2 from '@tabler/icons-svelte/icons/logout-2';
 	import IconMessageReport from '@tabler/icons-svelte/icons/message-report';
 	import { createEventDispatcher, onMount } from 'svelte';
-	import { fade } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { accountInfo, safeInsets, user } from '$lib/state';
 	import { logOut } from '$lib/state/helper';
 	import SettingsEntry from './SettingsEntry.svelte';
@@ -40,7 +40,7 @@
 
 </script>
 
-<div transition:fade={{ duration: 150 }} class="absolute w-full h-full inset-0 bg-background z-30 grid" >
+<div transition:fly={{ duration: 150, x: 100 }} class="absolute w-full h-full inset-0 bg-background z-30 grid" >
 	{#if $user}
 		<div class="flex flex-col justify-between items-center h-full gap-10 col-start-1 col-end-2 row-start-1 row-end-2 p-4 overflow-x-hidden"
 			style:padding-top="{Math.max($safeInsets.top, 16)}px" style:padding-bottom="{Math.max($safeInsets.bottom, 24)}px"
