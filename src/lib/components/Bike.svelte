@@ -37,6 +37,10 @@
 				addErrorMessage('Não tem uma subscrição ativa');
 				return false;
 			}
+			if (($accountInfo?.balance ?? 0) < 0) {
+				addErrorMessage('Não é possível desbloquear bicicletas se o seu saldo for negativo');
+				return false;
+			}
 			if ($appSettings.distanceLock) {
 				if ($currentPos == null) {
 					addErrorMessage('Não foi possível determinar a sua posição');
