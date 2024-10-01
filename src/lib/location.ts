@@ -27,7 +27,6 @@ export async function watchPosition() {
 			distanceFilter: 2,
 		}, position => {
 			if (position) {
-				console.log('BackgroundGeolocation:', position);
 				currentPos.set({ coords: { ...position, heading: position.bearing }, timestamp: (new Date).getTime() });
 			}
 		});
@@ -43,7 +42,6 @@ export async function watchPosition() {
 			timeout: 10000,
 		}, position => {
 			if (position === null) return;
-			console.log('Geolocation:', position);
 			currentPos.set(position);
 		});
 	}
