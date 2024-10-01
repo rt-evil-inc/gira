@@ -33,5 +33,6 @@ export function getCssVariable(name:string) {
 
 export function getTheme() {
 	const settings = get(appSettings);
+	if (!settings) return undefined;
 	return settings.theme === 'system' ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' : settings.theme;
 }

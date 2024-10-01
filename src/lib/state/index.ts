@@ -90,7 +90,7 @@ export const currentTrip = writable<ActiveTrip|null>(null);
 export const accountInfo = writable<AccountInfo|null>(null);
 export const selectedStation = writable<string|null>(null);
 export const safeInsets = writable<Insets>({ top: 0, bottom: 0, left: 0, right: 0 });
-export const appSettings = writable<AppSettings>({ distanceLock: true, mockUnlock: true, backgroundLocation: true, analytics: true, theme: 'system' });
+export const appSettings = writable<AppSettings>();
 export const tripRating = writable<TripRating>({ currentRating: null });
 export const following = writable<boolean>(false);
 

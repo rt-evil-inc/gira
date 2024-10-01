@@ -26,6 +26,8 @@
 		});
 	}
 
+	let currentTheme: 'light' | 'dark' | undefined;
+
 	onMount(() => {
 		loadUserCreds();
 		initAnalytics();
@@ -41,13 +43,13 @@
 
 		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 		const updateTheme = () => {
-			const currentTheme = getTheme();
+			currentTheme = getTheme();
+			if (currentTheme === undefined) return;
 			document.documentElement.setAttribute('data-theme', currentTheme);
 			if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') StatusBar.setStyle({ style: currentTheme == 'dark' ? Style.Dark : Style.Light });
 		};
 		appSettings.subscribe(updateTheme);
 		mediaQuery.addEventListener('change', updateTheme);
-		updateTheme();
 
 		return () => {
 			App.removeAllListeners();
@@ -56,6 +58,8 @@
 	});
 </script>
 
-<div class="w-screen h-screen font-sans">
-	<slot />
-</div>
+{#if currentTheme !== undefined}
+	<div class="w-screen h-screen font-sans">
+		<slot />
+	</div>
+{/if}
