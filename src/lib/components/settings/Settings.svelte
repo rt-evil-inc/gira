@@ -1,9 +1,9 @@
 <script>
 	import { dev } from '$app/environment';
 	import { LOCK_DISTANCE_m } from '$lib/constants';
-	import { appSettings } from '$lib/state';
-	import MenuPage from '../MenuPage.svelte';
-	import Toggle from '../Toggle.svelte';
+	import { appSettings } from '$lib/settings';
+	import MenuPage from '$lib/components/MenuPage.svelte';
+	import Toggle from '$lib/components/Toggle.svelte';
 </script>
 
 <MenuPage>

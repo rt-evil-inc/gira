@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { safeInsets } from '$lib/state';
+	import { safeInsets } from '$lib/ui';
 	import { fade } from 'svelte/transition';
 
 	export let offset = 0, y:number|undefined = 0, left:undefined|number = undefined, right:undefined|number = undefined, bottom = false;

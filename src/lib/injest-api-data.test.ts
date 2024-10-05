@@ -1,8 +1,8 @@
 import type { ActiveTripSubscription } from '$lib/gira-api/ws-types';
 import { get } from 'svelte/store';
-import { updateWithTripMessage } from './helper';
+import { updateWithTripMessage } from '$lib/injest-api-data';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
-import { currentTrip } from '.';
+import { currentTrip } from '$lib/trip';
 import { tripPayWithNoPoints, tripPayWithPoints } from '$lib/gira-api/__mocks__/api';
 import * as api from '$lib/gira-api/__mocks__/api';
 

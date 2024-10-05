@@ -3,12 +3,12 @@
 	import Bike from '$lib/components/Bike.svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
-	import { stations, selectedStation, type StationInfo } from '$lib/state';
+	import { stations, selectedStation, type StationInfo } from '$lib/map';
 	import { tick } from 'svelte';
 	import { currentPos } from '$lib/location';
 	import { distanceBetweenCoords, formatDistance } from '$lib/utils';
 	import { fade } from 'svelte/transition';
-	import BikeSkeleton from './BikeSkeleton.svelte';
+	import BikeSkeleton from '$lib/components/BikeSkeleton.svelte';
 	import { getStationInfo } from '$lib/gira-api/api';
 
 	export let bikeListHeight = 0;
@@ -44,11 +44,13 @@
 	function onTouchStart(event: TouchEvent) {
 		initPos = event.touches[0].clientY - $pos;
 	}
+
 	function onTouchMove(event: TouchEvent) {
 		dragging = true;
 		let newPos = Math.max(event.touches[0].clientY - initPos, 0);
 		pos.set(newPos, { duration: 0 });
 	}
+
 	function onTouchEnd() {
 		dragging = false;
 		if (Math.abs($pos) > dragged.clientHeight * 0.3) {
@@ -127,6 +129,7 @@
 			},
 		};
 	}
+
 	function getStationFromSerial(serial:string) {
 		const s = $stations.find(s => s.serialNumber == serial);
 		if (!s) {

@@ -1,4 +1,4 @@
-import type { M, Q } from '../api-types';
+import type { M, Q } from '$lib/gira-api/api-types';
 
 export async function reserveBike(serialNumber: string): Promise<M<['reserveBike']>> {
 	return {

@@ -10,104 +10,12 @@
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import type { ThrownError } from '../gira-api/api-types';
-	import { accountInfo, addErrorMessage, appSettings, currentTrip, type StationInfo } from '$lib/state';
-	import { currentPos, watchPosition } from '$lib/location';
+	import { tryStartTrip } from '$lib/trip';
+	import { type StationInfo } from '$lib/map';
 	import { fade } from 'svelte/transition';
-	import { distanceBetweenCoords } from '$lib/utils';
-	import { LOCK_DISTANCE_m } from '$lib/constants';
-	import { updateActiveTripInfo } from '$lib/state/helper';
-	import { reserveBike, startTrip } from '$lib/gira-api/api';
-	import { captureEvent } from '$lib/analytics';
-
-	async function checkTripStarted() {
-		if ($currentTrip === null) return;
-		if ((await reserveBike(serial)).reserveBike) {
-			$currentTrip = null;
-		} else if (!$currentTrip.confirmed) {
-			updateActiveTripInfo();
-		}
-	}
 
 	export let type:'classic'|'electric'|null = null, id:string = '', battery:number|null = null, dock:string, disabled = false, serial:string, station:StationInfo;
-	const action = async () => {
-		if (serial == null) return;
-		try {
-			if ($accountInfo?.subscription === null) {
-				addErrorMessage('Não tem uma subscrição ativa');
-				return false;
-			}
-			if (($accountInfo?.balance ?? 0) < 0) {
-				addErrorMessage('Não é possível desbloquear bicicletas se o seu saldo for negativo');
-				return false;
-			}
-			if ($appSettings.distanceLock) {
-				if ($currentPos == null) {
-					addErrorMessage('Não foi possível determinar a sua posição');
-					return false;
-				} else {
-					if (distanceBetweenCoords($currentPos.coords.latitude, $currentPos.coords.longitude, station.latitude, station.longitude) > LOCK_DISTANCE_m / 1000) {
-						addErrorMessage('Não está perto o suficiente da estação');
-						return false;
-					}
-				}
-			}
-			let reservedBike = (await reserveBike(serial)).reserveBike;
-			if (reservedBike) {
-				let success = (await startTrip()).startTrip;
-				if (success) {
-					for (let i = 15000; i <= 30000; i += 5000) {
-						setTimeout(checkTripStarted, i);
-					}
-					$currentTrip = {
-						code: '',
-						arrivalTime: null,
-						bikePlate: id,
-						traveledDistanceKm: 0,
-						destination: null,
-						distanceLeft: null,
-						speed: 0,
-						startDate: new Date,
-						startPos: $currentPos ? {
-							lng: $currentPos.coords.longitude,
-							lat: $currentPos.coords.latitude,
-						} : null,
-						predictedEndDate: null,
-						finished: false,
-						confirmed: false,
-						pathTaken: $currentPos ? [{
-							lng: $currentPos.coords.longitude,
-							lat: $currentPos.coords.latitude,
-							time: new Date,
-						}] : [],
-					};
-					watchPosition();
-					captureEvent('bike_unlocked');
-					return true;
-				} else {
-					addErrorMessage('Não foi possível desbloquear a bicicleta');
-					return false;
-				}
-			}
-		} catch (_e) {
-			const knownErrors = ['Serviço indisponível. Horário de utilização entre as 06:00 e as 02:00.'];
-			const e = _e as ThrownError;
-			let addedError = false;
-			if (e && e.errors) {
-				for (let error of e.errors) {
-					if (knownErrors.includes(error.message)) {
-						addErrorMessage(error.message);
-						addedError = true;
-					}
-				}
-				if (!addedError) {
-					addErrorMessage('Não foi possível desbloquear a bicicleta');
-				}
-			}
-			console.error(e);
-			return false;
-		}
-	};
+	const action = () => tryStartTrip(id, serial, station);
 
 	let dragging = false;
 	let initPos = 0;

@@ -9,15 +9,15 @@
 	import IconMessageReport from '@tabler/icons-svelte/icons/message-report';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
-	import { accountInfo, safeInsets, user } from '$lib/state';
-	import { logOut } from '$lib/state/helper';
-	import SettingsEntry from './SettingsEntry.svelte';
-	import Metric from './Metric.svelte';
-	import History from './settings/History.svelte';
-	import Settings from './settings/Settings.svelte';
-	import Info from './settings/About.svelte';
+	import { safeInsets } from '$lib/ui';
+	import SettingsEntry from '$lib/components/SettingsEntry.svelte';
+	import Metric from '$lib/components/Metric.svelte';
+	import History from '$lib/components/settings/History.svelte';
+	import Settings from '$lib/components/settings/Settings.svelte';
+	import Info from '$lib/components/settings/About.svelte';
 	import { App } from '@capacitor/app';
 	import type { PluginListenerHandle } from '@capacitor/core';
+	import { user, accountInfo, logOut } from '$lib/account';
 
 	let openPage: 'settings' | 'history' |'info'| null = null;
 	let listener:PluginListenerHandle;

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { version } from '$app/environment';
 	import { captureEvent } from '$lib/analytics';
-	import { safeInsets } from '$lib/state';
-	import MenuPage from '../MenuPage.svelte';
+	import { safeInsets } from '$lib/ui';
+	import MenuPage from '$lib/components/MenuPage.svelte';
 	async function wait(ms:number) {
 		return new Promise(resolve => setTimeout(resolve, ms));
 	}

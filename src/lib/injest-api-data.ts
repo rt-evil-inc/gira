@@ -1,8 +1,43 @@
-import type { Q } from '$lib/gira-api';
-import { get } from 'svelte/store';
-import { stations, type StationInfo, tripRating, currentTrip, accountInfo } from '.';
+import type { Q } from '$lib/gira-api/api-types';
 import type { ActiveTripSubscription } from '$lib/gira-api/ws-types';
+import { get } from 'svelte/store';
 import { currentPos } from '$lib/location';
+import { stations, type StationInfo } from '$lib/map';
+import { currentTrip, tripRating } from '$lib/trip';
+import { fullOnetimeInfo, getActiveTripInfo, tripPayWithNoPoints, tripPayWithPoints } from '$lib/gira-api/api';
+import { accountInfo } from '$lib/account';
+
+export async function updateOnetimeInfo() {
+	const resp = await fullOnetimeInfo();
+	ingestStations(resp);
+	ingestAccountInfo(resp);
+	ingestSubscriptions(resp);
+	ingestActiveTripInfo(resp);
+	ingestLastUnratedTrip(resp);
+}
+
+export function updateActiveTripInfo() {
+	getActiveTripInfo().then(ingestActiveTripInfo);
+}
+
+export function updateWithTripMessage(recvTrip:ActiveTripSubscription) {
+	console.debug('ingesting trip message from ws', recvTrip);
+	if (recvTrip.code === 'no_trip' || recvTrip.bike === 'dummy') {
+		if (get(currentTrip)?.confirmed || Date.now() - (get(currentTrip)?.startDate?.getTime() ?? 0) > 30000) {
+			currentTrip.set(null);
+		}
+		return;
+	}
+
+	if (recvTrip.finished) {
+		if (recvTrip.canUsePoints) tripPayWithPoints(recvTrip.code);
+		else if (recvTrip.canPayWithMoney) tripPayWithNoPoints(recvTrip.code);
+	}
+
+	const ctrip = get(currentTrip);
+	if (recvTrip.code === ctrip?.code) ingestCurrentTripUpdate(recvTrip);
+	else ingestOtherTripUpdate(recvTrip);
+}
 
 export function ingestStations(maybeStations:Q<['getStations']>) {
 	if (maybeStations.getStations === null || maybeStations.getStations === undefined) return;

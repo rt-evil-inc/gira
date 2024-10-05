@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { loadUserCreds, safeInsets, token, appSettings } from '$lib/state';
+	import { safeInsets } from '$lib/ui';
+	import { appSettings } from '$lib/settings';
 	import '@fontsource/inter/latin-400.css';
 	import '@fontsource/inter/latin-500.css';
 	import '@fontsource/inter/latin-600.css';
@@ -12,11 +13,12 @@
 	import { SafeArea } from 'capacitor-plugin-safe-area';
 	import '../app.css';
 	import { App } from '@capacitor/app';
-	import { refreshToken } from '$lib/auth';
-	import { updateActiveTripInfo } from '$lib/state/helper';
+	import { loadUserCreds, refreshToken, token } from '$lib/account';
+	import { updateActiveTripInfo } from '$lib/injest-api-data';
 	import { initAnalytics } from '$lib/analytics';
 	import { ScreenOrientation } from '@capacitor/screen-orientation';
 	import { getTheme } from '$lib/utils';
+	import { loadSettings } from '$lib/settings';
 
 	if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') {
 		StatusBar.setOverlaysWebView({ overlay: true });
@@ -26,10 +28,9 @@
 		});
 	}
 
-	let currentTheme: 'light' | 'dark' | undefined;
-
 	onMount(() => {
 		loadUserCreds();
+		loadSettings();
 		initAnalytics();
 		App.addListener('resume', () => {
 			if ($token != null && $token.refreshToken != null) {
@@ -43,8 +44,8 @@
 
 		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 		const updateTheme = () => {
-			currentTheme = getTheme();
-			if (currentTheme === undefined) return;
+			if (!$appSettings?.theme) return;
+			const currentTheme = getTheme();
 			document.documentElement.setAttribute('data-theme', currentTheme);
 			if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') StatusBar.setStyle({ style: currentTheme == 'dark' ? Style.Dark : Style.Light });
 		};
@@ -58,7 +59,7 @@
 	});
 </script>
 
-{#if currentTheme !== undefined}
+{#if $appSettings?.theme}
 	<div class="w-screen h-screen font-sans">
 		<slot />
 	</div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { safeInsets } from '$lib/state';
+	import { safeInsets } from '$lib/ui';
 	import { fly } from 'svelte/transition';
 </script>
 

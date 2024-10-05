@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { bearing, bearingNorth, currentPos } from '$lib/location';
-	import { getMapStyle } from '$lib/mapStyle';
-	import { pulsingDot } from '$lib/pulsing-dot';
-	import type { GeoJSON } from 'geojson';
-	import { appSettings, currentTrip, following, selectedStation, stations, token } from '$lib/state';
-	import { getCssVariable, getTheme } from '$lib/utils';
-	import type { Position } from '@capacitor/geolocation';
+	import { getMapStyle } from '$lib/map-style';
 	import maplibregl from 'maplibre-gl';
 	import { onMount, tick } from 'svelte';
-	import type { Unsubscriber } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
+	import { token } from '$lib/account';
+	import { loadImages, selectedStation, setSourceData, stations, following, addLayers } from '$lib/map';
+	import { getTheme } from '$lib/utils';
+	import type { Unsubscriber } from 'svelte/motion';
+	import { appSettings } from '$lib/settings';
+	import { currentTrip } from '$lib/trip';
+	import type { GeoJSON } from 'geojson';
+	import type { Position } from '@capacitor/geolocation';
 
 	export let loading = true;
 	export let bottomPadding = 0;
@@ -27,145 +29,13 @@
 
 	$: if ($bearingNorth) map.flyTo({ bearing: 0 });
 
-	function setSourceData() {
-		const src = map.getSource('points');
-
-		const data: GeoJSON = {
-			'type': 'FeatureCollection',
-			'features': $stations.map(station => ({
-				type: 'Feature',
-				properties: {
-					code: station.code,
-					serialNumber: station.serialNumber,
-					name: station.name,
-					bikes: station.bikes,
-					selected: station.serialNumber == $selectedStation,
-					inService: station.assetStatus === 'active',
-					docks: station.docks,
-					freeDocks: station.docks - station.bikes,
-				},
-				geometry: {
-					type: 'Point',
-					coordinates: [station.longitude, station.latitude],
-				},
-			})),
-		};
-		if (src instanceof maplibregl.GeoJSONSource) {
-			src.setData(data);
-		} else {
-			map.addSource('points', {
-				'type': 'geojson',
-				'data': data,
-			});
-		}
-		const userSrc = map.getSource('user-location');
-
-		const pos = $currentPos;
-		const userLocationData:GeoJSON.GeoJSON = pos ? {
-			'type': 'FeatureCollection',
-			'features': [{
-				type: 'Feature',
-				properties: {},
-				geometry: {
-					type: 'Point',
-					coordinates: [pos.coords.longitude, pos.coords.latitude],
-				},
-			}],
-		} : { type: 'FeatureCollection', features: [] };
-		if (!(userSrc instanceof maplibregl.GeoJSONSource)) {
-			map.addSource('user-location', {
-				'type': 'geojson',
-				'data': userLocationData,
-			});
-		}
-	}
-
-	async function loadSvg(url: string, replaces?:Record<string, string>): Promise<HTMLImageElement> {
-		let svgData = await (await fetch(url)).text();
-		return new Promise((resolve, reject) => {
-			if (replaces) {
-				for (const [key, value] of Object.entries(replaces)) {
-					svgData = svgData.replace(new RegExp('{' + key + '}', 'g'), value);
-				}
-			}
-			let img = new Image;
-			img.onload = _ => resolve(img);
-			img.onerror = reject;
-			img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgData);
-		});
-	}
-
-	function addLayers() {
-		if (map.getLayer('points') != undefined) return;
-		map.addLayer({
-			'id': 'points',
-			'type': 'symbol',
-			'source': 'points',
-			'layout': {
-				// bike if selected, bike_selected otherwise
-				// 'icon-image': ['case', ['get', 'selected'], ['concat', 'bike_selected-', ['get', 'bikes']], ['concat', 'bike-', ['get', 'bikes']]],
-				// Add case for inService and selected
-				visibility: 'visible',
-				'icon-image': ['case',
-					['get', 'selected'],
-					['case',
-						['get', 'inService'],
-						['concat', 'bike_selected-', ['get', 'bikes']],
-						'bike_inactive_selected'],
-					['case',
-						['get', 'inService'],
-						['concat', 'bike-', ['get', 'bikes']],
-						'bike_inactive']],
-
-				'icon-size': ['interpolate', ['linear'], ['zoom'], 11, 0.3, 13, 0.5],
-				'icon-anchor': 'bottom',
-				'icon-allow-overlap': true,
-				'icon-padding': 0,
-			},
-		});
-		map.addLayer({
-			'id': 'docks',
-			'type': 'symbol',
-			'source': 'points',
-			'layout': {
-				// bike if selected, bike_selected otherwise
-				// 'icon-image': ['case', ['get', 'selected'], ['concat', 'bike_selected-', ['get', 'bikes']], ['concat', 'bike-', ['get', 'bikes']]],
-				// Add case for inService and selected
-				visibility: 'none',
-				'icon-image': ['case',
-					['get', 'selected'],
-					['case',
-						['get', 'inService'],
-						['concat', 'dock_selected-', ['get', 'freeDocks']],
-						'dock_inactive_selected'],
-					['case',
-						['get', 'inService'],
-						['concat', 'dock-', ['get', 'freeDocks']],
-						'dock_inactive']],
-
-				'icon-size': ['interpolate', ['linear'], ['zoom'], 11, 0.3, 13, 0.5],
-				'icon-anchor': 'bottom',
-				'icon-allow-overlap': true,
-				'icon-padding': 0,
-			},
-		});
-		map.addLayer({
-			'id': 'user-location',
-			'type': 'symbol',
-			'source': 'user-location',
-			'layout': {
-				'icon-image': 'pulsing-dot',
-			},
-		});
-	}
-
-	function addEventListeners() {
+	function addEventListeners(map: maplibregl.Map) {
 		map.on('click', 'points', async function (e) {
 			if (e.features === undefined) return;
-			$following = false;
+			following.set(false);
 			const feature = e.features[0] as GeoJSON.Feature<GeoJSON.Point>;
 			const props = feature.properties as { serialNumber: string, name: string, bikes: number };
-			$selectedStation = props.serialNumber;
+			selectedStation.set(props.serialNumber);
 			await tick();
 			await tick();
 			map.flyTo({
@@ -176,75 +46,18 @@
 		});
 		// on dragging map, remove user tracking
 		map.on('dragstart', () => {
-			$following = false;
+			following.set(false);
 		});
 		map.on('click', e => {
 			const features = map.queryRenderedFeatures(e.point, { layers: ['points'] });
 			if (features.length == 0) {
-				$selectedStation = null;
+				selectedStation.set(null);
 			}
 		});
 		map.on('rotate', () => {
 			bearing.set(map.getBearing());
 			bearingNorth.set(false);
 		});
-	}
-
-	async function loadImages() {
-		const accent = getCssVariable('--color-primary');
-		const replaces = {
-			accent,
-			background: getCssVariable('--color-background'),
-			inactive: getCssVariable('--color-label'),
-			shadow_strength: getTheme() === 'light' ? '0.25' : '1',
-		};
-
-		function addOrReplace(id:string, img: Parameters<typeof map.addImage>[1], options: Parameters<typeof map.addImage>[2] = {}) {
-			if (map.hasImage(id)) {
-				map.updateImage(id, img);
-			} else {
-				map.addImage(id, img, options);
-			}
-		}
-
-		addOrReplace('pulsing-dot', pulsingDot(map), { pixelRatio: 2 });
-		addOrReplace('bike_inactive', await loadSvg('./assets/bike_marker_inactive.svg', replaces));
-		addOrReplace('bike_inactive_selected', await loadSvg('./assets/bike_marker_inactive_selected.svg', replaces));
-		addOrReplace('dock_inactive', await loadSvg('./assets/dock_marker_inactive.svg', replaces));
-		addOrReplace('dock_inactive_selected', await loadSvg('./assets/dock_marker_inactive_selected.svg', replaces));
-
-		const imgs = [['bike', './assets/bike_marker.svg', accent], ['bike_selected', './assets/bike_marker_selected.svg', replaces.background], ['dock', './assets/dock_marker.svg', accent], ['dock_selected', './assets/dock_marker_selected.svg', replaces.background]];
-		const canvas = document.createElement('canvas');
-		const context = canvas.getContext('2d', { willReadFrequently: true })!;
-		const start = performance.now();
-		await Promise.all(imgs.map(([name, url, color]) => loadSvg(url, replaces).then(img => {
-			context.clearRect(0, 0, img.width, img.height);
-			context.drawImage(img, 0, 0);
-			const imageWithoutNumber = context.getImageData(0, 0, img.width, img.height);
-			canvas.width = img.width;
-			canvas.height = img.height;
-			context.font = 'bold 44px Inter';
-			context.textAlign = 'center';
-			context.fillStyle = color;
-			for (let i = 0; i < 50; i++) {
-				context.putImageData(imageWithoutNumber, 0, 0);
-				context.fillText(i.toString(), img.width / 2, img.height / 1.65);
-				const newImg = context.getImageData(0, 0, img.width, img.height);
-				addOrReplace(`${name}-${i}`, newImg);
-			}
-		})));
-		console.debug(`Loaded images in ${performance.now() - start}ms`);
-	}
-
-	let unsubPos:Unsubscriber;
-	async function onMapLoad(loadPromise: Promise<void>) {
-		console.debug('Map loaded');
-		await loadPromise;
-		mapLoaded = true;
-		setSourceData();
-		addLayers();
-		addEventListeners();
-		unsubPos = currentPos.subscribe(handleLocUpdate);
 	}
 
 	function centerMap(pos: Position) {
@@ -282,38 +95,39 @@
 		}
 	}
 
+	let unsubPos:Unsubscriber;
+
 	onMount(() => {
-		const mode = getTheme();
 		map = new maplibregl.Map({
 			container: mapElem,
-			style: getMapStyle(mode),
+			style: getMapStyle(getTheme()),
 			center: [-9.15, 38.744],
 			zoom: 11,
 			attributionControl: false,
 		});
 		map.addControl(new maplibregl.AttributionControl, 'bottom-left');
-		const loadPromise = loadImages();
-		map.once('load', () => onMapLoad(loadPromise));
+		map.once('load', async () => {
+			console.debug('Map loaded');
+			await loadImages(map);
+			mapLoaded = true;
+			setSourceData(map);
+			addLayers(map);
+			addEventListeners(map);
+			unsubPos = currentPos.subscribe(handleLocUpdate);
+		});
 		return () => {
 			map.remove();
 			if (unsubPos) unsubPos();
 		};
 	});
 
-	$: if ($stations && map) {
-		$selectedStation = $selectedStation;
-		if (mapLoaded) {
-			setSourceData();
-		}
-	}
-
 	appSettings.subscribe(() => {
 		if (map) {
 			map.once('styledata', () => {
 				console.debug('style.load fired');
-				loadImages();
-				setSourceData();
-				addLayers();
+				loadImages(map);
+				setSourceData(map);
+				addLayers(map);
 				console.debug(map, map.getStyle(), map.getSource('points'));
 			});
 			map.setStyle(getMapStyle(getTheme()), { diff: true });
@@ -321,19 +135,18 @@
 	});
 
 	currentTrip.subscribe(trip => {
-		if (trip) {
-			// change visibility of layers
-			if (mapLoaded) {
-				map.setLayoutProperty('points', 'visibility', 'none');
-				map.setLayoutProperty('docks', 'visibility', 'visible');
-			}
-		} else {
-			if (mapLoaded) {
-				map.setLayoutProperty('points', 'visibility', 'visible');
-				map.setLayoutProperty('docks', 'visibility', 'none');
-			}
+		if (mapLoaded) {
+			map.setLayoutProperty('points', 'visibility', trip ? 'none' : 'visible');
+			map.setLayoutProperty('docks', 'visibility', trip ? 'visible' : 'none');
 		}
 	});
+
+	$: if ($stations && map) {
+		$selectedStation = $selectedStation;
+		if (mapLoaded) {
+			setSourceData(map);
+		}
+	}
 
 	$: if ($following && !blurred && $currentPos && topPadding !== null && bottomPadding !== null && leftPadding !== null) centerMap($currentPos);
 

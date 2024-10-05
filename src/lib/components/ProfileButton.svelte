@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { user, accountInfo } from '$lib/state';
+	import { user, accountInfo } from '$lib/account';
 </script>
 
 {#if $user}

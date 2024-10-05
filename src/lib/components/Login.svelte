@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { login } from '$lib/auth';
+	import { login } from '$lib/account';
 	import { onDestroy } from 'svelte';
-	import { userCredentials } from '../state';
+	import { userCredentials } from '$lib/account';
 	import { Keyboard } from '@capacitor/keyboard';
 
 	let email = '';

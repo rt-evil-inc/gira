@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { addErrorMessage, safeInsets } from '$lib/state';
+	import { errorMessages, safeInsets } from '$lib/ui';
 
 	import IconMoodWrrr from '@tabler/icons-svelte/icons/mood-wrrr';
 	import IconMoodConfuzed from '@tabler/icons-svelte/icons/mood-confuzed';
@@ -11,7 +11,7 @@
 	import IconMoodHappy from '@tabler/icons-svelte/icons/mood-happy';
 	import IconMoodHappyFilled from '@tabler/icons-svelte/icons/mood-happy-filled';
 	import { fade, fly } from 'svelte/transition';
-	import { tripRating } from '$lib/state';
+	import { tripRating } from '$lib/trip';
 	import { rateTrip } from '$lib/gira-api/api';
 
 	export let code:string;
@@ -28,7 +28,7 @@
 			if (r) {
 				$tripRating.currentRating = null;
 			} else {
-				addErrorMessage('Erro ao avaliar viagem');
+				errorMessages.add('Erro ao avaliar viagem');
 			}
 		});
 	}

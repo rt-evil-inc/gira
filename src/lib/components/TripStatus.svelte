@@ -2,10 +2,12 @@
 	import { fade, fly } from 'svelte/transition';
 	import Metric from '$lib/components/Metric.svelte';
 	import { cubicInOut } from 'svelte/easing';
-	import { following, safeInsets, currentTrip as t } from '$lib/state';
+	import { currentTrip as t } from '$lib/trip';
 	import { onMount } from 'svelte';
 	import { KeepAwake } from '@capacitor-community/keep-awake';
 	import { ScreenOrientation } from '@capacitor/screen-orientation';
+	import { following } from '$lib/map';
+	import { safeInsets } from '$lib/ui';
 
 	export let height:number;
 	export let width:number;

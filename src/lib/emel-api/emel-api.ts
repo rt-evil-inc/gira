@@ -1,5 +1,5 @@
-import type { Token } from '$lib/state';
-import type { ApiResponse, TokenOpt, UserInfo } from './types';
+import type { Token } from '$lib/account';
+import type { ApiResponse, TokenOpt, UserInfo } from '$lib/emel-api/types';
 
 export async function getTokensLogin(email: string, password: string) {
 	return await fetch('https://api-auth.emel.pt/auth', {
