@@ -1,4 +1,5 @@
 import posthog from 'posthog-js';
+import { appSettings } from './settings';
 
 const POSTHOG_URL = 'https://posthog.tteles.dev';
 const POSTHOG_API_KEY = 'phc_TzcytD0DrmirOxFVVSYR8azP3jpsNiWXcSLZ5qd8kFj';
@@ -8,6 +9,14 @@ export function initAnalytics() {
 	posthog.init(POSTHOG_API_KEY, {
 		api_host: POSTHOG_URL,
 		person_profiles: 'identified_only', // or 'always' to create profiles for anonymous users as well
+	});
+	appSettings.subscribe(settings => {
+		if (settings.analytics) {
+			console.debug('opting in to analytics');
+			optInAnalytics();
+		} else {
+			optOutAnalytics();
+		}
 	});
 }
 

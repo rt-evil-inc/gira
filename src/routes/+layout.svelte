@@ -30,8 +30,9 @@
 
 	onMount(() => {
 		loadUserCreds();
-		loadSettings();
-		initAnalytics();
+		loadSettings().then(() => {
+			initAnalytics();
+		});
 		App.addListener('resume', () => {
 			if ($token != null && $token.refreshToken != null) {
 				console.debug('Refreshing token because app was reopened');
