@@ -78,10 +78,16 @@ export async function loadUserCreds() {
 		const responseCode = await login(v.email, v.password);
 		if (responseCode !== 0) {
 			console.error('Login failed!');
+			// Invalid credentials
+			if (responseCode === 100) {
+				Preferences.remove({ key: 'email' });
+				Preferences.remove({ key: 'password' });
+			}
 			userCredentials.set(null);
+		} else {
+			Preferences.set({ key: 'email', value: v.email });
+			Preferences.set({ key: 'password', value: v.password });
 		}
-		Preferences.set({ key: 'email', value: v.email });
-		Preferences.set({ key: 'password', value: v.password });
 	});
 }
 
@@ -128,6 +134,7 @@ export async function refreshToken() {
 			if (!creds) return false;
 			const res = await login(creds.email, creds.password);
 			if (res !== 0) {
+				// Invalid credentials
 				await new Promise(resolve => setTimeout(resolve, msBetweenRefreshAttempts));
 				continue;
 			} else {
