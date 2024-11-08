@@ -5,6 +5,7 @@ import { selectedStation } from '$lib/map';
 import { Preferences } from '@capacitor/preferences';
 import { startWS } from '$lib/gira-api/ws';
 import { updateOnetimeInfo } from '$lib/injest-api-data';
+import { FIREBASE_TOKEN_URL } from './constants';
 
 export type Token = {
   accessToken: string;
@@ -40,6 +41,7 @@ export type AccountInfo = {
 }
 
 export const token = writable<Token|null|undefined>(undefined);
+export const firebaseToken = writable<string|null>(null);
 export const userCredentials = writable<{email: string, password: string}|null>(null);
 export const user = writable<User|null>(null);
 export const accountInfo = writable<AccountInfo|null>(null);
@@ -91,7 +93,15 @@ export async function loadUserCreds() {
 	});
 }
 
+export async function fetchFirebaseToken() {
+	const t = await fetch(FIREBASE_TOKEN_URL).then(res => res.text());
+	if (!t) return false;
+	await firebaseToken.set(t);
+	return true;
+}
+
 export async function login(email: string, password: string) {
+	if (!await fetchFirebaseToken()) return 1;
 	const response = await getTokensLogin(email, password);
 	if (response.error.code !== 0) return response.error.code;
 	const { accessToken, refreshToken, expiration } = response.data;
@@ -114,6 +124,7 @@ export async function logOut() {
 const msBetweenRefreshAttempts = 2000;
 const attempts = 5;
 export async function refreshToken() {
+	if (!await fetchFirebaseToken()) return false;
 	const tokens = get(token);
 	if (!tokens) return false;
 	let success = false;
