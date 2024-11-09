@@ -10,8 +10,11 @@
 		"Keyboard": {
 			"resize": "none"
 		}
-  },
-  "android": {
-    "useLegacyBridge": true
+	},
+	"android": {
+		"useLegacyBridge": true
+	},
+	"ios": {
+		"scheme": "GiraPlus"
 	}
 }

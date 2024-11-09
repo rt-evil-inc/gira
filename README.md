@@ -78,16 +78,12 @@ cd gira
 ```sh
 npm install
 npm run build
-cd ios/App
-pod install
 npx cap run ios
 ```
   ou
 ```bash
 bun install
 bun run build
-cd ios/App
-pod install
 bunx cap run ios
 ```
 
