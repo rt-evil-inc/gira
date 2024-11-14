@@ -1,44 +1,53 @@
-import type { Token } from '$lib/state';
-import type { ApiResponse, TokenOpt, UserInfo } from './types';
+import { firebaseToken, type Token } from '$lib/state';
+import { GIRA_AUTH_URL } from '$lib/constants';
+import type { ApiResponse, TokenOpt, UserInfo } from '$lib/emel-api/types';
+import { get } from 'svelte/store';
+import { CapacitorHttp } from '@capacitor/core';
 
 export async function getTokensLogin(email: string, password: string) {
-	return await fetch('https://api-auth.emel.pt/auth', {
-		method: 'POST',
+	console.log(get(firebaseToken));
+	const response = await CapacitorHttp.post({
+		url: GIRA_AUTH_URL + '/login',
 		headers: {
-			'User-Agent': 'Gira/3.2.8 (Android 34)',
+			'User-Agent': 'Gira/3.4.0 (Android 34)',
 			'Content-Type': 'application/json',
 			'Priority': 'high',
+			'x-firebase-token': `${get(firebaseToken)}`,
 		},
-		body: JSON.stringify({
+		data: {
 			Provider: 'EmailPassword',
 			CredentialsEmailPassword: {
 				email,
 				password,
 			},
-		}),
-	}).then(res => res.json() as Promise<ApiResponse<TokenOpt>>);
+		},
+	});
+	return response.data as ApiResponse<TokenOpt>;
 }
 
 export async function getTokensRefresh(tokens: Token) {
-	return await fetch('https://api-auth.emel.pt/token/refresh', {
-		method: 'POST',
+	const response = await CapacitorHttp.post({
+		url: GIRA_AUTH_URL + '/token/refresh',
 		headers: {
-			'User-Agent': 'Gira/3.2.8 (Android 34)',
+			'User-Agent': 'Gira/3.4.0 (Android 34)',
 			'Content-Type': 'application/json',
+			'x-firebase-token': `${get(firebaseToken)}`,
 		},
-		body: JSON.stringify({
+		data: {
 			token: tokens.refreshToken,
-		}),
-	}).then(res => res.json() as Promise<ApiResponse<TokenOpt>>);
+		},
+	});
+	return response.data as ApiResponse<TokenOpt>;
 }
 
 export async function getUserInfo(tokens: Token) {
-	return await fetch('https://api-auth.emel.pt/user', {
-		method: 'GET',
+	const response = await CapacitorHttp.get({
+		url: GIRA_AUTH_URL + '/user',
 		headers: {
-			'User-Agent': 'Gira/3.2.8 (Android 34)',
+			'User-Agent': 'Gira/3.4.0 (Android 34)',
 			'Content-Type': 'application/json',
 			'Authorization': `Bearer ${tokens.accessToken}`,
 		},
-	}).then(res => res.json() as Promise<ApiResponse<UserInfo>>);
+	});
+	return response.data as ApiResponse<UserInfo>;
 }

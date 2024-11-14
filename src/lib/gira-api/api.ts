@@ -4,7 +4,8 @@ import { get } from 'svelte/store';
 import { Preferences } from '@capacitor/preferences';
 import type { M, Q, ThrownError } from './api-types';
 import type { Mutation, Query } from './api-types';
-import { token } from '$lib/state';
+import { token, firebaseToken } from '$lib/state';
+import { GIRA_API_URL } from '$lib/constants';
 const RETRY_DELAY = 1000;
 const RETRIES = 5;
 let backoff = 0;
@@ -13,11 +14,12 @@ async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
 	let res: HttpResponse = { status: 0, data: {}, headers: {}, url: '' };
 	for (let tryNum = 0; tryNum < RETRIES; tryNum++) {
 		res = await CapacitorHttp.post({
-			url: 'https://apigira.emel.pt/graphql',
+			url: GIRA_API_URL + '/graphql',
 			headers: {
-				'User-Agent': 'Gira/3.2.8 (Android 34)',
+				'User-Agent': 'Gira/3.4.0 (Android 34)',
 				'content-type': 'application/json',
 				'authorization': `Bearer ${get(token)?.accessToken}`,
+				'x-firebase-token': `${get(firebaseToken)}`,
 			},
 			data: body,
 		});
@@ -41,11 +43,12 @@ async function query<T extends(keyof Query)[]>(body:any): Promise<Q<T>> {
 	let res: HttpResponse = { status: 0, data: {}, headers: {}, url: '' };
 	for (let tryNum = 0; tryNum < RETRIES; tryNum++) {
 		res = await CapacitorHttp.post({
-			url: 'https://apigira.emel.pt/graphql',
+			url: GIRA_API_URL + '/graphql',
 			headers: {
-				'User-Agent': 'Gira/3.2.8 (Android 34)',
+				'User-Agent': 'Gira/3.4.0 (Android 34)',
 				'content-type': 'application/json',
 				'authorization': `Bearer ${get(token)?.accessToken}`,
+				'x-firebase-token': `${get(firebaseToken)}`,
 			},
 			data: body,
 		});
@@ -137,7 +140,7 @@ export async function startTrip() {
 }
 // // returns an int or float of the active trip cost
 // async  get_active_trip_cost(){
-//     response = await make_post_request("https://apigira.emel.pt/graphql", JSON.stringify({
+//     response = await make_post_request(GIRA_API_URL + "/graphql", JSON.stringify({
 //         "operationName": "activeTripCost",
 //         "variables": {},
 //         "query": "query activeTripCost {activeTripCost}"

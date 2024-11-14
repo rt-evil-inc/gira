@@ -79,6 +79,7 @@ export type TripRating = {
 }
 
 export const userCredentials: Writable<{email: string, password: string}|null> = writable(null);
+export const firebaseToken = writable<string|null>(null);
 export const token: Writable<Token|null|undefined> = writable(undefined);
 export const user: Writable<User|null> = writable(null);
 export const stations = writable<StationInfo[]>([]);

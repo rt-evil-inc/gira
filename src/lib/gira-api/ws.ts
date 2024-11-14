@@ -1,22 +1,24 @@
-import { token } from '$lib/state';
+import { token, firebaseToken } from '$lib/state';
 import { get } from 'svelte/store';
 import type { WSEvent } from './ws-types';
 import { randomUUID } from '$lib/utils';
 import { updateWithTripMessage } from '$lib/state/helper';
 import { ingestStations } from '$lib/state/mutate';
+import { GIRA_WS_URL } from '$lib/constants';
 
-let ws:WebSocket;
+let ws: WebSocket;
 export function startWS() {
 	console.debug('starting ws');
 	const tokens = get(token);
 	const access = tokens?.accessToken;
-	if (!access) return;
+	const firebase = get(firebaseToken);
+	if (!access || !firebase) return;
 	if (ws) {
 		if (ws.readyState === WebSocket.CONNECTING) return;
 		if (ws.readyState === WebSocket.OPEN) return;
 	}
 
-	ws = new WebSocket('wss://apigira.emel.pt/graphql', 'graphql-ws');
+	ws = new WebSocket(GIRA_WS_URL + '/graphql', 'graphql-ws');
 	ws.onopen = () => {
 		backoff = 0;
 		console.debug('ws opened');
