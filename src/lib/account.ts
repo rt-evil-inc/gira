@@ -47,6 +47,7 @@ export const firebaseToken = writable<string|null>(null);
 export const userCredentials = writable<{email: string, password: string}|null>(null);
 export const user = writable<User|null>(null);
 export const accountInfo = writable<AccountInfo|null>(null);
+export const tokenServerMessage = writable<string|null>(null);
 
 let tokenRefreshTimeout: ReturnType<typeof setTimeout>|null = null;
 token.subscribe(async v => {
@@ -74,14 +75,11 @@ export async function loadUserCreds() {
 	}
 
 	userCredentials.subscribe(async v => {
-		if (!v) {
-			Preferences.remove({ key: 'email' });
-			Preferences.remove({ key: 'password' });
-			return;
-		}
+		if (!v) return;
 		const responseCode = await login(v.email, v.password);
 		if (responseCode !== 0) {
 			console.error('Login failed!');
+			token.set(null);
 			// Invalid credentials
 			if (responseCode === 100) {
 				Preferences.remove({ key: 'email' });
@@ -105,6 +103,10 @@ export async function fetchFirebaseToken() {
 	};
 	const response = await httpRequestWithRetry(options);
 	if (!response || !response.data) return false;
+	if (response.status === 418) {
+		tokenServerMessage.set(response.data);
+		return false;
+	}
 	await firebaseToken.set(response.data);
 	return true;
 }
