@@ -1,17 +1,19 @@
 import { get } from 'svelte/store';
 import { getTokensLogin, getTokensRefresh, getUserInfo } from './emel-api/emel-api';
-import { firebaseToken, token, user, userCredentials } from './state';
+import { firebaseToken, token, tokenServerMessage, user, userCredentials } from './state';
 import { FIREBASE_TOKEN_URL } from './constants';
 import { version } from '$app/environment';
-import { CapacitorHttp } from '@capacitor/core';
+import { httpRequestWithRetry } from '$lib/utils';
 
 export async function fetchFirebaseToken() {
-	const response = await CapacitorHttp.get({
+	const response = await httpRequestWithRetry({
+		method: 'get',
 		url: FIREBASE_TOKEN_URL,
 		headers: {
 			'User-Agent': `Gira+/${version}`,
 		},
 	});
+	if (!response || !response.data) return false;
 	if (!response.data) return false;
 	await firebaseToken.set(response.data);
 	return true;

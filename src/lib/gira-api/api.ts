@@ -1,71 +1,42 @@
 import { dev } from '$app/environment';
-import { CapacitorHttp, type HttpResponse } from '@capacitor/core';
 import { get } from 'svelte/store';
 import { Preferences } from '@capacitor/preferences';
-import type { M, Q, ThrownError } from './api-types';
+import type { M, Q } from './api-types';
 import type { Mutation, Query } from './api-types';
 import { token, firebaseToken } from '$lib/state';
 import { GIRA_API_URL } from '$lib/constants';
-const RETRY_DELAY = 1000;
-const RETRIES = 5;
-let backoff = 0;
+import { httpRequestWithRetry } from '$lib/utils';
 
 async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
-	let res: HttpResponse = { status: 0, data: {}, headers: {}, url: '' };
-	for (let tryNum = 0; tryNum < RETRIES; tryNum++) {
-		res = await CapacitorHttp.post({
-			url: GIRA_API_URL + '/graphql',
-			headers: {
-				'User-Agent': 'Gira/3.4.0 (Android 34)',
-				'content-type': 'application/json',
-				'authorization': `Bearer ${get(token)?.accessToken}`,
-				'x-firebase-token': `${get(firebaseToken)}`,
-			},
-			data: body,
-		});
-		if (res.status >= 200 && res.status < 300) {
-			console.debug(body, res);
-			backoff = RETRY_DELAY;
-			return res.data.data as Promise<M<T>>;
-		} else {
-			console.debug('error in mutate', res);
-		}
-		await new Promise(resolve => setTimeout(resolve, backoff += 1000));
-	}
-	console.error('failed mutation with body', body, res);
-	throw {
-		errors: res.data.errors,
-		status: res.status,
-	} as ThrownError;
+	const options = {
+		url: GIRA_API_URL + '/graphql',
+		method: 'post',
+		headers: {
+			'User-Agent': 'Gira/3.4.0 (Android 34)',
+			'content-type': 'application/json',
+			'authorization': `Bearer ${get(token)?.accessToken}`,
+			'x-firebase-token': `${get(firebaseToken)}`,
+		},
+		data: body,
+	};
+	const res = await httpRequestWithRetry(options, true);
+	return res?.data.data as Promise<M<T>>;
 }
 
 async function query<T extends(keyof Query)[]>(body:any): Promise<Q<T>> {
-	let res: HttpResponse = { status: 0, data: {}, headers: {}, url: '' };
-	for (let tryNum = 0; tryNum < RETRIES; tryNum++) {
-		res = await CapacitorHttp.post({
-			url: GIRA_API_URL + '/graphql',
-			headers: {
-				'User-Agent': 'Gira/3.4.0 (Android 34)',
-				'content-type': 'application/json',
-				'authorization': `Bearer ${get(token)?.accessToken}`,
-				'x-firebase-token': `${get(firebaseToken)}`,
-			},
-			data: body,
-		});
-		if (res.status >= 200 && res.status < 300) {
-			console.debug(body, res);
-			backoff = RETRY_DELAY;
-			return res.data.data as Promise<Q<T>>;
-		} else {
-			console.debug('error in query', res);
-		}
-		await new Promise(resolve => setTimeout(resolve, backoff += 1000));
-	}
-	console.error('failed query with body', body, res);
-	throw {
-		errors: res.data.errors,
-		status: res.status,
-	} as ThrownError;
+	const options = {
+		url: GIRA_API_URL + '/graphql',
+		method: 'post',
+		headers: {
+			'User-Agent': 'Gira/3.4.0 (Android 34)',
+			'content-type': 'application/json',
+			'authorization': `Bearer ${get(token)?.accessToken}`,
+			'x-firebase-token': `${get(firebaseToken)}`,
+		},
+		data: body,
+	};
+	const res = await httpRequestWithRetry(options, true);
+	return res?.data.data as Promise<Q<T>>;
 }
 
 // async getStations(): Promise<Q<['getStations']>> {
