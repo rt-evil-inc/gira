@@ -6,6 +6,8 @@ import { Preferences } from '@capacitor/preferences';
 import { startWS } from '$lib/gira-api/ws';
 import { updateOnetimeInfo } from '$lib/injest-api-data';
 import { FIREBASE_TOKEN_URL } from './constants';
+import { version } from '$app/environment';
+import { httpRequestWithRetry } from '$lib/utils';
 
 export type Token = {
   accessToken: string;
@@ -94,9 +96,16 @@ export async function loadUserCreds() {
 }
 
 export async function fetchFirebaseToken() {
-	const t = await fetch(FIREBASE_TOKEN_URL).then(res => res.text());
-	if (!t) return false;
-	await firebaseToken.set(t);
+	const options = {
+		url: FIREBASE_TOKEN_URL,
+		method: 'get',
+		headers: {
+			'User-Agent': `Gira+/${version}`,
+		},
+	};
+	const response = await httpRequestWithRetry(options);
+	if (!response || !response.data) return false;
+	await firebaseToken.set(response.data);
 	return true;
 }
 

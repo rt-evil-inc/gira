@@ -1,5 +1,6 @@
 import { get } from 'svelte/store';
 import { appSettings } from '$lib/settings';
+import { CapacitorHttp, type HttpOptions } from '@capacitor/core';
 
 export const deg2rad = (deg:number) => deg * (Math.PI / 180);
 
@@ -34,4 +35,27 @@ export function getCssVariable(name:string) {
 export function getTheme() {
 	const settings = get(appSettings);
 	return settings.theme === 'system' ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' : settings.theme;
+}
+
+const maxAttempts = 5;
+const retryDelay = 1000;
+
+export async function httpRequestWithRetry(options: HttpOptions, retryOnStatus = false) {
+	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+		try {
+			const response = await CapacitorHttp.request(options);
+			if (retryOnStatus && (response.status < 200 || response.status >= 300)) {
+				throw response;
+			}
+			return response;
+		} catch (error) {
+			console.error(`Attempt ${attempt}:`, error);
+			if (attempt < maxAttempts) {
+				await new Promise(resolve => setTimeout(resolve, retryDelay * attempt)); // Linear backoff
+			} else {
+				console.error('Max attempts reached. Throwing error.');
+				throw error;
+			}
+		}
+	}
 }
