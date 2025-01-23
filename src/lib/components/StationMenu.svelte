@@ -66,10 +66,10 @@
 		if ($stations) {
 			station = $stations.find(s => s.serialNumber == $selectedStation);
 			if (station) {
-				name = station.name.split('-', 2)[1].trim();
+				name = station.name.split(/-|–/, 2)[1].trim();
 				bikes = station.bikes;
 				freeDocks = Math.max(station.docks - station.bikes, 0);
-				code = station.name.split('-', 2)[0].trim();
+				code = station.name.split(/-|–/, 2)[0].trim();
 				if ($currentPos) distance = distanceBetweenCoords(station.latitude, station.longitude, $currentPos.coords.latitude, $currentPos.coords.longitude);
 			}
 		}

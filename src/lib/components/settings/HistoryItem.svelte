@@ -18,11 +18,11 @@
 	}
 
 	function idFromName(name:string) {
-		return name.split('-').map(t => t.trim())[0];
+		return name.split(/-|–/).map(t => t.trim())[0];
 	}
 
 	function nameFromName(name:string) {
-		return name.split('-').map(t => t.trim())[1];
+		return name.split(/-|–/).map(t => t.trim())[1];
 	}
 </script>
 
