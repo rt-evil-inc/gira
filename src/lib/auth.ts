@@ -1,30 +1,33 @@
 import { get } from 'svelte/store';
 import { getTokensLogin, getTokensRefresh, getUserInfo } from './emel-api/emel-api';
-import { firebaseToken, token, tokenServerMessage, user, userCredentials } from './state';
-import { FIREBASE_TOKEN_URL } from './constants';
+import { encryptedFirebaseToken, token, user, userCredentials } from './state';
+import { ENCRYPTED_TOKEN_EXCHANGE_URL } from './constants';
 import { version } from '$app/environment';
 import { httpRequestWithRetry } from '$lib/utils';
 
-export async function fetchFirebaseToken() {
+export async function fetchEncryptedFirebaseToken(accessToken?: string) {
+	if (!accessToken) return false;
 	const response = await httpRequestWithRetry({
 		method: 'get',
-		url: FIREBASE_TOKEN_URL,
+		url: ENCRYPTED_TOKEN_EXCHANGE_URL,
 		headers: {
 			'User-Agent': `Gira+/${version}`,
+			'x-gira-token': accessToken,
 		},
 	});
 	if (!response || !response.data) return false;
 	if (!response.data) return false;
-	await firebaseToken.set(response.data);
+	console.log('Encrypted Firebase Token:', response.data);
+	await encryptedFirebaseToken.set(response.data);
 	return true;
 }
 
 export async function login(email: string, password: string) {
-	if (!await fetchFirebaseToken()) return 1;
 	const response = await getTokensLogin(email, password);
 	if (response.error.code !== 0) return response.error.code;
 	const { accessToken, refreshToken, expiration } = response.data;
 	if (!accessToken || !refreshToken) return response.error.code;
+	if (!await fetchEncryptedFirebaseToken(accessToken)) return 1;
 	token.set({ accessToken, refreshToken, expiration });
 	return 0;
 }
@@ -32,7 +35,6 @@ export async function login(email: string, password: string) {
 const msBetweenRefreshAttempts = 2000;
 const attempts = 5;
 export async function refreshToken() {
-	if (!await fetchFirebaseToken()) return false;
 	const tokens = get(token);
 	if (!tokens) return false;
 	let success = false;
@@ -43,6 +45,8 @@ export async function refreshToken() {
 			continue;
 		}
 		const { accessToken, refreshToken, expiration } = response.data;
+		// TODO: Check if the token is expired
+		if (!await fetchEncryptedFirebaseToken(accessToken)) return false;
 		token.set({ accessToken, refreshToken, expiration });
 		success = true;
 	}

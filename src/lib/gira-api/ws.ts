@@ -1,4 +1,4 @@
-import { token, firebaseToken } from '$lib/state';
+import { token, encryptedFirebaseToken } from '$lib/state';
 import { get } from 'svelte/store';
 import type { WSEvent } from './ws-types';
 import { randomUUID } from '$lib/utils';
@@ -11,7 +11,7 @@ export function startWS() {
 	console.debug('starting ws');
 	const tokens = get(token);
 	const access = tokens?.accessToken;
-	const firebase = get(firebaseToken);
+	const firebase = get(encryptedFirebaseToken);
 	if (!access || !firebase) return;
 	if (ws) {
 		if (ws.readyState === WebSocket.CONNECTING) return;

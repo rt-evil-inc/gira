@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import { Preferences } from '@capacitor/preferences';
 import type { M, Q } from './api-types';
 import type { Mutation, Query } from './api-types';
-import { token, firebaseToken } from '$lib/state';
+import { token, encryptedFirebaseToken } from '$lib/state';
 import { GIRA_API_URL } from '$lib/constants';
 import { httpRequestWithRetry } from '$lib/utils';
 
@@ -12,10 +12,10 @@ async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
 		url: GIRA_API_URL + '/graphql',
 		method: 'post',
 		headers: {
-			'User-Agent': 'Gira/3.4.0 (Android 34)',
+			'User-Agent': 'Gira/3.4.3 (Android 34)',
 			'content-type': 'application/json',
 			'authorization': `Bearer ${get(token)?.accessToken}`,
-			'x-firebase-token': `${get(firebaseToken)}`,
+			'x-firebase-token': `${get(encryptedFirebaseToken)}`,
 		},
 		data: body,
 	};
@@ -28,10 +28,10 @@ async function query<T extends(keyof Query)[]>(body:any): Promise<Q<T>> {
 		url: GIRA_API_URL + '/graphql',
 		method: 'post',
 		headers: {
-			'User-Agent': 'Gira/3.4.0 (Android 34)',
+			'User-Agent': 'Gira/3.4.3 (Android 34)',
 			'content-type': 'application/json',
 			'authorization': `Bearer ${get(token)?.accessToken}`,
-			'x-firebase-token': `${get(firebaseToken)}`,
+			'x-firebase-token': `${get(encryptedFirebaseToken)}`,
 		},
 		data: body,
 	};
