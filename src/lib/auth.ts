@@ -15,9 +15,7 @@ export async function fetchEncryptedFirebaseToken(accessToken?: string) {
 			'x-gira-token': accessToken,
 		},
 	});
-	if (!response || !response.data) return false;
-	if (!response.data) return false;
-	console.log('Encrypted Firebase Token:', response.data);
+	if (!response || response.data !== 200 || !response.data) return false;
 	await encryptedFirebaseToken.set(response.data);
 	return true;
 }
@@ -45,7 +43,6 @@ export async function refreshToken() {
 			continue;
 		}
 		const { accessToken, refreshToken, expiration } = response.data;
-		// TODO: Check if the token is expired
 		if (!await fetchEncryptedFirebaseToken(accessToken)) return false;
 		token.set({ accessToken, refreshToken, expiration });
 		success = true;
