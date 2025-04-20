@@ -1,4 +1,4 @@
-import { firebaseToken, token } from '$lib/account';
+import { encryptedFirebaseToken, token } from '$lib/account';
 import { get } from 'svelte/store';
 import type { WSEvent } from '$lib/gira-api/ws-types';
 import { randomUUID } from '$lib/utils';
@@ -10,7 +10,7 @@ export function startWS() {
 	console.debug('starting ws');
 	const tokens = get(token);
 	const access = tokens?.accessToken;
-	const firebase = get(firebaseToken);
+	const firebase = get(encryptedFirebaseToken);
 	if (!access || !firebase) return;
 	if (ws) {
 		if (ws.readyState === WebSocket.CONNECTING) return;
