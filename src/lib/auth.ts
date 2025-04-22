@@ -15,7 +15,7 @@ export async function fetchEncryptedFirebaseToken(accessToken?: string) {
 			'x-gira-token': accessToken,
 		},
 	});
-	if (!response || response.data !== 200 || !response.data) return false;
+	if (!response || response.status !== 200 || !response.data) return false;
 	await encryptedFirebaseToken.set(response.data);
 	return true;
 }
