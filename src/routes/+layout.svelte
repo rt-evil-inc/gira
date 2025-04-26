@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { loadUserCreds, safeInsets, token } from '$lib/state';
+	import { currentTrip, loadUserCreds, safeInsets, token } from '$lib/state';
 	import '@fontsource/inter/latin-400.css';
 	import '@fontsource/inter/latin-500.css';
 	import '@fontsource/inter/latin-600.css';
@@ -14,6 +14,7 @@
 	import { App } from '@capacitor/app';
 	import { refreshToken } from '$lib/auth';
 	import { updateActiveTripInfo } from '$lib/state/helper';
+	import { reportAppUsageEvent, reportTripStartEvent } from '$lib/gira-mais-api/gira-mais-api';
 
 	if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') {
 		StatusBar.setOverlaysWebView({ overlay: true });
@@ -24,7 +25,17 @@
 		});
 	}
 
+	// Report trip start event when the trip is confirmed
+	let tripConfirmed = false;
+	currentTrip.subscribe(trip => {
+		if (!tripConfirmed && trip?.confirmed) {
+			reportTripStartEvent(trip.bikeSerial, trip.startStationSerial);
+		}
+		tripConfirmed = trip?.confirmed ?? false;
+	});
+
 	onMount(() => {
+		reportAppUsageEvent();
 		loadUserCreds();
 		App.addListener('resume', () => {
 			if ($token != null && $token.refreshToken != null) {

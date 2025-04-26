@@ -17,6 +17,13 @@
 				</div>
 				<Toggle bind:checked={$appSettings.distanceLock} />
 			</div>
+			<div class="flex bg-white rounded-2xl py-4 px-5 gap-5 text-info justify-between items-center" style:box-shadow="0px 0px 12px 0px var(--color-shadow)">
+				<div class="grow">
+					<div class="font-semibold leading-relaxed">Contribuir para estatísticas</div>
+					<div class="text-xs font-medium leading-[1.1] text-label">Contribuir com a coleção de eventos anónimos: abertura da aplicação e começo de viagens</div>
+				</div>
+				<Toggle bind:checked={$appSettings.analytics} />
+			</div>
 			{#if dev}
 				<div class="flex bg-white rounded-2xl py-4 px-5 gap-5 text-info justify-between items-center" style:box-shadow="0px 0px 12px 0px var(--color-shadow)">
 					<div class="grow">

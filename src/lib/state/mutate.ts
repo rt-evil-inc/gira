@@ -81,6 +81,8 @@ export function ingestActiveTripInfo(maybeTrips:Q<['activeTrip']>) {
 	currentTrip.update(ct => ct ? {
 		code: code!,
 		bikePlate: ct.bikePlate,
+		bikeSerial: ct.bikeSerial,
+		startStationSerial: ct.startStationSerial,
 		startPos: ct.startPos,
 		destination: ct.destination,
 		traveledDistanceKm: ct.traveledDistanceKm,
@@ -95,6 +97,8 @@ export function ingestActiveTripInfo(maybeTrips:Q<['activeTrip']>) {
 	} : {
 		code: code!,
 		bikePlate: null,
+		bikeSerial: null,
+		startStationSerial: null,
 		startPos: null,
 		destination: null,
 		traveledDistanceKm: 0,
@@ -172,6 +176,8 @@ export function ingestOtherTripUpdate(recvTrip:ActiveTripSubscription) {
 	currentTrip.set({
 		startDate: new Date(recvTrip.startDate),
 		bikePlate: recvTrip.bike,
+		bikeSerial: null,
+		startStationSerial: null,
 		code: recvTrip.code,
 		finished: recvTrip.finished,
 		startPos: null,

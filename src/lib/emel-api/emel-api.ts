@@ -1,11 +1,9 @@
-import { encryptedFirebaseToken, type Token } from '$lib/state';
+import { type Token } from '$lib/state';
 import { GIRA_AUTH_URL } from '$lib/constants';
 import type { ApiResponse, TokenOpt, UserInfo } from '$lib/emel-api/types';
-import { get } from 'svelte/store';
 import { httpRequestWithRetry } from '$lib/utils';
 
 export async function getTokensLogin(email: string, password: string) {
-	console.log(get(encryptedFirebaseToken));
 	const response = await httpRequestWithRetry({
 		method: 'post',
 		url: GIRA_AUTH_URL + '/login',

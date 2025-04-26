@@ -58,6 +58,8 @@
 						code: '',
 						arrivalTime: null,
 						bikePlate: id,
+						bikeSerial: serial,
+						startStationSerial: station.serialNumber,
 						traveledDistanceKm: 0,
 						destination: null,
 						distanceLeft: null,

@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 import { getTokensLogin, getTokensRefresh, getUserInfo } from './emel-api/emel-api';
 import { encryptedFirebaseToken, token, user, userCredentials } from './state';
-import { ENCRYPTED_TOKEN_EXCHANGE_URL } from './constants';
+import { GIRA_MAIS_API_URL } from './constants';
 import { version } from '$app/environment';
 import { httpRequestWithRetry } from '$lib/utils';
 
@@ -9,7 +9,7 @@ export async function fetchEncryptedFirebaseToken(accessToken?: string) {
 	if (!accessToken) return false;
 	const response = await httpRequestWithRetry({
 		method: 'get',
-		url: ENCRYPTED_TOKEN_EXCHANGE_URL,
+		url: GIRA_MAIS_API_URL + '/encrypted-token',
 		headers: {
 			'User-Agent': `Gira+/${version}`,
 			'x-gira-token': accessToken,

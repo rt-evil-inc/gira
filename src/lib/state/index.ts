@@ -33,6 +33,8 @@ export type StationInfo ={
 export type ActiveTrip = {
 	code: string,
 	bikePlate: string|null,
+	bikeSerial: string|null,
+	startStationSerial: string|null,
 	startPos: {lat: number, lng: number}|null,
 	destination: {lat: number, lng: number}|null,
 	traveledDistanceKm: number,
@@ -66,6 +68,7 @@ export type Insets = {
 }
 export type AppSettings = {
 	distanceLock: boolean;
+	analytics: boolean;
 	mockUnlock: boolean;
 }
 export type TripRating = {
@@ -87,7 +90,7 @@ export const currentTrip = writable<ActiveTrip|null>(null);
 export const accountInfo = writable<AccountInfo|null>(null);
 export const selectedStation = writable<string|null>(null);
 export const safeInsets = writable<Insets>({ top: 0, bottom: 0, left: 0, right: 0 });
-export const appSettings = writable<AppSettings>({ distanceLock: true, mockUnlock: true });
+export const appSettings = writable<AppSettings>({ distanceLock: true, analytics: true, mockUnlock: true });
 export const tripRating = writable<TripRating>({ currentRating: null });
 export const following = writable<boolean>(false);
 
@@ -143,8 +146,9 @@ export async function loadUserCreds() {
 		token.set(null);
 	}
 	const distanceLock = (await Preferences.get({ key: 'settings/distanceLock' })).value !== 'false'; // !== 'false' is so that it defaults to true if the key is not set
+	const analytics = (await Preferences.get({ key: 'settings/analytics' })).value !== 'false';
 	const mockUnlock = (await Preferences.get({ key: 'settings/mockUnlock' })).value !== 'false';
-	appSettings.set({ distanceLock, mockUnlock });
+	appSettings.set({ distanceLock, analytics, mockUnlock });
 
 	userCredentials.subscribe(async v => {
 		if (!v) {
@@ -162,6 +166,7 @@ export async function loadUserCreds() {
 	});
 	appSettings.subscribe(async v => {
 		Preferences.set({ key: 'settings/distanceLock', value: v.distanceLock.toString() });
+		Preferences.set({ key: 'settings/analytics', value: v.analytics.toString() });
 		Preferences.set({ key: 'settings/mockUnlock', value: v.mockUnlock.toString() });
 	});
 }
