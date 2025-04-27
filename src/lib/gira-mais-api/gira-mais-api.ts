@@ -1,6 +1,6 @@
 import { dev, version } from '$app/environment';
 import { GIRA_MAIS_API_URL } from '$lib/constants';
-import type { TripStatisticsPostRequest, TripStatisticsPostResponse, UsageStatisticsPostRequest, UsageStatisticsPostResponse } from '$lib/gira-mais-api/types';
+import type { MessageGetResponse, TripStatisticsPostRequest, TripStatisticsPostResponse, UsageStatisticsPostRequest, UsageStatisticsPostResponse } from '$lib/gira-mais-api/types';
 import { appSettings } from '$lib/state';
 import { httpRequestWithRetry } from '$lib/utils';
 import { Device } from '@capacitor/device';
@@ -45,4 +45,16 @@ export async function reportTripStartEvent(bikeSerial: string | null, stationSer
 		} as TripStatisticsPostRequest,
 	});
 	return response?.data as TripStatisticsPostResponse;
+}
+
+export async function getMessage() {
+	const response = await httpRequestWithRetry({
+		method: 'get',
+		url: GIRA_MAIS_API_URL + '/message',
+		headers: {
+			'User-Agent': `Gira+/${version}`,
+			'Content-Type': 'application/json',
+		},
+	});
+	return response?.data as MessageGetResponse;
 }

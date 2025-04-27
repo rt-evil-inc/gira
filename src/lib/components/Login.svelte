@@ -30,7 +30,7 @@
 
 <div class="flex flex-col max-w-sm px-4 w-full h-full justify-center transition-all duration-300" style:padding-bottom="{keyboardHeight}px">
 	<div class="bg-background rounded-2xl max-w-sm w-full flex flex-col items-center p-6" style:box-shadow="0px 0px 20px 0px var(--color-shadow)">
-		<div class="text-center text-lg text-info font-semibold mb-2 rounded-lg">Bem vindo ao Gira+</div>
+		<div class="text-center text-lg text-info font-semibold mb-2 rounded-lg">Bem vindo à Gira+</div>
 		<form class="flex flex-col w-full gap-4" on:submit={loginWrapper}>
 			<div class="w-full">
 				<div class="text-sm text-info font-medium pb-1">Email</div>
