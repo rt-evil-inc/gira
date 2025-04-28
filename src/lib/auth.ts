@@ -1,6 +1,6 @@
 import { get } from 'svelte/store';
 import { getTokensLogin, getTokensRefresh, getUserInfo } from './emel-api/emel-api';
-import { encryptedFirebaseToken, token, user, userCredentials } from './state';
+import { addErrorMessage, encryptedFirebaseToken, token, user, userCredentials } from './state';
 import { GIRA_MAIS_API_URL } from './constants';
 import { version } from '$app/environment';
 import { httpRequestWithRetry } from '$lib/utils';
@@ -15,7 +15,16 @@ export async function fetchEncryptedFirebaseToken(accessToken?: string) {
 			'x-gira-token': accessToken,
 		},
 	});
-	if (!response || response.status !== 200 || !response.data) return false;
+	if (response?.data === 'no tokens available') {
+		addErrorMessage('Sem tokens disponíveis');
+		return false;
+	} else if (response?.data === 'failed to encrypt token') {
+		addErrorMessage('Erro ao encriptar o token');
+		return false;
+	} else if (!response || response.status !== 200 || !response.data) {
+		addErrorMessage('Erro ao obter um token');
+		return false;
+	}
 	await encryptedFirebaseToken.set(response.data);
 	return true;
 }
@@ -25,7 +34,7 @@ export async function login(email: string, password: string) {
 	if (response.error.code !== 0) return response.error.code;
 	const { accessToken, refreshToken, expiration } = response.data;
 	if (!accessToken || !refreshToken) return response.error.code;
-	if (!await fetchEncryptedFirebaseToken(accessToken)) return 1;
+	await fetchEncryptedFirebaseToken(accessToken);
 	token.set({ accessToken, refreshToken, expiration });
 	return 0;
 }
