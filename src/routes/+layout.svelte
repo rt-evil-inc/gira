@@ -14,7 +14,7 @@
 	import { App } from '@capacitor/app';
 	import { refreshToken } from '$lib/auth';
 	import { updateActiveTripInfo } from '$lib/state/helper';
-	import { reportAppUsageEvent, reportTripStartEvent } from '$lib/gira-mais-api/gira-mais-api';
+	import { reportAppUsageEvent } from '$lib/gira-mais-api/gira-mais-api';
 
 	if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') {
 		StatusBar.setOverlaysWebView({ overlay: true });
@@ -24,15 +24,6 @@
 			safeInsets.set(ins.insets);
 		});
 	}
-
-	// Report trip start event when the trip is confirmed
-	let tripConfirmed = false;
-	currentTrip.subscribe(trip => {
-		if (!tripConfirmed && trip?.confirmed) {
-			reportTripStartEvent(trip.bikeSerial, trip.startStationSerial);
-		}
-		tripConfirmed = trip?.confirmed ?? false;
-	});
 
 	onMount(() => {
 		reportAppUsageEvent();

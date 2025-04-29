@@ -33,8 +33,6 @@ export type StationInfo ={
 export type ActiveTrip = {
 	code: string,
 	bikePlate: string|null,
-	bikeSerial: string|null,
-	startStationSerial: string|null,
 	startPos: {lat: number, lng: number}|null,
 	destination: {lat: number, lng: number}|null,
 	traveledDistanceKm: number,

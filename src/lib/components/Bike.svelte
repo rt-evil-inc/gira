@@ -18,6 +18,7 @@
 	import { LOCK_DISTANCE_m } from '$lib/constants';
 	import { updateActiveTripInfo } from '$lib/state/helper';
 	import { reserveBike, startTrip } from '$lib/gira-api/api';
+	import { reportTripStartEvent } from '$lib/gira-mais-api/gira-mais-api';
 
 	async function checkTripStarted() {
 		if ($currentTrip === null) return;
@@ -51,6 +52,7 @@
 			if (reservedBike) {
 				let success = (await startTrip()).startTrip;
 				if (success) {
+					reportTripStartEvent(serial, station.serialNumber);
 					for (let i = 15000; i <= 30000; i += 5000) {
 						setTimeout(checkTripStarted, i);
 					}
@@ -58,8 +60,6 @@
 						code: '',
 						arrivalTime: null,
 						bikePlate: id,
-						bikeSerial: serial,
-						startStationSerial: station.serialNumber,
 						traveledDistanceKm: 0,
 						destination: null,
 						distanceLeft: null,
