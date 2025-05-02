@@ -12,6 +12,7 @@ dependencies {
     implementation project(':capacitor-community-background-geolocation')
     implementation project(':capacitor-community-keep-awake')
     implementation project(':capacitor-app')
+    implementation project(':capacitor-device')
     implementation project(':capacitor-geolocation')
     implementation project(':capacitor-keyboard')
     implementation project(':capacitor-local-notifications')

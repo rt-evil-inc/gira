@@ -15,10 +15,10 @@
 	import { App } from '@capacitor/app';
 	import { loadUserCreds, refreshToken, token } from '$lib/account';
 	import { updateActiveTripInfo } from '$lib/injest-api-data';
-	import { initAnalytics } from '$lib/analytics';
 	import { ScreenOrientation } from '@capacitor/screen-orientation';
 	import { getTheme } from '$lib/utils';
 	import { loadSettings } from '$lib/settings';
+	import { reportAppUsageEvent } from '$lib/gira-mais-api/gira-mais-api';
 
 	if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') {
 		StatusBar.setOverlaysWebView({ overlay: true });
@@ -31,7 +31,7 @@
 	onMount(() => {
 		loadUserCreds();
 		loadSettings().then(() => {
-			initAnalytics();
+			reportAppUsageEvent();
 		});
 		App.addListener('resume', () => {
 			if ($token != null && $token.refreshToken != null) {

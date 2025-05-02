@@ -5,9 +5,10 @@ import { selectedStation } from '$lib/map';
 import { Preferences } from '@capacitor/preferences';
 import { startWS } from '$lib/gira-api/ws';
 import { updateOnetimeInfo } from '$lib/injest-api-data';
-import { TOKEN_EXCHANGE_URL } from './constants';
+import { GIRA_MAIS_API_URL } from './constants';
 import { version } from '$app/environment';
 import { httpRequestWithRetry } from '$lib/utils';
+import { errorMessages } from './ui';
 
 export type Token = {
   accessToken: string;
@@ -92,18 +93,32 @@ export async function loadUserCreds() {
 	});
 }
 
-export async function fetchEncryptedFirebaseToken(accessToken: string) {
-	const options = {
-		url: TOKEN_EXCHANGE_URL + '/exchangeEnc',
-		method: 'get',
-		headers: {
-			'User-Agent': `Gira+/${version}`,
-			'x-gira-token': accessToken,
-		},
-	};
-	const response = await httpRequestWithRetry(options);
-	if (!response || response.status !== 200 || !response.data) return false;
-	await encryptedFirebaseToken.set(response.data);
+export async function fetchEncryptedFirebaseToken(accessToken?: string) {
+	if (!accessToken) return false;
+	try {
+		const response = await httpRequestWithRetry({
+			method: 'get',
+			url: GIRA_MAIS_API_URL + '/encrypted-token',
+			headers: {
+				'User-Agent': `Gira+/${version}`,
+				'x-gira-token': accessToken,
+			},
+		});
+		if (response?.data === 'no tokens available') {
+			errorMessages.add('Sem tokens disponíveis');
+			return false;
+		} else if (response?.data === 'failed to encrypt token') {
+			errorMessages.add('Erro ao encriptar o token');
+			return false;
+		} else if (!response || response.status !== 200 || !response.data) {
+			errorMessages.add('Erro ao obter um token');
+			return false;
+		}
+		await encryptedFirebaseToken.set(response.data);
+	} catch (e) {
+		errorMessages.add('Erro ao obter um token');
+		return false;
+	}
 	return true;
 }
 
@@ -112,7 +127,7 @@ export async function login(email: string, password: string) {
 	if (response.error.code !== 0) return response.error.code;
 	const { accessToken, refreshToken, expiration } = response.data;
 	if (!accessToken || !refreshToken) return response.error.code;
-	if (!await fetchEncryptedFirebaseToken(accessToken)) return 1;
+	await fetchEncryptedFirebaseToken(accessToken);
 	token.set({ accessToken, refreshToken, expiration });
 	return 0;
 }

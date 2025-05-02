@@ -20,6 +20,8 @@
 	import ErrorMessage from '$lib/components/ErrorMessage.svelte';
 	import { App } from '@capacitor/app';
 	import { token } from '$lib/account';
+	import { getMessage } from '$lib/gira-mais-api/gira-mais-api';
+	import { Preferences } from '@capacitor/preferences';
 
 	let menuHeight = 0;
 	let stationMenuPos:number|undefined = 0;
@@ -27,8 +29,20 @@
 	let tripStatusWidth:number = 0;
 	let profileOpen = false;
 	let locationPermission = false;
+	let message = '';
+	let messageTimestamp:string;
 
 	onMount(() => {
+		getMessage().then(async res => {
+			if (res) {
+				const lastMessageTimestamp = Date.parse((await Preferences.get({ key: 'lastMessageTimestamp' })).value || '0');
+				if (res.showAlways || Date.parse(res.timestamp) > lastMessageTimestamp) {
+					message = res.message;
+					messageTimestamp = res.timestamp;
+				}
+			}
+		});
+
 		Geolocation.checkPermissions().then(({ location }) => {
 			locationPermission = location == 'granted';
 			setTimeout(() => {
@@ -93,3 +107,14 @@
 
 	<ErrorMessage />
 </div>
+
+{#if message}
+	<div transition:fade={{ duration: 150 }} class="absolute top-0 flex items-center justify-center w-full h-full bg-black/50 z-50">
+		<div class="bg-background rounded-2xl max-w-sm w-full flex flex-col p-6 m-2" style:box-shadow="0px 0px 20px 0px var(--color-shadow)">
+			<div class="text-info font-medium max-h-[70vh] overflow-y-auto">{@html message}</div>
+			<div class="flex justify-end mt-4">
+				<button class="text-primary font-bold mx-2" on:click={() => { message = ''; Preferences.set({ key: 'lastMessageTimestamp', value: messageTimestamp }); }}>Ok</button>
+			</div>
+		</div>
+	</div>
+{/if}

@@ -6,10 +6,10 @@ import { appSettings } from '$lib/settings';
 import { currentPos, watchPosition } from '$lib/location';
 import { distanceBetweenCoords } from '$lib/utils';
 import { LOCK_DISTANCE_m } from '$lib/constants';
-import { captureEvent } from '$lib/analytics';
 import { reserveBike, startTrip } from '$lib/gira-api/api';
 import type { StationInfo } from './map';
 import { updateActiveTripInfo } from './injest-api-data';
+import { reportTripStartEvent } from './gira-mais-api/gira-mais-api';
 
 export type ActiveTrip = {
 	code: string,
@@ -75,6 +75,7 @@ export async function tryStartTrip(id: string, serial: string, station: StationI
 		if (reservedBike) {
 			const success = (await startTrip()).startTrip;
 			if (success) {
+				reportTripStartEvent(serial, station.serialNumber);
 				for (let i = 15000; i <= 30000; i += 5000) {
 					setTimeout(() => checkTripStarted(serial), i);
 				}
