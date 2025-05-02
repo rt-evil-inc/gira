@@ -103,7 +103,6 @@ export async function tryStartTrip(id: string, serial: string, station: StationI
 					}] : [],
 				});
 				watchPosition();
-				captureEvent('bike_unlocked');
 				return true;
 			} else {
 				errorMessages.add('Não foi possível desbloquear a bicicleta');
