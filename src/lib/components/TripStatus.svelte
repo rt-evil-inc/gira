@@ -11,16 +11,23 @@
 
 	export let height:number;
 	export let width:number;
+	export let lockOrientation = false;
 
 	let portrait = true;
 	$: if ($t) {
 		height = portrait ? ($t.destination ? 216 : 160) + Math.max(12, $safeInsets.top) : 0;
 		width = portrait ? 0 : ($t.destination ? 238 : 190) + $safeInsets.top;
-		ScreenOrientation.unlock();
+		lockOrientation = false;
 	} else {
 		height = 0;
 		width = 0;
+		lockOrientation = true;
+	}
+
+	$: if (lockOrientation) {
 		ScreenOrientation.lock({ orientation: 'portrait' });
+	} else {
+		ScreenOrientation.unlock();
 	}
 
 	let seconds: number;
