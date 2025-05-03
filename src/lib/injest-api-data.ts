@@ -113,36 +113,24 @@ export function ingestActiveTripInfo(maybeTrips:Q<['activeTrip']>) {
 		// defaultOrder,
 		// version,
 	} = maybeTrips.activeTrip!;
-	currentTrip.update(ct => ct ? {
+	currentTrip.update(ct => ({
 		code: code!,
-		bikePlate: ct.bikePlate,
-		startPos: ct.startPos,
-		destination: ct.destination,
-		traveledDistanceKm: ct.traveledDistanceKm,
-		distanceLeft: ct.distanceLeft,
-		speed: ct.speed,
+		bikePlate: ct?.bikePlate ?? null,
+		startPos: ct?.startPos ?? null,
+		destination: ct?.destination ?? null,
+		traveledDistanceKm: ct?.traveledDistanceKm ?? 0,
+		distanceLeft: ct?.distanceLeft ?? null,
+		speed: ct?.speed ?? 0,
 		startDate: new Date(startDate!),
-		predictedEndDate: ct.predictedEndDate,
-		arrivalTime: ct.predictedEndDate,
+		predictedEndDate: ct?.predictedEndDate ?? null,
+		arrivalTime: ct?.predictedEndDate ?? null,
 		finished: false,
 		confirmed: true,
-		pathTaken: ct.pathTaken,
-	} : {
-		code: code!,
-		bikePlate: null,
-		startPos: null,
-		destination: null,
-		traveledDistanceKm: 0,
-		distanceLeft: null,
-		speed: 0,
-		startDate: new Date(startDate!),
-		predictedEndDate: null,
-		arrivalTime: null,
-		finished: false,
-		confirmed: true,
-		pathTaken: [],
-	});
+		pathTaken: ct?.pathTaken ?? [],
+		lastUpdate: new Date(),
+	}));
 }
+
 export function ingestLastUnratedTrip(lastTripData:Q<['unratedTrips', 'tripHistory']>) {
 	if (lastTripData.unratedTrips === null || lastTripData.unratedTrips === undefined || lastTripData.unratedTrips.length <= 0) return;
 	const unratedTrip = lastTripData.unratedTrips[0];
@@ -196,6 +184,7 @@ export function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
 				bikePlate: recvTrip.bike,
 				code: recvTrip.code,
 				confirmed: true,
+				lastUpdate: new Date(),
 			};
 		}
 	});
@@ -222,5 +211,6 @@ export function ingestOtherTripUpdate(recvTrip:ActiveTripSubscription) {
 			lng: p.coords.longitude,
 			time: new Date,
 		}] : [],
+		lastUpdate: new Date(),
 	});
 }

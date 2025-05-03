@@ -2,7 +2,7 @@ import { registerPlugin } from '@capacitor/core';
 import { get, writable } from 'svelte/store';
 import { type Position, Geolocation } from '@capacitor/geolocation';
 import type { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
-import { currentTrip } from '$lib/trip';
+import { checkTripActive, currentTrip } from '$lib/trip';
 import { distanceBetweenCoords } from '$lib/utils';
 import { MIN_TRAVEL_DISTANCE_m } from '$lib/constants';
 import { appSettings } from './settings';
@@ -49,6 +49,7 @@ export async function watchPosition() {
 			if (position) {
 				currentPos.set({ coords: { ...position, heading: position.bearing }, timestamp: (new Date).getTime() });
 			}
+			checkTripActive();
 		});
 	} else {
 		if (watchId !== null) return;
@@ -61,8 +62,9 @@ export async function watchPosition() {
 			enableHighAccuracy: true,
 			timeout: 10000,
 		}, position => {
-			if (position === null) return;
-			currentPos.set(position);
+			if (position) {
+				currentPos.set(position);
+			};
 		});
 	}
 }

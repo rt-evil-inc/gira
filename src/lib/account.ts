@@ -6,7 +6,7 @@ import { Preferences } from '@capacitor/preferences';
 import { startWS } from '$lib/gira-api/ws';
 import { updateOnetimeInfo } from '$lib/injest-api-data';
 import { GIRA_MAIS_API_URL } from './constants';
-import { version } from '$app/environment';
+import { dev, version } from '$app/environment';
 import { httpRequestWithRetry } from '$lib/utils';
 import { errorMessages } from './ui';
 
@@ -15,7 +15,7 @@ export type Token = {
 	refreshToken: string;
 	expiration: number;
 };
-type JWT = {
+export type JWT = {
 	jti: string;
 	sub: string;
 	loginProvider: string;
@@ -100,7 +100,7 @@ export async function fetchEncryptedFirebaseToken(accessToken?: string) {
 			method: 'get',
 			url: GIRA_MAIS_API_URL + '/encrypted-token',
 			headers: {
-				'User-Agent': `Gira+/${version}`,
+				'User-Agent': `Gira+/${dev ? 'dev' : version}`,
 				'x-gira-token': accessToken,
 			},
 		});

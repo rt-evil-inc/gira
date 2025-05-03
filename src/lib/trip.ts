@@ -10,6 +10,7 @@ import { reserveBike, startTrip } from '$lib/gira-api/api';
 import type { StationInfo } from './map';
 import { updateActiveTripInfo } from './injest-api-data';
 import { reportTripStartEvent } from './gira-mais-api/gira-mais-api';
+import { refreshToken, token, type JWT } from './account';
 
 export type ActiveTrip = {
 	code: string,
@@ -24,7 +25,8 @@ export type ActiveTrip = {
 	arrivalTime: Date|null,
 	finished: boolean,
 	confirmed: boolean,
-	pathTaken : {lat: number, lng: number, time:Date}[]
+	pathTaken : {lat: number, lng: number, time:Date}[],
+	lastUpdate: Date | null,
 }
 export type TripRating = {
 	currentRating:{
@@ -101,6 +103,7 @@ export async function tryStartTrip(id: string, serial: string, station: StationI
 						lat: pos.coords.latitude,
 						time: new Date,
 					}] : [],
+					lastUpdate: new Date(),
 				});
 				watchPosition();
 				return true;
@@ -126,5 +129,23 @@ export async function tryStartTrip(id: string, serial: string, station: StationI
 		}
 		console.error(e);
 		return false;
+	}
+}
+
+/** Force trip info update if more than 30 seconds have passed since last update.
+	* Meant to be called while the app is in background. */
+export function checkTripActive() {
+	const lastUpdate = get(currentTrip)?.lastUpdate;
+	if (!lastUpdate || Date.now() - lastUpdate.getTime() < 1000 * 30) return;
+
+	const t = get(token);
+	if (!t) return;
+	const jwt:JWT = JSON.parse(window.atob(t.accessToken.split('.')[1]));
+
+	// Refresh token if it expires in less than 30 seconds and update trip info
+	if (jwt.exp * 1000 - Date.now() < 30 * 1000) {
+		refreshToken().then(updateActiveTripInfo);
+	} else {
+		updateActiveTripInfo();
 	}
 }
