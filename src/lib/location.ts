@@ -22,7 +22,7 @@ currentPos.subscribe(async v => {
 			const traveledDistance = distanceBetweenCoords(lastLocation.lat, lastLocation.lng, v.coords.latitude, v.coords.longitude);
 			trip.traveledDistanceKm += traveledDistance;
 			const speed = (trip.traveledDistanceKm / ((v.timestamp - trip.startDate.getTime()) / 1000)) * 3600;
-			if (traveledDistance >= MIN_TRAVEL_DISTANCE_m / 1000) trip.speed = speed;
+			if (trip.traveledDistanceKm >= MIN_TRAVEL_DISTANCE_m / 1000) trip.speed = speed;
 		}
 		return trip;
 	});
@@ -47,7 +47,7 @@ export async function watchPosition() {
 			distanceFilter: 2,
 		}, position => {
 			if (position) {
-				currentPos.set({ coords: { ...position, heading: position.bearing }, timestamp: (new Date).getTime() });
+				currentPos.set({ coords: { ...position, heading: position.bearing }, timestamp: position.time ?? Date.now() });
 			}
 			checkTripActive();
 		});
