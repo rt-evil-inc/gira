@@ -7,9 +7,8 @@
 	import { token } from '$lib/account';
 	import { loadImages, selectedStation, setSourceData, stations, following, addLayers } from '$lib/map';
 	import { getTheme } from '$lib/utils';
-	import type { Unsubscriber } from 'svelte/motion';
 	import { appSettings } from '$lib/settings';
-	import { currentTrip } from '$lib/trip';
+	import { currentTrip, type ActiveTrip } from '$lib/trip';
 	import type { GeoJSON } from 'geojson';
 	import type { Position } from '@capacitor/geolocation';
 
@@ -68,12 +67,12 @@
 		});
 	}
 
-	async function handleLocUpdate(pos: Position|null) {
+	currentPos.subscribe((pos: Position|null) => {
+		if (!mapLoaded) return;
 		if (pos && pos.coords) {
 			if ($following && !blurred) centerMap(pos);
 			const src = map.getSource<maplibregl.GeoJSONSource>('user-location');
-			// dont change to GeoJSONSource as building breaks for no apparent reason
-			const data:GeoJSON.GeoJSON = {
+			const data:GeoJSON = {
 				'type': 'FeatureCollection',
 				'features': [{
 					type: 'Feature',
@@ -93,9 +92,28 @@
 				});
 			}
 		}
-	}
-
-	let unsubPos:Unsubscriber;
+	});
+	
+	currentTrip.subscribe((trip: ActiveTrip | null) => {
+		if (!mapLoaded) return;
+		const src = map.getSource<maplibregl.GeoJSONSource>('trip-path');
+		const data:GeoJSON = {
+			type: 'Feature',
+			properties: {},
+			geometry: {
+				type: 'LineString',
+				coordinates: trip?.pathTaken?.map((p) => [p.lng, p.lat]) ?? [],
+			},
+		};
+		if (src != null) {
+			src.setData(data);
+		} else {
+			map.addSource('trip-path', {
+				'type': 'geojson',
+				'data': data,
+			});
+		}
+	});
 
 	onMount(() => {
 		map = new maplibregl.Map({
@@ -113,11 +131,9 @@
 			setSourceData(map);
 			addLayers(map);
 			addEventListeners(map);
-			unsubPos = currentPos.subscribe(handleLocUpdate);
 		});
 		return () => {
 			map.remove();
-			if (unsubPos) unsubPos();
 		};
 	});
 

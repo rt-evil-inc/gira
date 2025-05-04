@@ -51,8 +51,8 @@ export function getMapStyle(style:'dark'|'light'): maplibregl.StyleSpecification
 		green100: '#2e3a2e',
 		green200: '#2b3a2b',
 
-		gira100: '#607244',
-		gira200: '#758c54',
+		gira100: '#435030',
+		gira200: '#5d7043',
 
 		red100: '#231c1d',
 		red200: '#77333b',

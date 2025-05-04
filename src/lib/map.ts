@@ -72,6 +72,21 @@ export function setSourceData(map: maplibregl.Map) {
 			'data': userLocationData,
 		});
 	}
+
+	const tripSrc = map.getSource('trip-path');
+	if (!(tripSrc instanceof maplibregl.GeoJSONSource)) {
+		map.addSource('trip-path', {
+			'type': 'geojson',
+			'data': {
+				type: 'Feature',
+				properties: {},
+				geometry: {
+					type: 'LineString',
+					coordinates: [],
+				}
+			},
+		});
+	}
 }
 
 export async function loadSvg(url: string, replaces?:Record<string, string>): Promise<HTMLImageElement> {
@@ -91,6 +106,32 @@ export async function loadSvg(url: string, replaces?:Record<string, string>): Pr
 
 export function addLayers(map: maplibregl.Map) {
 	if (map.getLayer('points') != undefined) return;
+	map.addLayer({
+		'id': 'trip-path-outline',
+		'type': 'line',
+		'source': 'trip-path',
+		'layout': {
+			'line-cap': 'round',
+			'line-join': 'round',
+		},
+		'paint': {
+			'line-color': getCssVariable('--color-background'),
+			'line-width': 10,
+		},
+	}, 'building');
+	map.addLayer({
+		'id': 'trip-path',
+		'type': 'line',
+		'source': 'trip-path',
+		'layout': {
+			'line-cap': 'round',
+			'line-join': 'round',
+		},
+		'paint': {
+			'line-color': getCssVariable('--color-primary'),
+			'line-width': 6,
+		},
+	}, 'building');
 	map.addLayer({
 		'id': 'points',
 		'type': 'symbol',
