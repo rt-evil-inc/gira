@@ -25,9 +25,8 @@
 	$: if (rating !== undefined) {
 		clearTimeout(timeout);
 		rate(code, rating).then(r => {
-			if (r) {
-				$tripRating.currentRating = null;
-			} else {
+			$tripRating.currentRating = null;
+			if (!r) {
 				errorMessages.add('Erro ao avaliar viagem');
 			}
 		});

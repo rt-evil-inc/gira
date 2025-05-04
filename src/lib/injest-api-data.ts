@@ -3,7 +3,7 @@ import type { ActiveTripSubscription } from '$lib/gira-api/ws-types';
 import { get } from 'svelte/store';
 import { currentPos } from '$lib/location';
 import { stations, type StationInfo } from '$lib/map';
-import { currentTrip, tripRating } from '$lib/trip';
+import { currentTrip, endTrip, tripRating } from '$lib/trip';
 import { fullOnetimeInfo, getActiveTripInfo, tripPayWithNoPoints, tripPayWithPoints } from '$lib/gira-api/api';
 import { accountInfo } from '$lib/account';
 
@@ -22,9 +22,11 @@ export function updateActiveTripInfo() {
 
 export function updateWithTripMessage(recvTrip:ActiveTripSubscription) {
 	console.debug('ingesting trip message from ws', recvTrip);
+	const ct = get(currentTrip);
+
 	if (recvTrip.code === 'no_trip' || recvTrip.bike === 'dummy') {
-		if (get(currentTrip)?.confirmed || Date.now() - (get(currentTrip)?.startDate?.getTime() ?? 0) > 30000) {
-			currentTrip.set(null);
+		if (ct?.confirmed || Date.now() - (ct?.startDate?.getTime() ?? 0) > 30000) {
+			endTrip();
 		}
 		return;
 	}
@@ -34,8 +36,7 @@ export function updateWithTripMessage(recvTrip:ActiveTripSubscription) {
 		else if (recvTrip.canPayWithMoney) tripPayWithNoPoints(recvTrip.code);
 	}
 
-	const ctrip = get(currentTrip);
-	if (recvTrip.code === ctrip?.code) ingestCurrentTripUpdate(recvTrip);
+	if (recvTrip.code === ct?.code) ingestCurrentTripUpdate(recvTrip);
 	else ingestOtherTripUpdate(recvTrip);
 }
 
@@ -79,8 +80,9 @@ export async function ingestSubscriptions(maybeSubscriptions:Q<['activeUserSubsc
 
 export function ingestActiveTripInfo(maybeTrips:Q<['activeTrip']>) {
 	if (maybeTrips.activeTrip === null || maybeTrips.activeTrip === undefined || maybeTrips.activeTrip.code === 'no_trip' || maybeTrips.activeTrip.asset === 'dummy') {
-		if (get(currentTrip)?.confirmed || Date.now() - (get(currentTrip)?.startDate?.getTime() ?? 0) > 30000) {
-			currentTrip.set(null);
+		const ct = get(currentTrip);
+		if (ct?.confirmed || Date.now() - (ct?.startDate?.getTime() ?? 0) > 30000) {
+			endTrip();
 		}
 		return;
 	}
@@ -136,6 +138,7 @@ export function ingestLastUnratedTrip(lastTripData:Q<['unratedTrips', 'tripHisto
 	const unratedTrip = lastTripData.unratedTrips[0];
 	if (unratedTrip == null || unratedTrip.code == null || unratedTrip.asset == null) return;
 	const endToNow = (new Date).getTime() - new Date(unratedTrip.endDate).getTime();
+	if (unratedTrip) tripPayWithPoints(unratedTrip.code); // attempt to pay with points just in case
 	// check if 24h have passed
 	if (!(endToNow < 24 * 60 * 60 * 1000)) return;
 	let bikePlate;
@@ -165,16 +168,18 @@ export function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
 		// if trip finished, rate, else, update trip stuff
 		if (recvTrip.finished) {
 			currentTrip.set(null);
-			tripRating.update(rating => {
-				rating.currentRating = {
-					code: recvTrip.code,
-					bikePlate: recvTrip.bike,
-					startDate: new Date(recvTrip.startDate),
-					endDate: new Date(recvTrip.endDate ?? 0),
-					tripPoints: recvTrip.tripPoints ?? 0,
-				};
-				return rating;
-			});
+			if (!recvTrip.canceled) {
+				tripRating.update(rating => {
+					rating.currentRating = {
+						code: recvTrip.code,
+						bikePlate: recvTrip.bike,
+						startDate: new Date(recvTrip.startDate),
+						endDate: new Date(recvTrip.endDate ?? 0),
+						tripPoints: recvTrip.tripPoints ?? 0,
+					};
+					return rating;
+				});
+			}
 			return null;
 		} else {
 			if (trip === null) throw new Error('trip is null in impossible place');

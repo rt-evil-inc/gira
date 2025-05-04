@@ -6,9 +6,9 @@ import { appSettings } from '$lib/settings';
 import { currentPos, watchPosition } from '$lib/location';
 import { distanceBetweenCoords } from '$lib/utils';
 import { LOCK_DISTANCE_m } from '$lib/constants';
-import { reserveBike, startTrip } from '$lib/gira-api/api';
+import { getTripHistory, getUnratedTrips, reserveBike, startTrip, tripPayWithPoints } from '$lib/gira-api/api';
 import type { StationInfo } from './map';
-import { updateActiveTripInfo } from './injest-api-data';
+import { ingestLastUnratedTrip, updateActiveTripInfo } from './injest-api-data';
 import { reportTripStartEvent } from './gira-mais-api/gira-mais-api';
 import { refreshToken, token, type JWT } from './account';
 
@@ -148,4 +148,21 @@ export function checkTripActive() {
 	} else {
 		updateActiveTripInfo();
 	}
+}
+
+/** Gracefully end the trip.
+  * Meant to be called when an abrupt trip end was detected. */
+export async function endTrip() {
+	const trip = get(currentTrip);
+	
+	// Attempt to pay with points just in case
+	if (trip) tripPayWithPoints(trip.code);
+	
+	currentTrip.set(null);
+	
+	// Check if there is a rating to be done
+	ingestLastUnratedTrip({
+		unratedTrips: (await getUnratedTrips(0, 1)).unratedTrips,
+		tripHistory: (await getTripHistory(0, 1)).tripHistory,
+	});
 }
