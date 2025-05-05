@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: "zulu"
-          java-version: "17.x"
+          java-version: "21.x"
           cache: "gradle"
       - name: Create the Keystore
         env:

@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     namespace "dev.tteles.gira"
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "dev.tteles.gira"
         minSdkVersion rootProject.ext.minSdkVersion

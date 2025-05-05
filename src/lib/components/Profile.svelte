@@ -20,7 +20,7 @@
 	import { user, accountInfo, logOut } from '$lib/account';
 
 	let openPage: 'settings' | 'history' |'info'| null = null;
-	let listener:PluginListenerHandle;
+	let backListener: PluginListenerHandle;
 	const dispatch = createEventDispatcher();
 
 	function formatDate(date:Date) {
@@ -29,13 +29,12 @@
 	}
 
 	onMount(() => {
-		listener = App.addListener('backButton', () => {
+		App.addListener('backButton', () => {
 			if (openPage !== null) openPage = null;
 			else dispatch('close');
-		});
-		return () => {
-			listener.remove();
-		};
+		}).then(l => backListener = l);
+
+		return () => backListener?.remove();
 	});
 
 </script>

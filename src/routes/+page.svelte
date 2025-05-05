@@ -22,7 +22,9 @@
 	import { token } from '$lib/account';
 	import { getMessage } from '$lib/gira-mais-api/gira-mais-api';
 	import { Preferences } from '@capacitor/preferences';
+	import type { PluginListenerHandle } from '@capacitor/core';
 
+	let backListener: PluginListenerHandle;
 	let menuHeight = 0;
 	let stationMenuPos:number|undefined = 0;
 	let tripStatusHeight:number = 0;
@@ -56,7 +58,7 @@
 			}, 500);
 		});
 
-		let backListener = App.addListener('backButton', () => {
+		App.addListener('backButton', () => {
 			if (!profileOpen) {
 				if ($selectedStation != null) {
 					$selectedStation = null;
@@ -64,11 +66,9 @@
 					App.exitApp();
 				}
 			}
-		});
+		}).then(l => backListener = l);
 
-		return () => {
-			backListener.remove();
-		};
+		return () => backListener?.remove();
 	});
 </script>
 
