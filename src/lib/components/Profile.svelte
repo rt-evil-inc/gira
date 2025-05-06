@@ -18,6 +18,7 @@
 	import { App } from '@capacitor/app';
 	import type { PluginListenerHandle } from '@capacitor/core';
 	import { user, accountInfo, logOut } from '$lib/account';
+	import { IconHeart } from '@tabler/icons-svelte';
 
 	let openPage: 'settings' | 'history' |'info'| null = null;
 	let backListener: PluginListenerHandle;
@@ -69,6 +70,7 @@
 				<SettingsEntry icon={IconTool} text={'Configurações'} subtext={'Definições da aplicação'} on:click={() => openPage = 'settings'} />
 				<a href="https://github.com/rt-evil-inc/gira/issues"><SettingsEntry icon={IconMessageReport} text={'Feedback'} subtext={'Problemas e sugestões'} /></a>
 				<SettingsEntry icon={IconInfoCircle} text={'Sobre'} subtext={'Informação acerca da aplicação'} on:click={() => openPage = 'info'} />
+				<a href="https://github.com/sponsors/rt-evil-inc/"><SettingsEntry icon={IconHeart} iconClass="stroke-[#db61a2]" text={'Contribuir'} subtext={'Apoiar o desenvolvimento do projeto'} /></a>
 			</div>
 			<button class="flex flex-col items-center mb-3" on:click={() => { dispatch('close'); logOut(); }}>
 				<IconLogout2 class="text-primary mr-2" size={32} />
