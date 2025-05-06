@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icon.svg" width="170" align="center">
+  <img src="assets/icon.svg" width="130" align="center" style="transform: scale(1.5) translateY(10px);">
 </p>
 
 # Gira+
