@@ -2,7 +2,7 @@
 	import { fade } from 'svelte/transition';
 
 	export let className = '';
-	const initialDelay = 3000;
+	const initialDelay = 2000;
 </script>
 
 <svg class="stroke-primary {className}" width="120" viewBox="0 0 347 246" fill="none" xmlns="http://www.w3.org/2000/svg">
