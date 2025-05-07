@@ -33,6 +33,8 @@ const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('Backg
 let watchId: string|null = null;
 let backgroundWatchId: string|null = null;
 
+appSettings.subscribe(watchPosition); // Update location watcher when settings change
+
 export async function watchPosition() {
 	if (get(currentTrip) !== null && get(appSettings).backgroundLocation) {
 		if (backgroundWatchId !== null) return;
@@ -64,7 +66,7 @@ export async function watchPosition() {
 		}, position => {
 			if (position) {
 				currentPos.set(position);
-			};
+			}
 		});
 	}
 }
