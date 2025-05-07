@@ -10,7 +10,7 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { safeInsets } from '$lib/ui';
-	import SettingsEntry from '$lib/components/SettingsEntry.svelte';
+	import ProfileMenuEntry from '$lib/components/ProfileMenuEntry.svelte';
 	import Metric from '$lib/components/Metric.svelte';
 	import History from '$lib/components/settings/History.svelte';
 	import Settings from '$lib/components/settings/Settings.svelte';
@@ -66,11 +66,11 @@
 				</div>
 			</div>
 			<div class="flex flex-col grow font-semibold px-2 gap-3 w-full">
-				<SettingsEntry icon={IconHistory} text={'Histórico'} subtext={'Lista de viagens anteriores'} on:click={() => openPage = 'history'} />
-				<SettingsEntry icon={IconTool} text={'Configurações'} subtext={'Definições da aplicação'} on:click={() => openPage = 'settings'} />
-				<a href="https://github.com/rt-evil-inc/gira/issues"><SettingsEntry icon={IconMessageReport} text={'Feedback'} subtext={'Problemas e sugestões'} external /></a>
-				<SettingsEntry icon={IconInfoCircle} text={'Sobre'} subtext={'Informação acerca da aplicação'} on:click={() => openPage = 'info'} />
-				<a href="https://github.com/sponsors/rt-evil-inc/"><SettingsEntry icon={IconHeart} iconClass="stroke-[#db61a2]" text={'Contribuir'} subtext={'Apoiar o desenvolvimento do projeto'} external /></a>
+				<ProfileMenuEntry icon={IconHistory} text={'Histórico'} subtext={'Lista de viagens anteriores'} on:click={() => openPage = 'history'} />
+				<ProfileMenuEntry icon={IconTool} text={'Configurações'} subtext={'Definições da aplicação'} on:click={() => openPage = 'settings'} />
+				<a href="https://github.com/rt-evil-inc/gira/issues"><ProfileMenuEntry icon={IconMessageReport} text={'Feedback'} subtext={'Problemas e sugestões'} external /></a>
+				<ProfileMenuEntry icon={IconInfoCircle} text={'Sobre'} subtext={'Informação acerca da aplicação'} on:click={() => openPage = 'info'} />
+				<a href="https://github.com/sponsors/rt-evil-inc/"><ProfileMenuEntry icon={IconHeart} iconClass="stroke-[#db61a2]" text={'Contribuir'} subtext={'Apoiar o desenvolvimento do projeto'} external /></a>
 			</div>
 			<button class="flex flex-col items-center mb-3" on:click={() => { dispatch('close'); logOut(); }}>
 				<IconLogout2 class="text-primary mr-2" size={32} />
