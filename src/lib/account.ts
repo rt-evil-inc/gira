@@ -104,10 +104,10 @@ export async function fetchEncryptedFirebaseToken(accessToken?: string) {
 				'x-gira-token': accessToken,
 			},
 		});
-		if (response?.data === 'no tokens available') {
+		if (response?.data.includes('no tokens available')) {
 			errorMessages.add('Sem tokens disponíveis');
 			return false;
-		} else if (response?.data === 'failed to encrypt token') {
+		} else if (response?.data.includes('failed to encrypt token')) {
 			errorMessages.add('Erro ao encriptar o token');
 			return false;
 		} else if (!response || response.status !== 200 || !response.data) {
