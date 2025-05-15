@@ -75,7 +75,11 @@ export async function loadUserCreds() {
 	}
 
 	userCredentials.subscribe(async v => {
-		if (!v) return;
+		if (!v) {
+			Preferences.remove({ key: 'email' });
+			Preferences.remove({ key: 'password' });
+			return;
+		}
 		const responseCode = await login(v.email, v.password);
 		if (responseCode !== 0) {
 			console.error('Login failed!');
