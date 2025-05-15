@@ -1,10 +1,21 @@
 <script lang="ts">
 	import { user, accountInfo } from '$lib/account';
 	import IconMoonFilled from '@tabler/icons-svelte/icons/moon-filled';
+	import { onDestroy } from 'svelte';
 
-	const offHours = (new Date).getHours() >= 2 && (new Date).getHours() < 6;
-	const noSubscription = $accountInfo?.subscription === null;
-	const negativeBalance = ($accountInfo?.balance ?? 0) < 0;
+	let offHours = (new Date).getHours() >= 2 && (new Date).getHours() < 6;
+	let noSubscription = false;
+	let negativeBalance = false;
+
+	$: {
+		noSubscription = $accountInfo?.subscription === null;
+		negativeBalance = ($accountInfo?.balance ?? 0) < 0;
+	}
+
+	const interval = setInterval(() => {
+		offHours = (new Date).getHours() >= 2 && (new Date).getHours() < 6;
+	}, 60 * 1000);
+	onDestroy(() => clearInterval(interval));
 </script>
 
 {#if $user}
