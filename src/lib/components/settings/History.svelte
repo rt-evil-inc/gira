@@ -6,6 +6,7 @@
 	import { fly } from 'svelte/transition';
 	import MenuPage from '$lib/components/MenuPage.svelte';
 	import { getTripHistory } from '$lib/gira-api/api';
+	import { getLocale, t } from '$lib/translations';
 
 	let trips:TripHistory_TripDetail[] = [];
 	let observed:HTMLDivElement;
@@ -27,14 +28,6 @@
 		}, [] as TripHistory_TripDetail[]));
 		console.debug(trips);
 		loading = false;
-	}
-
-	function formatDate(date:Date) {
-		const day = date.getDate();
-		const month = date.toLocaleString('pt', { month: 'short' });
-		const year = date.getFullYear();
-		const dayOfWeek = date.toLocaleString('pt', { weekday: 'long' });
-		return `${dayOfWeek}, ${day} ${month} ${year}`;
 	}
 
 	let observer:IntersectionObserver;
@@ -69,18 +62,18 @@
 </script>
 
 <MenuPage>
-	<div class="text-3xl font-bold text-info px-5 pt-5">Viagens</div>
+	<div class="text-3xl font-bold text-info px-5 pt-5">{$t('trips_label')}</div>
 	{#if didFirstRequest }
 		{#if didFirstRequest && trips.length == 0 }
 			<div class="flex flex-col items-center justify-center h-full" style:margin-top={-$safeInsets.top - 32 + 'px'}>
-				<div class="text-2xl font-bold text-info">Nenhuma viagem</div>
-				<div class="text-label text-sm text-center">Não há viagens registadas</div>
+				<div class="text-2xl font-bold text-info">{$t('no_trips_label')}</div>
+				<div class="text-label text-sm text-center">{$t('no_trips_registered_label')}</div>
 			</div>
 		{:else}
 			<div class="flex flex-col gap-6 p-5">
 				{#each aggregate as [_, tripsObj]}
 					<div transition:fly={{ y: 150 }} class="flex flex-col gap-3">
-						<div class="font-semibold text-label text-sm">{formatDate(new Date(tripsObj[0]))}</div>
+						<div class="font-semibold text-label text-sm">{new Date(tripsObj[0]).toLocaleString(getLocale(), { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' })}</div>
 						{#each tripsObj[1] as trip}
 							<div transition:fly={{ y: 150 }}>
 								<HistoryItem trip={trip} />

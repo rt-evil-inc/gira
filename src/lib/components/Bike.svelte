@@ -13,6 +13,7 @@
 	import { tryStartTrip } from '$lib/trip';
 	import { type StationInfo } from '$lib/map';
 	import { fade } from 'svelte/transition';
+	import { t } from '$lib/translations';
 
 	export let type:'classic'|'electric'|null = null, id:string = '', battery:number|null = null, dock:string, disabled = false, serial:string, station:StationInfo;
 	const action = () => tryStartTrip(id, serial, station);
@@ -107,7 +108,7 @@
 		{/if}
 		<div class="flex flex-col items-center text-primary w-6">
 			<span class="font-bold text-2xl leading-none">{dock}</span>
-			<span class="font-bold text-[7px] text-center leading-none">DOCA</span>
+			<span class="font-bold text-[7px] text-center leading-none">{$t('dock_label')}</span>
 		</div>
 	</div>
 </div>

@@ -9,6 +9,7 @@ import { GIRA_MAIS_API_URL } from './constants';
 import { dev, version } from '$app/environment';
 import { httpRequestWithRetry } from '$lib/utils';
 import { errorMessages } from './ui';
+import { t } from './translations';
 
 export type Token = {
   accessToken: string;
@@ -109,18 +110,18 @@ export async function fetchEncryptedFirebaseToken(accessToken?: string) {
 			},
 		});
 		if (response?.data.includes('no tokens available')) {
-			errorMessages.add('Sem tokens disponíveis');
+			errorMessages.add(get(t)('no_tokens_available_error'));
 			return false;
 		} else if (response?.data.includes('failed to encrypt token')) {
-			errorMessages.add('Erro ao encriptar o token');
+			errorMessages.add(get(t)('token_encryption_error'));
 			return false;
 		} else if (!response || response.status !== 200 || !response.data) {
-			errorMessages.add('Erro ao obter um token');
+			errorMessages.add(get(t)('token_fetch_error'));
 			return false;
 		}
 		await encryptedFirebaseToken.set(response.data);
 	} catch (e) {
-		errorMessages.add('Erro ao obter um token');
+		errorMessages.add(get(t)('token_fetch_error'));
 		return false;
 	}
 	return true;

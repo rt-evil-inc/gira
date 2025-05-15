@@ -2,7 +2,8 @@
 	import { version } from '$app/environment';
 	import { safeInsets } from '$lib/ui';
 	import MenuPage from '$lib/components/MenuPage.svelte';
-	import GitHubStarRequest from '../GitHubStarRequest.svelte';
+	import GitHubStarRequest from '$lib/components/GitHubStarRequest.svelte';
+	import { t } from '$lib/translations';
 	async function wait(ms:number) {
 		return new Promise(resolve => setTimeout(resolve, ms));
 	}
@@ -34,11 +35,11 @@
 
 <MenuPage>
 	<div class="flex flex-col p-5 relative grow overflow-hidden" style:padding-bottom="{Math.max($safeInsets.bottom, 20)}px">
-		<div class="text-3xl font-bold text-info pl-2">Sobre</div>
+		<div class="text-3xl font-bold text-info pl-2">{$t('about_label')}</div>
 		<div class="flex flex-col h-full px-5 py-10 gap-10 items-center">
 			<div class="flex flex-col w-full gap-3 font-medium text-info leading-tight">
-				<span>Esta aplicação é uma re-implementação das funcionalidades da aplicação Gira.</span>
-				<span>A aplicação não é oficial, não estando associada de modo algum à EMEL ou à Câmara Municipal de Lisboa.</span>
+				<span>{$t('app_description')}</span>
+				<span>{$t('not_official_disclaimer')}</span>
 			</div>
 			<div class="flex flex-col w-full gap-4 origin-[1.75rem_144px] relative
 				transition-transform transform duration-1000
@@ -52,7 +53,7 @@
 					role="button"
 					class:opacity-0={rotatedOutside}
 					style="-webkit-tap-highlight-color: transparent"
-				>Desenvolvido por:</span>
+				>{$t('made_by')}:</span>
 				<a href="https://github.com/rodrigohpalmeirim" class="flex gap-3 items-center z-10 origin-[1.75rem_1.75rem]"
 					class:animate-[spin_0.1s_linear_infinite]={wheelsSpinning}>
 					<img src="https://avatars.githubusercontent.com/u/34187774?s=64" alt="" class="w-14 h-14 rounded-full" />
@@ -88,7 +89,7 @@
 					</a>
 					<GitHubStarRequest className="absolute -top-12 -right-32" />
 				</div>
-				<span class="font-semibold text-info text-xs">Projeto open-source sob a licença GPL-3.0</span>
+				<span class="font-semibold text-info text-xs">{$t('open_source_license')}</span>
 			</div>
 		</div>
 		<a href="https://github.com/rt-evil-inc/gira/releases" class="absolute left-5 font-semibold text-label text-xs" style:bottom="{Math.max($safeInsets.bottom, 20)}px">v{version}</a>

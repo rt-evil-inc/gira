@@ -23,6 +23,7 @@
 	import { getMessage } from '$lib/gira-mais-api/gira-mais-api';
 	import { Preferences } from '@capacitor/preferences';
 	import type { PluginListenerHandle } from '@capacitor/core';
+	import { t } from '$lib/translations';
 
 	let backListener: PluginListenerHandle;
 	let menuHeight = 0;
@@ -113,7 +114,7 @@
 		<div class="bg-background rounded-2xl max-w-sm w-full flex flex-col p-6 m-2" style:box-shadow="0px 0px 20px 0px var(--color-shadow)">
 			<div class="text-info font-medium max-h-[70vh] overflow-y-auto">{@html message}</div>
 			<div class="flex justify-end mt-4">
-				<button class="text-primary font-bold mx-2" on:click={() => { message = ''; Preferences.set({ key: 'lastMessageTimestamp', value: messageTimestamp }); }}>Ok</button>
+				<button class="text-primary font-bold mx-2" on:click={() => { message = ''; Preferences.set({ key: 'lastMessageTimestamp', value: messageTimestamp }); }}>{$t('ok_button')}</button>
 			</div>
 		</div>
 	</div>

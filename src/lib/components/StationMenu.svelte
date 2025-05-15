@@ -10,6 +10,7 @@
 	import { fade } from 'svelte/transition';
 	import BikeSkeleton from '$lib/components/BikeSkeleton.svelte';
 	import { getStationInfo } from '$lib/gira-api/api';
+	import { t } from '$lib/translations';
 
 	export let bikeListHeight = 0;
 	export let posTop:number|undefined = 0;
@@ -150,7 +151,7 @@
 		<div class="flex p-9 pt-0 pb-2 gap-4" on:touchstart={onTouchStart} on:touchend={onTouchEnd} on:touchmove={onTouchMove}>
 			<div class="flex flex-col grow">
 				<div class="flex items-center gap-2">
-					<span class="font-bold text-sm text-info">Estação {code}</span>
+					<span class="font-bold text-sm text-info">{$t('station_label')} {code}</span>
 					{#if distance}
 						<span transition:fade={{ duration: 150 }} class="font-semibold bg-background-secondary text-xs text-info px-1 py-[1px] rounded">{formatDistance(distance)}</span>
 					{/if}
@@ -159,11 +160,11 @@
 			</div>
 			<div class="flex flex-col items-center text-info">
 				<span class="font-bold text-2xl leading-none">{bikes}</span>
-				<span class="font-bold text-[7px] leading-none">BICICLETAS</span>
+				<span class="font-bold text-[7px] leading-none">{$t('bikes_label')}</span>
 			</div>
 			<div class="flex flex-col items-center text-info">
 				<span class="font-bold text-2xl leading-none">{freeDocks}</span>
-				<span class="font-bold text-[7px] text-center leading-none">DOCAS<br>LIVRES</span>
+				<span class="font-bold text-[7px] text-center leading-none">{$t('free_docks_label')}</span>
 			</div>
 		</div>
 		<div class="overflow-y-auto transition-all" style:height="calc(min(50vh,{bikeListHeight}px))" on:scroll={() => isScrolling = true} on:touchend={() => isScrolling = false}>

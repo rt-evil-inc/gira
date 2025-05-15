@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { TripHistory_TripDetail } from '$lib/gira-api/api-types';
+	import { t } from '$lib/translations';
 
 	export let trip: TripHistory_TripDetail|null;
 
@@ -42,14 +43,14 @@
 			<div>
 				<div class="font-bold text-primary text-xl leading-none">{formatHours(new Date(trip.startDate))}</div>
 				{#if trip.startLocation}
-					<div class="font-bold text-xs">Estação {idFromName(trip.startLocation)}</div>
+					<div class="font-bold text-xs">{$t('station_label')} {idFromName(trip.startLocation)}</div>
 					<div class="font-medium leading-none text-xs text-label">{nameFromName(trip.startLocation)}</div>
 				{/if}
 			</div>
 			<div>
 				<div class="font-bold text-primary text-xl leading-none">{formatHours(new Date(trip.endDate))}</div>
 				{#if trip.endLocation}
-					<div class="font-bold text-xs">Estação {idFromName(trip.endLocation)}</div>
+					<div class="font-bold text-xs">{$t('station_label')} {idFromName(trip.endLocation)}</div>
 					<div class="font-medium leading-none text-xs text-label">{nameFromName(trip.endLocation)}</div>
 				{/if}
 			</div>
@@ -59,15 +60,11 @@
 				<div class="flex flex-col items-center">
 					<div class="text-nowrap">
 						{#if getHoursDiff(new Date(trip.endDate), new Date(trip.startDate)) > 0}
-							<span class="text-2xl font-bold text-primary pr-px">{getHoursDiff(new Date(trip.endDate), new Date(trip.startDate))}</span><span class="text-sm font-semibold text-label">
-								h
-							</span>
+							<span class="text-2xl font-bold text-primary pr-px">{getHoursDiff(new Date(trip.endDate), new Date(trip.startDate))}</span><span class="text-sm font-semibold text-label">{$t('hours_label')}</span>
 						{/if}
-						<span class="text-2xl font-bold text-primary pr-px">{getMinutesDiff(new Date(trip.endDate), new Date(trip.startDate))}</span><span class="text-sm font-semibold text-label">
-							min
-						</span>
+						<span class="text-2xl font-bold text-primary pr-px">{getMinutesDiff(new Date(trip.endDate), new Date(trip.startDate))}</span><span class="text-sm font-semibold text-label">{$t('minutes_label')}</span>
 					</div>
-					<span class="text-2xs font-semibold text-label text-center -mt-1 leading-none max-w-[70px]">DURAÇÃO</span>
+					<span class="text-2xs font-semibold text-label text-center -mt-1 leading-none max-w-[70px]">{$t('duration_label')}</span>
 				</div>
 				<!-- <Metric value={formatDateDiffMinutes(new Date(trip.endDate), new Date(trip.startDate))} unit="min" label="Duração" /> -->
 

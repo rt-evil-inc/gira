@@ -2,6 +2,7 @@ import { dev, version } from '$app/environment';
 import { GIRA_MAIS_API_URL } from '$lib/constants';
 import type { MessageGetResponse, TripStatisticsPostRequest, TripStatisticsPostResponse, UsageStatisticsPostRequest, UsageStatisticsPostResponse } from '$lib/gira-mais-api/types';
 import { appSettings } from '$lib/settings';
+import { getLocale } from '$lib/translations';
 import { httpRequestWithRetry } from '$lib/utils';
 import { Device } from '@capacitor/device';
 import { get } from 'svelte/store';
@@ -54,6 +55,7 @@ export async function getMessage() {
 		headers: {
 			'User-Agent': `Gira+/${version}`,
 			'Content-Type': 'application/json',
+			'Accept-Language': getLocale(),
 		},
 	});
 	return response?.data as MessageGetResponse;

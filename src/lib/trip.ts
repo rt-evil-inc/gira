@@ -11,6 +11,7 @@ import type { StationInfo } from './map';
 import { ingestLastUnratedTrip, updateActiveTripInfo } from './injest-api-data';
 import { reportTripStartEvent } from './gira-mais-api/gira-mais-api';
 import { refreshToken, token, type JWT } from './account';
+import { t } from './translations';
 
 export type ActiveTrip = {
 	code: string,
@@ -54,21 +55,21 @@ export async function tryStartTrip(id: string, serial: string, station: StationI
 	if (serial == null) return;
 	try {
 		if (get(accountInfo)?.subscription === null) {
-			errorMessages.add('Não tem uma subscrição ativa');
+			errorMessages.add(get(t)('no_active_subscription_error'));
 			return false;
 		}
 		if ((get(accountInfo)?.balance ?? 0) < 0) {
-			errorMessages.add('Não é possível desbloquear bicicletas se o seu saldo for negativo');
+			errorMessages.add(get(t)('negative_balance_error'));
 			return false;
 		}
 		if (get(appSettings).distanceLock) {
 			const pos = get(currentPos);
 			if (pos == null) {
-				errorMessages.add('Não foi possível determinar a sua posição');
+				errorMessages.add(get(t)('location_determination_error'));
 				return false;
 			} else {
 				if (distanceBetweenCoords(pos.coords.latitude, pos.coords.longitude, station.latitude, station.longitude) > LOCK_DISTANCE_m / 1000) {
-					errorMessages.add('Não está perto o suficiente da estação');
+					errorMessages.add(get(t)('not_close_enough_error'));
 					return false;
 				}
 			}
@@ -103,28 +104,30 @@ export async function tryStartTrip(id: string, serial: string, station: StationI
 						lat: pos.coords.latitude,
 						time: new Date,
 					}] : [],
-					lastUpdate: new Date(),
+					lastUpdate: new Date,
 				});
 				watchPosition();
 				return true;
 			} else {
-				errorMessages.add('Não foi possível desbloquear a bicicleta');
+				errorMessages.add(get(t)('bike_unlock_error'));
 				return false;
 			}
 		}
 	} catch (_e) {
-		const knownErrors = ['Serviço indisponível. Horário de utilização entre as 06:00 e as 02:00.'];
+		const knownErrors: Record<string, string> = {
+			'Serviço indisponível. Horário de utilização entre as 06:00 e as 02:00.': 'service_hours_error',
+		};
 		const e = _e as ThrownError;
 		let addedError = false;
 		if (e && e.errors) {
 			for (const error of e.errors) {
-				if (knownErrors.includes(error.message)) {
-					errorMessages.add(error.message);
+				if (knownErrors[error.message]) {
+					errorMessages.add(get(t)(knownErrors[error.message]));
 					addedError = true;
 				}
 			}
 			if (!addedError) {
-				errorMessages.add('Não foi possível desbloquear a bicicleta');
+				errorMessages.add(get(t)('bike_unlock_error'));
 			}
 		}
 		console.error(e);
@@ -154,12 +157,12 @@ export function checkTripActive() {
   * Meant to be called when an abrupt trip end was detected. */
 export async function endTrip() {
 	const trip = get(currentTrip);
-	
+
 	// Attempt to pay with points just in case
 	if (trip) tripPayWithPoints(trip.code);
-	
+
 	currentTrip.set(null);
-	
+
 	// Check if there is a rating to be done
 	ingestLastUnratedTrip({
 		unratedTrips: (await getUnratedTrips(0, 1)).unratedTrips,
