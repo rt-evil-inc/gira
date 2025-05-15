@@ -71,7 +71,7 @@
 			<div class="flex flex-col grow font-semibold px-2 gap-3 w-full">
 				<ProfileMenuEntry icon={IconHistory} text={$t('history_label')} subtext={$t('history_subtext')} on:click={() => openPage = 'history'} />
 				<ProfileMenuEntry icon={IconTool} text={$t('settings_label')} subtext={$t('settings_subtext')} on:click={() => openPage = 'settings'} />
-				<a href="https://github.com/rt-evil-inc/gira/issues"><ProfileMenuEntry icon={IconMessageReport} text={$t('feedback_label')} subtext={$t('feedback_subtext')} external /></a>
+				<a href="https://github.com/rt-evil-inc/gira-mais/issues"><ProfileMenuEntry icon={IconMessageReport} text={$t('feedback_label')} subtext={$t('feedback_subtext')} external /></a>
 				<ProfileMenuEntry icon={IconInfoCircle} text={$t('about_label')} subtext={$t('about_subtext')} on:click={() => openPage = 'info'} />
 				<a href="https://github.com/sponsors/rt-evil-inc/"><ProfileMenuEntry icon={IconHeart} iconClass="stroke-[#db61a2]" text={$t('contribute_label')} subtext={$t('contribute_subtext')} external /></a>
 			</div>

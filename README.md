@@ -30,7 +30,7 @@ A aplicação está a ser desenvolvida em **SvelteKit**, juntamente com a biblio
 ## Instalação e Compilação
 
 ### Android
-É possível descarregar a versão mais recente da aplicação [aqui](https://github.com/rt-evil-inc/gira/releases/latest).
+É possível descarregar a versão mais recente da aplicação [aqui](https://github.com/rt-evil-inc/gira-mais/releases/latest).
 
 A aplicação irá ser disponibilizada na PlayStore. Aguardamos validação da Google.
 
