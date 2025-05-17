@@ -36,16 +36,23 @@ jobs:
           token: ${{ secrets.ORG_RELEASE_TOKEN }}
 
       - name: Bump version
-        run: misc/release/pump-version.sh -s "${{ inputs.serverBump }}" -m "${{ inputs.mobileBump }}"
+        run: misc/release/bump-version.sh -s "${{ inputs.serverBump }}" -m "${{ inputs.mobileBump }}"
+
+      - name: Get user details
+        id: user-details
+        run: |
+          echo "name=$(gh api /users/${{ github.actor }} --jq '.name // .login')" >> $GITHUB_OUTPUT
+          echo "email=$(gh api /users/${{ github.actor }} --jq '.email // "${github.actor}@users.noreply.github.com"')" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit and tag
         id: push-tag
         uses: EndBug/add-and-commit@v9
         with:
-          author_name: ttmx
-          author_email: git@tteles.dev
-          default_author: user_info 
-          message: "Version ${{ env.GIRA_VERSION }}"
+          author_name: ${{ steps.user-details.outputs.name }}
+          author_email: ${{ steps.user-details.outputs.email }}
+          message: "Bump version to ${{ env.GIRA_VERSION }}"
           tag: ${{ env.GIRA_VERSION }}
           push: true
 
@@ -90,4 +97,3 @@ jobs:
             *.apk
           token: ${{ secrets.ORG_RELEASE_TOKEN }}
           body_path: commit_messages.txt
-          
