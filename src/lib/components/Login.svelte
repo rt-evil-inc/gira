@@ -48,3 +48,4 @@
 		</form>
 	</div>
 </div>
+<p class="absolute bottom-10 px-8 text-center text-xs text-label">{$t('login_disclaimer')}</p>

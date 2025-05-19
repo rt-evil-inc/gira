@@ -105,12 +105,12 @@ const translations: Translations = {
 		pt: 'Sobre',
 	},
 	app_description: {
-		en: 'This application is a re-implementation of the Gira app functionalities.',
+		en: 'This application is a re-implementation of the Gira app\'s functionalities.',
 		pt: 'Esta aplicação é uma re-implementação das funcionalidades da aplicação Gira.',
 	},
 	not_official_disclaimer: {
-		en: 'The application is unofficial and not associated with EMEL or Câmara Municipal de Lisboa.',
-		pt: 'A aplicação não é oficial, não estando associada de modo algum à EMEL ou à Câmara Municipal de Lisboa.',
+		en: 'The application is unofficial and not affiliated in any way with EMEL or Câmara Municipal de Lisboa.',
+		pt: 'A aplicação não é oficial, não estando afiliada de modo algum à EMEL ou à Câmara Municipal de Lisboa.',
 	},
 	made_by: {
 		en: 'Made by',
@@ -199,6 +199,10 @@ const translations: Translations = {
 	login_button: {
 		en: 'Login',
 		pt: 'Login',
+	},
+	login_disclaimer: {
+		en: 'This application is not official and is not affiliated with EMEL. Your credentials are not shared with us or any third party.',
+		pt: 'Esta aplicação não é oficial e não está afiliada à EMEL. As suas credenciais não são partilhadas connosco ou com terceiros.',
 	},
 	history_subtext: {
 		en: 'List of previous trips',
