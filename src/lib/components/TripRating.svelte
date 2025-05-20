@@ -14,6 +14,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import { tripRating } from '$lib/trip';
 	import { rateTrip } from '$lib/gira-api/api';
+	import { reportErrorEvent } from '$lib/gira-mais-api/gira-mais-api';
 
 	export let code:string;
 	let rating:number;
@@ -29,6 +30,7 @@
 			$tripRating.currentRating = null;
 			if (!r) {
 				errorMessages.add($t('rate_trip_error'));
+				reportErrorEvent('rate_trip_error');
 			}
 		});
 	}

@@ -9,7 +9,7 @@ import { LOCK_DISTANCE_m } from '$lib/constants';
 import { getTripHistory, getUnratedTrips, reserveBike, startTrip, tripPayWithPoints } from '$lib/gira-api/api';
 import type { StationInfo } from './map';
 import { ingestLastUnratedTrip, updateActiveTripInfo } from './injest-api-data';
-import { reportTripStartEvent } from './gira-mais-api/gira-mais-api';
+import { reportErrorEvent, reportTripStartEvent } from '$lib/gira-mais-api/gira-mais-api';
 import { refreshToken, token, type JWT } from './account';
 import { t } from './translations';
 
@@ -110,6 +110,7 @@ export async function tryStartTrip(id: string, serial: string, station: StationI
 				return true;
 			} else {
 				errorMessages.add(get(t)('bike_unlock_error'));
+				reportErrorEvent('bike_unlock_error');
 				return false;
 			}
 		}
@@ -123,11 +124,13 @@ export async function tryStartTrip(id: string, serial: string, station: StationI
 			for (const error of e.errors) {
 				if (knownErrors[error.message]) {
 					errorMessages.add(get(t)(knownErrors[error.message]));
+					reportErrorEvent('gira_api_error', error.message);
 					addedError = true;
 				}
 			}
 			if (!addedError) {
 				errorMessages.add(get(t)('bike_unlock_error'));
+				reportErrorEvent('bike_unlock_error');
 			}
 		}
 		console.error(e);

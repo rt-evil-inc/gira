@@ -24,3 +24,13 @@ export type TripStatisticsPostRequest = {
 export type TripStatisticsPostResponse = {
   success: boolean;
 }
+
+export type ErrorStatisticsPostRequest = {
+  deviceId: string;
+  errorCode: string;
+  errorMessage: string;
+}
+
+export type ErrorStatisticsPostResponse = {
+  success: boolean;
+}

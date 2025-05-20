@@ -10,6 +10,7 @@ import { dev, version } from '$app/environment';
 import { httpRequestWithRetry } from '$lib/utils';
 import { errorMessages } from './ui';
 import { t } from './translations';
+import { reportErrorEvent } from '$lib/gira-mais-api/gira-mais-api';
 
 export type Token = {
   accessToken: string;
@@ -111,17 +112,21 @@ export async function fetchEncryptedFirebaseToken(accessToken?: string) {
 		});
 		if (response?.data.includes('no tokens available')) {
 			errorMessages.add(get(t)('no_tokens_available_error'));
+			reportErrorEvent('no_tokens_available_error');
 			return false;
 		} else if (response?.data.includes('failed to encrypt token')) {
 			errorMessages.add(get(t)('token_encryption_error'));
+			reportErrorEvent('token_encryption_error');
 			return false;
 		} else if (!response || response.status !== 200 || !response.data) {
 			errorMessages.add(get(t)('token_fetch_error'));
+			reportErrorEvent('token_fetch_error');
 			return false;
 		}
 		await encryptedFirebaseToken.set(response.data);
 	} catch (e) {
 		errorMessages.add(get(t)('token_fetch_error'));
+		reportErrorEvent('token_fetch_error');
 		return false;
 	}
 	return true;

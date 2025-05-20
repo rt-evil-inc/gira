@@ -1,6 +1,6 @@
 import { dev, version } from '$app/environment';
 import { GIRA_MAIS_API_URL } from '$lib/constants';
-import type { MessageGetResponse, TripStatisticsPostRequest, TripStatisticsPostResponse, UsageStatisticsPostRequest, UsageStatisticsPostResponse } from '$lib/gira-mais-api/types';
+import type { ErrorStatisticsPostRequest, ErrorStatisticsPostResponse, MessageGetResponse, TripStatisticsPostRequest, TripStatisticsPostResponse, UsageStatisticsPostRequest, UsageStatisticsPostResponse } from '$lib/gira-mais-api/types';
 import { appSettings } from '$lib/settings';
 import { getLocale } from '$lib/translations';
 import { httpRequestWithRetry } from '$lib/utils';
@@ -46,6 +46,25 @@ export async function reportTripStartEvent(bikeSerial: string | null, stationSer
 		} as TripStatisticsPostRequest,
 	});
 	return response?.data as TripStatisticsPostResponse;
+}
+
+export async function reportErrorEvent(errorCode: string, errorMessage: string | null = null) {
+	if (!get(appSettings).analytics || dev) return;
+
+	const response = await httpRequestWithRetry({
+		method: 'post',
+		url: GIRA_MAIS_API_URL + '/statistics/errors',
+		headers: {
+			'User-Agent': `Gira+/${version}`,
+			'Content-Type': 'application/json',
+		},
+		data: {
+			deviceId: (await Device.getId()).identifier,
+			errorCode,
+			errorMessage,
+		} as ErrorStatisticsPostRequest,
+	});
+	return response?.data as ErrorStatisticsPostResponse;
 }
 
 export async function getMessage() {

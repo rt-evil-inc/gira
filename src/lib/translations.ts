@@ -297,8 +297,8 @@ const translations: Translations = {
 		pt: 'Contribuir para estatísticas',
 	},
 	analytics_setting_description: {
-		en: 'Contribute with the collection of anonymous events: app opening and trip starts',
-		pt: 'Contribuir com a coleção de eventos anónimos: abertura da aplicação e começo de viagens',
+		en: 'Contribute with the collection of anonymous events: app opening, trip starts and errors',
+		pt: 'Contribuir com a coleção de eventos anónimos: abertura da aplicação, começo de viagens e erros',
 	},
 	mock_unlock_setting_label: {
 		en: 'Simulate unlocking',
