@@ -36,6 +36,18 @@ const translations: Translations = {
 		en: 'Ok',
 		pt: 'Ok',
 	},
+	ignore_button: {
+		en: 'Ignore',
+		pt: 'Ignorar',
+	},
+	new_version_available: {
+		en: 'New version available!',
+		pt: 'Nova versão disponível!',
+	},
+	see_release_notes: {
+		en: 'See release notes',
+		pt: 'Veja as novidades',
+	},
 	distance_traveled: {
 		en: 'Distance Traveled',
 		pt: 'Distância Percorrida',
