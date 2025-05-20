@@ -124,6 +124,10 @@ const translations: Translations = {
 		en: 'The application is unofficial and not affiliated in any way with EMEL or Câmara Municipal de Lisboa.',
 		pt: 'A aplicação não é oficial, não estando afiliada de modo algum à EMEL ou à Câmara Municipal de Lisboa.',
 	},
+	find_out_more_at: {
+		en: 'Find out more at ',
+		pt: 'Saiba mais em ',
+	},
 	made_by: {
 		en: 'Made by',
 		pt: 'Desenvolvido por',

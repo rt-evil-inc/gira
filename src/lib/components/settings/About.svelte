@@ -36,10 +36,11 @@
 <MenuPage>
 	<div class="flex flex-col p-5 relative grow overflow-hidden" style:padding-bottom="{Math.max($safeInsets.bottom, 20)}px">
 		<div class="text-3xl font-bold text-info pl-2">{$t('about_label')}</div>
-		<div class="flex flex-col h-full px-5 py-10 gap-10 items-center">
+		<div class="flex flex-col h-full px-5 py-8 gap-8 items-center">
 			<div class="flex flex-col w-full gap-3 font-medium text-info leading-tight">
 				<span>{$t('app_description')}</span>
 				<span>{$t('not_official_disclaimer')}</span>
+				<span>{$t('find_out_more_at')}<a href="https://gira-mais.app" class="text-primary underline">https://gira-mais.app</a></span>
 			</div>
 			<div class="flex flex-col w-full gap-4 origin-[1.75rem_144px] relative
 				transition-transform transform duration-1000
