@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icon.svg" width="130" align="center" style="transform: scale(1.5) translateY(10px);">
+  <img src="assets/icon.svg" width="190">
 </p>
 
 # Gira+
@@ -15,7 +15,9 @@ Com um olhar atento ao design, à experiência do utilizador (UX) e à estabilid
 
 ### Funcionalidades extra
 - Mapa com ciclovias
+- Modo escuro
 - Cálculo da distância percorrida e velocidade média durante uma viagem
+- Vizualização do trajeto percorrido
 
 ### Não implementado
 - Criação de contas
@@ -32,7 +34,7 @@ A aplicação está a ser desenvolvida em **SvelteKit**, juntamente com a biblio
 ### Android
 É possível descarregar a versão mais recente da aplicação [aqui](https://github.com/rt-evil-inc/gira-mais/releases/latest).
 
-A aplicação irá ser disponibilizada na PlayStore. Aguardamos validação da Google.
+A aplicação irá ser disponibilizada na PlayStore e na F-Droid.
 
 Alternativamente, a aplicação pode ser compilada através dos seguintes passos:
 
@@ -88,6 +90,6 @@ bunx cap run ios
 ```
 
 ## Misc
-Cumprimentos ao [@afonsosousah](https://github.com/afonsosousah), que inspirou o projeto com o [mGira](https://github.com/afonsosousah/mgira).  
-Obrigado ao [@joaodcp](https://github.com/joaodcp), que ajudou com esforços de reverse engineering do sistema original.  
-Agradecimentos à Inês Freitas pelo design do logo da aplicação.
+Cumprimentos ao [@afonsosousah](https://github.com/afonsosousah), que inspirou o projeto com a [mGira](https://github.com/afonsosousah/mgira).  
+Obrigado ao [@joaodcp](https://github.com/joaodcp), que ajudou com esforços de *reverse engineering* do sistema original.  
+Agradecimentos à Inês Freitas pelo design do logotipo da aplicação.
