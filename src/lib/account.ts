@@ -11,6 +11,7 @@ import { httpRequestWithRetry } from '$lib/utils';
 import { errorMessages } from './ui';
 import { t } from './translations';
 import { reportErrorEvent } from '$lib/gira-mais-api/gira-mais-api';
+import { encryptToken, hash } from '$lib/crypto';
 
 export type Token = {
   accessToken: string;
@@ -47,6 +48,7 @@ export type AccountInfo = {
 
 export const token = writable<Token|null|undefined>(undefined);
 export const encryptedFirebaseToken = writable<string|null>(null);
+export const firebaseToken = writable<string|null>(null);
 export const userCredentials = writable<{email: string, password: string}|null>(null);
 export const user = writable<User|null>(null);
 export const accountInfo = writable<AccountInfo|null>(null);
@@ -99,31 +101,58 @@ export async function loadUserCreds() {
 	});
 }
 
-export async function fetchEncryptedFirebaseToken(accessToken?: string) {
+function isTokenExpired(token: string) {
+	const jwt: JWT = JSON.parse(window.atob(token.split('.')[1]));
+	return jwt.exp * 1000 < Date.now() + 1000 * 30;
+}
+
+export async function fetchFirebaseToken(accessToken?: string) {
 	if (!accessToken) return false;
+
+	// Check if we already have a token that's not expired
+	const currentToken = get(firebaseToken);
+	if (currentToken && !isTokenExpired(currentToken)) {
+		// Token is still valid, just re-encrypt it
+		const encryptedToken = await encryptToken(currentToken, accessToken);
+		if (encryptedToken) {
+			await encryptedFirebaseToken.set(encryptedToken);
+			return true;
+		} else {
+			// errorMessages.add(get(t)('token_encryption_error'));
+			reportErrorEvent('token_encryption_error');
+		}
+	}
+
+	// No valid token found, fetch a new one
 	try {
 		const response = await httpRequestWithRetry({
 			method: 'get',
-			url: GIRA_MAIS_API_URL + '/encrypted-token',
+			url: GIRA_MAIS_API_URL + '/token',
 			headers: {
 				'User-Agent': `Gira+/${dev ? 'dev' : version}`,
-				'x-gira-token': accessToken,
+				'x-user-id': await hash(accessToken),
 			},
 		});
-		if (response?.data.includes('no tokens available')) {
+		if (response?.status === 404) {
 			errorMessages.add(get(t)('no_tokens_available_error'));
 			reportErrorEvent('no_tokens_available_error');
-			return false;
-		} else if (response?.data.includes('failed to encrypt token')) {
-			errorMessages.add(get(t)('token_encryption_error'));
-			reportErrorEvent('token_encryption_error');
 			return false;
 		} else if (!response || response.status !== 200 || !response.data) {
 			errorMessages.add(get(t)('token_fetch_error'));
 			reportErrorEvent('token_fetch_error');
 			return false;
 		}
-		await encryptedFirebaseToken.set(response.data);
+
+		// Encrypt the token
+		const encryptedToken = await encryptToken(response.data, accessToken);
+		if (!encryptedToken) {
+			errorMessages.add(get(t)('token_encryption_error'));
+			reportErrorEvent('token_encryption_error');
+			return false;
+		}
+
+		firebaseToken.set(response.data);
+		await encryptedFirebaseToken.set(encryptedToken);
 	} catch (e) {
 		errorMessages.add(get(t)('token_fetch_error'));
 		reportErrorEvent('token_fetch_error');
@@ -137,7 +166,7 @@ export async function login(email: string, password: string) {
 	if (response.error.code !== 0) return response.error.code;
 	const { accessToken, refreshToken, expiration } = response.data;
 	if (!accessToken || !refreshToken) return response.error.code;
-	await fetchEncryptedFirebaseToken(accessToken);
+	await fetchFirebaseToken(accessToken);
 	token.set({ accessToken, refreshToken, expiration });
 	return 0;
 }
@@ -166,7 +195,7 @@ export async function refreshToken() {
 			continue;
 		}
 		const { accessToken, refreshToken, expiration } = response.data;
-		if (!await fetchEncryptedFirebaseToken(accessToken)) return false;
+		if (!await fetchFirebaseToken(accessToken)) return false;
 		token.set({ accessToken, refreshToken, expiration });
 		success = true;
 	}
