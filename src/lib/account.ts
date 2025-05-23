@@ -130,7 +130,7 @@ export async function fetchFirebaseToken(accessToken?: string) {
 			url: GIRA_MAIS_API_URL + '/token',
 			headers: {
 				'User-Agent': `Gira+/${dev ? 'dev' : version}`,
-				'x-user-id': await hash(accessToken),
+				'x-user-id': await hash(get(userCredentials)!.email),
 			},
 		});
 		if (response?.status === 404) {
