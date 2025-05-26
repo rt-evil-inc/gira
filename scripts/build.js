@@ -49,8 +49,8 @@ async function updateAppId(dev = false) {
 	for (const file of files) {
 		let content = await fs.readFile(file, 'utf8');
 		if (dev) {
-			content = content.replaceAll(/(?<!namespace ")dev\.tteles\.gira/g, 'dev.tteles.gira.dev');
-			content = content.replaceAll('Gira+', 'Gira+ Dev');
+			content = content.replaceAll(/(?<!namespace ")dev\.tteles\.gira(?!\.dev)/g, 'dev.tteles.gira.dev');
+			content = content.replaceAll(/Gira\+(?! Dev)/g, 'Gira+ Dev');
 		} else {
 			content = content.replaceAll(/(?<!namespace ")dev\.tteles\.gira\.dev/g, 'dev.tteles.gira');
 			content = content.replaceAll('Gira+ Dev', 'Gira+');
@@ -77,7 +77,7 @@ function getIp() {
 	Object.keys(ifaces).forEach(ifname => {
 		let alias = 0;
 		const iface = ifaces[ifname];
-		if (!iface || ifname.includes('vEthernet')) return;
+		if (!iface || ifname.includes('vEthernet') || ifname.startsWith('veth') || ifname.startsWith('tailscale') || ifname.startsWith('br-') || ifname.startsWith('docker') || ifname == 'lo') return;
 		iface.forEach(iface2 => {
 			if ('IPv4' !== iface2.family || iface2.internal !== false) return;
 			if (alias >= 1) ip = iface2.address;
