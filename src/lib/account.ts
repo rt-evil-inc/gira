@@ -173,6 +173,8 @@ export async function login(email: string, password: string) {
 
 export async function logOut() {
 	token.set(null);
+	firebaseToken.set(null);
+	encryptedFirebaseToken.set(null);
 	userCredentials.set(null);
 	accountInfo.set(null);
 	currentTrip.set(null);

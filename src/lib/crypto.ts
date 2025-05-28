@@ -91,3 +91,5 @@ export async function hash(data: string): Promise<string> {
 	const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 	return hashHex;
 }
+
+hash('test').then(console.log).catch(console.error);
