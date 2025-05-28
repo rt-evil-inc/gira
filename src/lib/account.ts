@@ -106,9 +106,7 @@ function isTokenExpired(token: string) {
 	return jwt.exp * 1000 < Date.now() + 1000 * 30;
 }
 
-export async function fetchFirebaseToken(accessToken?: string) {
-	if (!accessToken) return false;
-
+export async function fetchFirebaseToken(userId: string, accessToken: string) {
 	// Check if we already have a token that's not expired
 	const currentToken = get(firebaseToken);
 	if (currentToken && !isTokenExpired(currentToken)) {
@@ -130,7 +128,7 @@ export async function fetchFirebaseToken(accessToken?: string) {
 			url: GIRA_MAIS_API_URL + '/token',
 			headers: {
 				'User-Agent': `Gira+/${dev ? 'dev' : version}`,
-				'x-user-id': await hash(get(userCredentials)!.email),
+				'x-user-id': userId,
 			},
 		});
 		if (response?.status === 404) {
@@ -166,7 +164,7 @@ export async function login(email: string, password: string) {
 	if (response.error.code !== 0) return response.error.code;
 	const { accessToken, refreshToken, expiration } = response.data;
 	if (!accessToken || !refreshToken) return response.error.code;
-	await fetchFirebaseToken(accessToken);
+	await fetchFirebaseToken(await hash(email), accessToken);
 	token.set({ accessToken, refreshToken, expiration });
 	return 0;
 }
@@ -191,13 +189,15 @@ export async function refreshToken() {
 	if (!tokens) return false;
 	let success = false;
 	for (let i = 0; i < attempts && !success; i++) {
+		const creds = get(userCredentials);
+		if (!creds) return false;
 		const response = await getTokensRefresh(tokens);
 		if (!response.error || response.error.code !== 0 || !response.data.accessToken || !response.data.refreshToken) {
 			await new Promise(resolve => setTimeout(resolve, msBetweenRefreshAttempts));
 			continue;
 		}
 		const { accessToken, refreshToken, expiration } = response.data;
-		if (!await fetchFirebaseToken(accessToken)) return false;
+		if (!await fetchFirebaseToken(await hash(creds.email), accessToken)) return false;
 		token.set({ accessToken, refreshToken, expiration });
 		success = true;
 	}
