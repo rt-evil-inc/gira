@@ -139,7 +139,7 @@ export async function fetchFirebaseToken(accessToken?: string) {
 			return false;
 		} else if (!response || response.status !== 200 || !response.data) {
 			errorMessages.add(get(t)('token_fetch_error'));
-			reportErrorEvent('token_fetch_error');
+			reportErrorEvent('token_fetch_error', 'Response status: ' + response?.status);
 			return false;
 		}
 
@@ -155,7 +155,7 @@ export async function fetchFirebaseToken(accessToken?: string) {
 		await encryptedFirebaseToken.set(encryptedToken);
 	} catch (e) {
 		errorMessages.add(get(t)('token_fetch_error'));
-		reportErrorEvent('token_fetch_error');
+		reportErrorEvent('token_fetch_error', (e as Error).message);
 		return false;
 	}
 	return true;
