@@ -6,7 +6,7 @@ import { appSettings } from '$lib/settings';
 import { currentPos, watchPosition } from '$lib/location';
 import { distanceBetweenCoords } from '$lib/utils';
 import { LOCK_DISTANCE_m } from '$lib/constants';
-import { getTripHistory, getUnratedTrips, reserveBike, startTrip, tripPayWithPoints } from '$lib/gira-api/api';
+import { getTripHistory, getUnratedTrips, knownErrors, reserveBike, startTrip, tripPayWithPoints } from '$lib/gira-api/api';
 import type { StationInfo } from './map';
 import { ingestLastUnratedTrip, updateActiveTripInfo } from './injest-api-data';
 import { reportErrorEvent, reportTripStartEvent } from '$lib/gira-mais-api/gira-mais-api';
@@ -54,14 +54,6 @@ async function checkTripStarted(serial: string) {
 export async function tryStartTrip(id: string, serial: string, station: StationInfo) {
 	if (serial == null) return;
 	try {
-		if (get(accountInfo)?.subscription === null) {
-			errorMessages.add(get(t)('no_active_subscription_error'));
-			return false;
-		}
-		if ((get(accountInfo)?.balance ?? 0) < 0) {
-			errorMessages.add(get(t)('negative_balance_error'));
-			return false;
-		}
 		if (get(appSettings).distanceLock) {
 			const pos = get(currentPos);
 			if (pos == null) {
@@ -115,22 +107,18 @@ export async function tryStartTrip(id: string, serial: string, station: StationI
 			}
 		}
 	} catch (_e) {
-		const knownErrors: Record<string, string> = {
-			'Serviço indisponível. Horário de utilização entre as 06:00 e as 02:00.': 'service_hours_error',
-		};
 		const e = _e as ThrownError;
 		let addedError = false;
 		if (e && e.errors) {
 			for (const error of e.errors) {
-				if (knownErrors[error.message]) {
-					errorMessages.add(get(t)(knownErrors[error.message]));
-					reportErrorEvent('gira_api_error', error.message);
+				if (knownErrors[error.message]?.message) {
+					errorMessages.add(get(t)(knownErrors[error.message].message!));
 					addedError = true;
 				}
+				reportErrorEvent('gira_api_error', error.message);
 			}
 			if (!addedError) {
 				errorMessages.add(get(t)('bike_unlock_error'));
-				reportErrorEvent('bike_unlock_error');
 			}
 		}
 		console.error(e);

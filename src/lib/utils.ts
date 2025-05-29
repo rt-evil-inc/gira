@@ -1,6 +1,8 @@
 import { get } from 'svelte/store';
 import { appSettings } from '$lib/settings';
-import { CapacitorHttp, type HttpOptions } from '@capacitor/core';
+import { CapacitorHttp, type HttpOptions, type HttpResponse } from '@capacitor/core';
+import type { ThrownError } from './gira-api/api-types';
+import { knownErrors } from './gira-api/api';
 
 export const deg2rad = (deg:number) => deg * (Math.PI / 180);
 
@@ -48,7 +50,12 @@ export async function httpRequestWithRetry(options: HttpOptions, retryOnStatus =
 				throw response;
 			}
 			return response;
-		} catch (error) {
+		} catch (e) {
+			const error = { ...(e as HttpResponse).data, status: (e as HttpResponse).status } as ThrownError;
+			if (error?.errors && error.errors.some(err => knownErrors[err.message]?.retry === false)) {
+				console.error('Known error occurred:', error);
+				throw error;
+			}
 			console.error(`Attempt ${attempt}:`, error);
 			if (attempt < maxAttempts) {
 				await new Promise(resolve => setTimeout(resolve, retryDelay * attempt)); // Linear backoff

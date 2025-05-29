@@ -7,6 +7,23 @@ import { encryptedFirebaseToken, token } from '$lib/account';
 import { GIRA_API_URL } from '$lib/constants';
 import { httpRequestWithRetry } from '$lib/utils';
 
+export const knownErrors: Record<string, { message?: string, retry: boolean }> = {
+	'Serviço indisponível. Horário de utilização entre as 06:00 e as 02:00.': { message: 'service_hours_error', retry: false },
+	'trip_interval_limit': { message: 'trip_interval_limit_error', retry: false },
+	'not_enough_balance': { message: 'negative_balance_error', retry: false },
+	'has_no_active_subscriptions': { message: 'no_active_subscription_error', retry: false },
+	'already_active_trip': { message: 'already_active_trip_error', retry: false },
+	'already_has_active_trip': { message: 'already_active_trip_error', retry: false },
+	'unable_to_start_trip': { message: 'bike_unlock_error', retry: true },
+	'trip_not_found': { message: 'trip_not_found_error', retry: false },
+	'invalid_arguments': { retry: false },
+	'bike_already_in_trip': { message: 'bike_already_in_trip_error', retry: false },
+	'bike_already_reserved': { message: 'bike_already_reserved_error', retry: false },
+	'no_bike_found': { message: 'no_bike_found_error', retry: false },
+	'bike_on_repair': { message: 'bike_in_repair_error', retry: false },
+	'bike_in_repair': { message: 'bike_in_repair_error', retry: false },
+};
+
 async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
 	const options = {
 		url: GIRA_API_URL + '/graphql',

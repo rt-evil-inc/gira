@@ -344,4 +344,32 @@ const translations: Translations = {
 		en: 'Service unavailable. Hours of operation between 06:00 and 02:00.',
 		pt: 'Serviço indisponível. Horário de utilização entre as 06:00 e as 02:00.',
 	},
+	trip_interval_limit_error: {
+		en: 'You have to wait 5 minutes between trips',
+		pt: 'Tem que esperar 5 minutos entre viagens',
+	},
+	already_active_trip_error: {
+		en: 'You already have an active trip',
+		pt: 'Já tem uma viagem ativa',
+	},
+	trip_not_found_error: {
+		en: 'Trip not found',
+		pt: 'Viagem não encontrada',
+	},
+	bike_already_in_trip_error: {
+		en: 'This bike is already in a trip',
+		pt: 'Esta bicicleta já está numa viagem',
+	},
+	bike_already_reserved_error: {
+		en: 'This bike is already reserved',
+		pt: 'Esta bicicleta já está reservada',
+	},
+	no_bike_found_error: {
+		en: 'No bike found',
+		pt: 'Não foi possível encontrar a bicicleta',
+	},
+	bike_in_repair_error: {
+		en: 'This bike is in repair',
+		pt: 'Esta bicicleta está em reparação',
+	},
 };
