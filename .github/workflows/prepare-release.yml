@@ -53,7 +53,7 @@ jobs:
           author_name: ${{ steps.user-details.outputs.name }}
           author_email: ${{ steps.user-details.outputs.email }}
           message: "Bump version to ${{ env.GIRA_VERSION }}"
-          tag: ${{ env.GIRA_VERSION }}
+          tag: ${{ inputs.serverBump != 'false' && env.GIRA_VERSION || '' }}
           push: true
 
   build_mobile:
