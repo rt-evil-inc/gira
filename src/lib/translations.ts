@@ -48,6 +48,10 @@ const translations: Translations = {
 		en: 'See release notes',
 		pt: 'Veja as novidades',
 	},
+	update_warning_setting_note: {
+		en: 'You can disable this warning in the settings.',
+		pt: 'Pode desativar este aviso nas configurações.',
+	},
 	distance_traveled: {
 		en: 'Distance Traveled',
 		pt: 'Distância Percorrida',
@@ -371,5 +375,13 @@ const translations: Translations = {
 	bike_in_repair_error: {
 		en: 'This bike is in repair',
 		pt: 'Esta bicicleta está em reparação',
+	},
+	update_warning_setting_label: {
+		en: 'Update warning',
+		pt: 'Aviso de atualização',
+	},
+	update_warning_setting_description: {
+		en: 'Show a warning when a new version of the app is available',
+		pt: 'Mostrar um aviso quando uma nova versão da aplicação estiver disponível',
 	},
 };

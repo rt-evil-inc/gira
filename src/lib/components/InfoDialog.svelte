@@ -21,19 +21,21 @@
 				}
 			}
 
-			httpRequestWithRetry({
-				method: 'GET',
-				url: 'https://api.github.com/repos/rt-evil-inc/gira-mais/releases/latest',
-				headers: {
-					'Accept': 'application/vnd.github.v3+json',
-				},
-			}).then(async response => {
-				if (!response || response.status !== 200) return;
-				const ignoredVersion = (await Preferences.get({ key: 'ignoredVersion' })).value || '';
-				if (response.data.tag_name !== 'v' + version && response.data.tag_name !== ignoredVersion) {
-					latestVersion = response.data.tag_name;
-				}
-			});
+			if ((await Preferences.get({ key: 'settings/updateWarning' })).value === 'true') {
+				httpRequestWithRetry({
+					method: 'GET',
+					url: 'https://api.github.com/repos/rt-evil-inc/gira-mais/releases/latest',
+					headers: {
+						'Accept': 'application/vnd.github.v3+json',
+					},
+				}).then(async response => {
+					if (!response || response.status !== 200) return;
+					const ignoredVersion = (await Preferences.get({ key: 'ignoredVersion' })).value || '';
+					if (response.data.tag_name !== 'v' + version && response.data.tag_name !== ignoredVersion) {
+						latestVersion = response.data.tag_name;
+					}
+				});
+			}
 		});
 	});
 </script>
@@ -53,6 +55,7 @@
 					<h1 class="text-lg font-semibold">{$t('new_version_available')}</h1>
 					<p>v{version} -> <b>{latestVersion}</b></p>
 					<a href="https://github.com/rt-evil-inc/gira-mais/releases" class="text-primary underline">{$t('see_release_notes')}</a>
+					<p class="text-xs text-label mt-2">{$t('update_warning_setting_note')}</p>
 				</div>
 				<div class="flex justify-end mt-4 gap-2">
 					<button class="text-primary font-bold mx-2" on:click={() => { Preferences.set({ key: 'ignoredVersion', value: latestVersion }); latestVersion = ''; }}>{$t('ignore_button')}</button>

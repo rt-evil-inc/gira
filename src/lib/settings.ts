@@ -8,6 +8,7 @@ export type AppSettings = {
 	analytics: boolean;
 	theme: 'light'|'dark'|'system';
 	locale: 'pt'|'en'|'system';
+	updateWarning: boolean;
 }
 
 export const appSettings = writable<AppSettings>();
@@ -19,7 +20,8 @@ export async function loadSettings() {
 	const analytics = (await Preferences.get({ key: 'settings/analytics' })).value !== 'false';
 	const theme = ((await Preferences.get({ key: 'settings/theme' })).value || 'system') as 'light'|'dark'|'system';
 	const locale = ((await Preferences.get({ key: 'settings/locale' })).value || 'system') as 'pt'|'en'|'system';
-	appSettings.set({ distanceLock, mockUnlock, backgroundLocation, analytics, theme, locale });
+	const updateWarning = (await Preferences.get({ key: 'settings/updateWarning' })).value !== 'false';
+	appSettings.set({ distanceLock, mockUnlock, backgroundLocation, analytics, theme, locale, updateWarning });
 	appSettings.subscribe(async v => {
 		Preferences.set({ key: 'settings/distanceLock', value: v.distanceLock.toString() });
 		Preferences.set({ key: 'settings/mockUnlock', value: v.mockUnlock.toString() });
@@ -27,5 +29,6 @@ export async function loadSettings() {
 		Preferences.set({ key: 'settings/analytics', value: v.analytics.toString() });
 		Preferences.set({ key: 'settings/theme', value: v.theme });
 		Preferences.set({ key: 'settings/locale', value: v.locale });
+		Preferences.set({ key: 'settings/updateWarning', value: v.updateWarning.toString() });
 	});
 }
