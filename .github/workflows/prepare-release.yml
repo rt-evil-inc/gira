@@ -97,3 +97,18 @@ jobs:
             *.apk
           token: ${{ secrets.ORG_RELEASE_TOKEN }}
           body_path: commit_messages.txt
+
+      - name: Download aab
+        uses: actions/download-artifact@v4
+        with:
+          name: release-aab-signed
+
+      - name: Upload .aab to Production Track
+        id: upload_production
+        uses: KevinRohn/github-action-upload-play-store@v1.0.0
+        with:
+          service_account_json: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          package_name: "dev.tteles.gira"
+          aab_file_path: "./app-release.aab"
+          track: "alpha"
+          release_status: "draft"
