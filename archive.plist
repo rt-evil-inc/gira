@@ -4,6 +4,16 @@
 <dict>
 <key>method</key>
 <string>app-store</string>
+<key>teamID</key>
+<string>CWY6HA7572</string>
+<key>uploadBitcode</key>
+<false/>
+<key>uploadSymbols</key>
+<true/>
+<key>compileBitcode</key>
+<false/>
+<key>signingStyle</key>
+<string>manual</string>
 <key>provisioningProfiles</key>
 <dict>
     <key>dev.tteles.giraplus</key>
