@@ -117,8 +117,6 @@ jobs:
 
       - run: bun run build
       - run: bunx cap sync ios
-      - name: List projects
-        run: xcodebuild -list -workspace './ios/App/App.xcworkspace'
 
       - name: Build project
         run: xcodebuild -workspace './ios/App/App.xcworkspace' -scheme GiraMais -destination generic/platform=iOS -archivePath App.xcarchive archive
