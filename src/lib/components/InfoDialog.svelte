@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte';
 	import { httpRequestWithRetry } from '$lib/utils';
 	import { version } from '$app/environment';
+	import X from '@tabler/icons-svelte/icons/x';
 
 	let message = '';
 	let messageTimestamp = '';
@@ -43,14 +44,17 @@
 {#if message || latestVersion}
 	<div transition:fade={{ duration: 150 }} class="absolute top-0 flex items-center justify-center w-full h-full bg-black/50 z-50">
 		{#if message}
-			<div class="bg-background rounded-2xl col-start-1 col-end-2 max-w-sm w-full flex flex-col p-6 m-2" style:box-shadow="0px 0px 20px 0px var(--color-shadow)">
+			<div class="relative bg-background rounded-2xl col-start-1 col-end-2 max-w-sm w-full flex flex-col p-6 m-2" style:box-shadow="0px 0px 20px 0px var(--color-shadow)">
 				<div class="text-info font-medium max-h-[70vh] overflow-y-auto">{@html message}</div>
 				<div class="flex justify-end mt-4">
 					<button class="text-primary font-bold mx-2" on:click={() => { message = ''; Preferences.set({ key: 'lastMessageTimestamp', value: messageTimestamp }); }}>{$t('ok_button')}</button>
 				</div>
+				<button class="absolute top-4 right-4 text-label" on:click={() => { message = ''; Preferences.set({ key: 'lastMessageTimestamp', value: messageTimestamp }); }}>
+					<X class="w-6 h-6" />
+				</button>
 			</div>
 		{:else if latestVersion}
-			<div transition:fade={{ delay: 150, duration: 150 }} class="bg-background rounded-2xl max-w-xs w-full flex flex-col p-6 m-2" style:box-shadow="0px 0px 20px 0px var(--color-shadow)">
+			<div transition:fade={{ delay: 150, duration: 150 }} class="relative bg-background rounded-2xl max-w-xs w-full flex flex-col p-6 m-2" style:box-shadow="0px 0px 20px 0px var(--color-shadow)">
 				<div class="text-info font-medium max-h-[70vh] overflow-y-auto">
 					<h1 class="text-lg font-semibold">{$t('new_version_available')}</h1>
 					<p>v{version} -> <b>{latestVersion}</b></p>
@@ -61,6 +65,9 @@
 					<button class="text-primary font-bold mx-2" on:click={() => { Preferences.set({ key: 'ignoredVersion', value: latestVersion }); latestVersion = ''; }}>{$t('ignore_button')}</button>
 					<button class="text-primary font-bold mx-2" on:click={() => { latestVersion = ''; }}>{$t('ok_button')}</button>
 				</div>
+				<button class="absolute top-4 right-4 text-label" on:click={() => { latestVersion = ''; }}>
+					<X class="w-6 h-6" />
+				</button>
 			</div>
 		{/if}
 	</div>

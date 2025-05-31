@@ -37,8 +37,8 @@ const translations: Translations = {
 		pt: 'Ok',
 	},
 	ignore_button: {
-		en: 'Ignore',
-		pt: 'Ignorar',
+		en: 'Ignore this version',
+		pt: 'Ignorar esta versão',
 	},
 	new_version_available: {
 		en: 'New version available!',
