@@ -189,7 +189,7 @@ const translations: Translations = {
 		pt: 'Contribuir',
 	},
 	exit_label: {
-		en: 'EXIT',
+		en: 'LOGOUT',
 		pt: 'SAIR',
 	},
 	welcome_message: {
