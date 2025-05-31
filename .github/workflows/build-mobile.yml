@@ -131,6 +131,21 @@ jobs:
           path: output/
           retention-days: 60
 
+      - name: Publish the App on TestFlight
+        shell: bash
+        if: success()
+        env:
+          APPLEID_USERNAME: ${{ secrets.APPLEID_USERNAME }}
+          APPLEID_PASSWORD: ${{ secrets.APPLEID_PASSWORD }}
+        run: |
+          xcrun altool \
+            --upload-app \
+            -t ios \
+            -f $PWD/output/*.ipa \
+            -u "${{ secrets.APPLEID_USERNAME }}" \
+            -p "${{ secrets.APPLEID_PASSWORD }}" \
+            --verbose
+
       # For use on self-hosted runners, see 
       # https://docs.github.com/en/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
       #- name: Clean up keychain and provisioning profile
