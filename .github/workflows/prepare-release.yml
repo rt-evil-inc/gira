@@ -116,3 +116,23 @@ jobs:
         aab_file_path: "./app-release.aab"
         track: "alpha"
         release_status: "draft"
+  upload_app_store:
+    runs-on: macos-latest
+    needs: build_mobile
+    steps:
+      - name: Download ipa
+        uses: actions/download-artifact@v4
+        with:
+          name: app-ios
+
+      - name: Publish the App on TestFlight
+        env:
+          APPLEID_USERNAME: ${{ secrets.APPLEID_USERNAME }}
+          APPLEID_PASSWORD: ${{ secrets.APPLEID_PASSWORD }}
+        run: |
+          xcrun altool \
+            --upload-app \
+            -t ios \
+            -f $PWD/*.ipa \
+            -u "${{ secrets.APPLEID_USERNAME }}" \
+            -p "${{ secrets.APPLEID_PASSWORD }}"
