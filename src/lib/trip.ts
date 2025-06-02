@@ -12,6 +12,7 @@ import { ingestLastUnratedTrip, updateActiveTripInfo } from './injest-api-data';
 import { reportErrorEvent, reportTripStartEvent } from '$lib/gira-mais-api/gira-mais-api';
 import { refreshToken, token, type JWT } from './account';
 import { t } from './translations';
+import { tick } from 'svelte';
 
 export type ActiveTrip = {
 	code: string,
@@ -41,6 +42,45 @@ export type TripRating = {
 
 export const currentTrip = writable<ActiveTrip|null>(null);
 export const tripRating = writable<TripRating>({ currentRating: null });
+
+// FAKE DATA FOR SCREENSHOTS - Remove before production
+export function createFakeTrip() {
+	// Fake bike path from Cais do Sodré area to Campo Grande (~1.2km)
+	// Following realistic streets and bike paths in Lisbon
+	const fakePath = [
+		{ lat: 38.746036, lng: -9.147943, time: new Date(Date.now() - 60 * 1000) },
+		{ lat: 38.747912, lng: -9.148398, time: new Date(Date.now() - 60 * 1000) },
+		{ lat: 38.747929, lng: -9.148427, time: new Date(Date.now() - 60 * 1000) },
+		{ lat: 38.747913, lng: -9.148576, time: new Date(Date.now() - 35 * 60 * 1000) },
+		{ lat: 38.748092, lng: -9.148843, time: new Date(Date.now() - 30 * 60 * 1000) },
+		{ lat: 38.748278, lng: -9.148863, time: new Date(Date.now() - 30 * 60 * 1000) },
+		{ lat: 38.748482, lng: -9.148684, time: new Date(Date.now() - 20 * 60 * 1000) },
+		{ lat: 38.748640, lng: -9.148832, time: new Date(Date.now() - 15 * 60 * 1000) },
+		{ lat: 38.748713, lng: -9.148620, time: new Date(Date.now() - 12 * 60 * 1000) },
+		{ lat: 38.748819, lng: -9.148673, time: new Date(Date.now() - 10 * 1000) },
+		{ lat: 38.751767, lng: -9.150800, time: new Date(Date.now() - 30 * 1000) },
+		{ lat: 38.752749, lng: -9.151496, time: new Date(Date.now() - 15 * 1000) },
+	];
+
+	const fakeTrip: ActiveTrip = {
+		code: 'FAKE_TRIP_123',
+		bikePlate: 'E2024',
+		startPos: fakePath[0],
+		destination: null, // Campo Grande
+		traveledDistanceKm: 1.2,
+		distanceLeft: null,
+		speed: 15.5, // km/h
+		startDate: new Date(Date.now() - 12 * 60 * 1000), // 12 minutes ago
+		predictedEndDate: null,
+		arrivalTime: null,
+		finished: false,
+		confirmed: true,
+		pathTaken: fakePath,
+		lastUpdate: new Date,
+	};
+
+	return fakeTrip;
+}
 
 async function checkTripStarted(serial: string) {
 	if (get(currentTrip) === null) return;
@@ -160,3 +200,8 @@ export async function endTrip() {
 		tripHistory: (await getTripHistory(0, 1)).tripHistory,
 	});
 }
+
+await tick();
+currentTrip.set(createFakeTrip());
+
+currentTrip.set = (...args) => {};

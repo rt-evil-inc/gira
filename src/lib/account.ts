@@ -225,5 +225,5 @@ export async function updateUserInfo() {
 	if (!tokens) return;
 	const response = await getUserInfo(tokens);
 	const { email, name } = response.data;
-	user.set({ email, name });
+	user.set({ email: 'joaosilva@email.pt', name: 'João Silva' });
 }

@@ -93,7 +93,6 @@
 			}
 		}
 	});
-	
 	currentTrip.subscribe((trip: ActiveTrip | null) => {
 		if (!mapLoaded) return;
 		const src = map.getSource<maplibregl.GeoJSONSource>('trip-path');
@@ -102,7 +101,7 @@
 			properties: {},
 			geometry: {
 				type: 'LineString',
-				coordinates: trip?.pathTaken?.map((p) => [p.lng, p.lat]) ?? [],
+				coordinates: trip?.pathTaken?.map(p => [p.lng, p.lat]) ?? [],
 			},
 		};
 		if (src != null) {
@@ -131,6 +130,8 @@
 			setSourceData(map);
 			addLayers(map);
 			addEventListeners(map);
+			map.setLayoutProperty('points', 'visibility', 'none');
+			map.setLayoutProperty('docks', 'visibility', 'visible');
 		});
 		return () => {
 			map.remove();

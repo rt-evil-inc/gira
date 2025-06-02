@@ -4,6 +4,7 @@ import type { GeoJSON } from 'geojson';
 import { getCssVariable, getTheme } from '$lib/utils';
 import maplibregl from 'maplibre-gl';
 import { currentPos } from '$lib/location';
+import { currentTrip } from './trip';
 
 export type StationInfo ={
 	code: string;
@@ -55,14 +56,14 @@ export function setSourceData(map: maplibregl.Map) {
 	const userSrc = map.getSource('user-location');
 
 	const pos = get(currentPos);
-	const userLocationData:GeoJSON.GeoJSON = pos ? {
+	const userLocationData:GeoJSON.GeoJSON = true ? {
 		'type': 'FeatureCollection',
 		'features': [{
 			type: 'Feature',
 			properties: {},
 			geometry: {
 				type: 'Point',
-				coordinates: [pos.coords.longitude, pos.coords.latitude],
+				coordinates: [-9.151496, 38.752749],
 			},
 		}],
 	} : { type: 'FeatureCollection', features: [] };
@@ -82,8 +83,8 @@ export function setSourceData(map: maplibregl.Map) {
 				properties: {},
 				geometry: {
 					type: 'LineString',
-					coordinates: [],
-				}
+					coordinates: get(currentTrip)?.pathTaken?.map(p => [p.lng, p.lat]) ?? [],
+				},
 			},
 		});
 	}

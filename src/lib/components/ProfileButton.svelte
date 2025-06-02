@@ -3,7 +3,7 @@
 	import IconMoonFilled from '@tabler/icons-svelte/icons/moon-filled';
 	import { onDestroy } from 'svelte';
 
-	let offHours = (new Date).getHours() >= 2 && (new Date).getHours() < 6;
+	let offHours = false;
 	let noSubscription = false;
 	let negativeBalance = false;
 
@@ -12,10 +12,10 @@
 		negativeBalance = ($accountInfo?.balance ?? 0) < 0;
 	}
 
-	const interval = setInterval(() => {
-		offHours = (new Date).getHours() >= 2 && (new Date).getHours() < 6;
-	}, 60 * 1000);
-	onDestroy(() => clearInterval(interval));
+// const interval = setInterval(() => {
+	// 	offHours = (new Date).getHours() >= 2 && (new Date).getHours() < 6;
+	// }, 60 * 1000);
+	// onDestroy(() => clearInterval(interval));
 </script>
 
 {#if $user}
