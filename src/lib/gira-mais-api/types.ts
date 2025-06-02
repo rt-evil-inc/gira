@@ -34,3 +34,13 @@ export type ErrorStatisticsPostRequest = {
 export type ErrorStatisticsPostResponse = {
   success: boolean;
 }
+
+export type BikeRatingPostRequest = {
+  deviceId: string;
+  bikeSerial: string;
+  rating: number;
+}
+
+export type BikeRatingPostResponse = {
+  success: boolean;
+}

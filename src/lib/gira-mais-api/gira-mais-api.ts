@@ -79,3 +79,22 @@ export async function getMessage() {
 	});
 	return response?.data as MessageGetResponse;
 }
+
+export async function postBikeRating(bikeSerial: string, rating: number) {
+	if (!get(appSettings).analytics || dev) return;
+
+	const response = await httpRequestWithRetry({
+		method: 'post',
+		url: GIRA_MAIS_API_URL + '/statistics/ratings',
+		headers: {
+			'User-Agent': `Gira+/${version}`,
+			'Content-Type': 'application/json',
+		},
+		data: {
+			deviceId: (await Device.getId()).identifier,
+			bikeSerial,
+			rating,
+		},
+	});
+	return response?.data as { success: boolean };
+}

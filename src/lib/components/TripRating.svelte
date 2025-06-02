@@ -14,12 +14,13 @@
 	import { fade, fly } from 'svelte/transition';
 	import { tripRating } from '$lib/trip';
 	import { rateTrip } from '$lib/gira-api/api';
-	import { reportErrorEvent } from '$lib/gira-mais-api/gira-mais-api';
+	import { postBikeRating, reportErrorEvent } from '$lib/gira-mais-api/gira-mais-api';
 
 	export let code:string;
 	let rating:number;
 
 	async function rate(code:string, rating:number) {
+		postBikeRating(code, rating);
 		return (await rateTrip(code, rating)).rateTrip;
 	}
 
