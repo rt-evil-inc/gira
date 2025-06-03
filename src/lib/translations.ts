@@ -312,6 +312,34 @@ const translations: Translations = {
 		en: 'Simulate reservation and unlocking of bicycles in development mode',
 		pt: 'Simular a reserva e desbloqueio de bicicletas em modo de desenvolvimento',
 	},
+	report_ratings_setting_label: {
+		en: 'Share trip ratings',
+		pt: 'Partilhar avaliações de viagens',
+	},
+	report_ratings_setting_description: {
+		en: 'Share your trip ratings with us so we can warn about bike conditions',
+		pt: 'Partilhar as suas avaliações de viagens connosco para que possamos avisar sobre o estado das bicicletas',
+	},
+	ui_settings_section: {
+		en: 'Interface',
+		pt: 'Interface',
+	},
+	location_settings_section: {
+		en: 'Location',
+		pt: 'Localização',
+	},
+	warnings_settings_section: {
+		en: 'Warnings',
+		pt: 'Avisos',
+	},
+	statistics_settings_section: {
+		en: 'Statistics',
+		pt: 'Estatísticas',
+	},
+	development_settings_section: {
+		en: 'Development',
+		pt: 'Desenvolvimento',
+	},
 	no_tokens_available_error: {
 		en: 'No tokens available',
 		pt: 'Sem tokens disponíveis',

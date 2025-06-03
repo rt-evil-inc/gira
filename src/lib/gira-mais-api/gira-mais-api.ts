@@ -81,7 +81,7 @@ export async function getMessage() {
 }
 
 export async function postBikeRating(bikeSerial: string, rating: number) {
-	if (!get(appSettings).analytics || dev) return;
+	if (!get(appSettings).reportRatings || dev) return;
 
 	const response = await httpRequestWithRetry({
 		method: 'post',
