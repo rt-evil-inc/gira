@@ -16,9 +16,9 @@
 	import Settings from '$lib/components/settings/Settings.svelte';
 	import Info from '$lib/components/settings/About.svelte';
 	import { App } from '@capacitor/app';
-	import type { PluginListenerHandle } from '@capacitor/core';
+	import { Capacitor, type PluginListenerHandle } from '@capacitor/core';
 	import { user, accountInfo, logOut } from '$lib/account';
-	import { IconHeart } from '@tabler/icons-svelte';
+	import { IconHeart, IconStar } from '@tabler/icons-svelte';
 	import { getLocale, t } from '$lib/translations';
 
 	let openPage: 'settings' | 'history' |'info'| null = null;
@@ -73,7 +73,11 @@
 				<ProfileMenuEntry icon={IconTool} text={$t('settings_label')} subtext={$t('settings_subtext')} on:click={() => openPage = 'settings'} />
 				<a href="https://github.com/rt-evil-inc/gira-mais/issues"><ProfileMenuEntry icon={IconMessageReport} text={$t('feedback_label')} subtext={$t('feedback_subtext')} external /></a>
 				<ProfileMenuEntry icon={IconInfoCircle} text={$t('about_label')} subtext={$t('about_subtext')} on:click={() => openPage = 'info'} />
-				<a href="https://github.com/sponsors/rt-evil-inc/"><ProfileMenuEntry icon={IconHeart} iconClass="stroke-[#db61a2]" text={$t('contribute_label')} subtext={$t('contribute_subtext')} external /></a>
+				{#if Capacitor.getPlatform() === 'ios'}
+					<a href="https://github.com/rt-evil-inc/gira-mais/"><ProfileMenuEntry icon={IconStar} iconClass="stroke-warning" text={$t('star_label')} subtext={$t('star_subtext')} external /></a>
+				{:else}
+					<a href="https://github.com/sponsors/rt-evil-inc/"><ProfileMenuEntry icon={IconHeart} iconClass="stroke-[#db61a2]" text={$t('contribute_label')} subtext={$t('contribute_subtext')} external /></a>
+				{/if}
 			</div>
 			<button class="flex flex-col items-center mb-3" on:click={() => { dispatch('close'); logOut(); }}>
 				<IconLogout2 class="text-primary mr-2" size={32} />

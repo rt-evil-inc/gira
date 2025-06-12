@@ -188,6 +188,10 @@ const translations: Translations = {
 		en: 'Contribute',
 		pt: 'Contribuir',
 	},
+	star_label: {
+		en: 'Leave a star',
+		pt: 'Deixar uma estrela',
+	},
 	exit_label: {
 		en: 'LOGOUT',
 		pt: 'SAIR',
@@ -243,6 +247,10 @@ const translations: Translations = {
 	contribute_subtext: {
 		en: 'Support the project\'s development',
 		pt: 'Apoiar o desenvolvimento do projeto',
+	},
+	star_subtext: {
+		en: 'Leave us a star on GitHub',
+		pt: 'Deixa-nos uma estrela no GitHub',
 	},
 	dock_label: {
 		en: 'DOCK',
