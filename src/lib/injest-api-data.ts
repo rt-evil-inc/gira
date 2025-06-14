@@ -26,7 +26,7 @@ export function updateWithTripMessage(recvTrip:ActiveTripSubscription) {
 
 	if (recvTrip.code === 'no_trip' || recvTrip.bike === 'dummy') {
 		if (ct?.confirmed || Date.now() - (ct?.startDate?.getTime() ?? 0) > 30000) {
-			endTrip();
+			updateActiveTripInfo(); // double-check if trip finished
 		}
 		return;
 	}
@@ -165,20 +165,32 @@ export function ingestLastUnratedTrip(lastTripData:Q<['unratedTrips', 'tripHisto
 
 export function ingestCurrentTripUpdate(recvTrip:ActiveTripSubscription) {
 	if (recvTrip.finished) {
-		updateActiveTripInfo(); // double-check if trip finished
-		return;
+		currentTrip.set(null);
+		if (!recvTrip.canceled) {
+			tripRating.update(rating => {
+				rating.currentRating = {
+					code: recvTrip.code,
+					bikePlate: recvTrip.bike,
+					startDate: new Date(recvTrip.startDate),
+					endDate: new Date(recvTrip.endDate ?? 0),
+					tripPoints: recvTrip.tripPoints ?? 0,
+				};
+				return rating;
+			});
+		}
+	} else {
+		currentTrip.update(trip => {
+			if (trip === null) throw new Error('trip is null in impossible place');
+			return {
+				...trip,
+				startDate: new Date(recvTrip.startDate),
+				bikePlate: recvTrip.bike,
+				code: recvTrip.code,
+				confirmed: true,
+				lastUpdate: new Date,
+			};
+		});
 	}
-	currentTrip.update(trip => {
-		if (trip === null) throw new Error('trip is null in impossible place');
-		return {
-			...trip,
-			startDate: new Date(recvTrip.startDate),
-			bikePlate: recvTrip.bike,
-			code: recvTrip.code,
-			confirmed: true,
-			lastUpdate: new Date,
-		};
-	});
 }
 
 export function ingestOtherTripUpdate(recvTrip:ActiveTripSubscription) {
