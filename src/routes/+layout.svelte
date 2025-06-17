@@ -19,6 +19,7 @@
 	import { getTheme } from '$lib/utils';
 	import { loadSettings } from '$lib/settings';
 	import { reportAppUsageEvent } from '$lib/gira-mais-api/gira-mais-api';
+	import { watchPosition } from '$lib/location';
 
 	if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') {
 		StatusBar.setOverlaysWebView({ overlay: true });
@@ -32,6 +33,10 @@
 		loadUserCreds();
 		loadSettings().then(() => {
 			reportAppUsageEvent();
+			appSettings.subscribe(() => {
+				watchPosition();
+				updateTheme();
+			});
 		});
 		App.addListener('resume', () => {
 			if ($token != null && $token.refreshToken != null) {
@@ -50,7 +55,6 @@
 			document.documentElement.setAttribute('data-theme', currentTheme);
 			if (Capacitor.getPlatform() === 'android' || Capacitor.getPlatform() === 'ios') StatusBar.setStyle({ style: currentTheme == 'dark' ? Style.Dark : Style.Light });
 		};
-		appSettings.subscribe(updateTheme);
 		mediaQuery.addEventListener('change', updateTheme);
 
 		return () => {

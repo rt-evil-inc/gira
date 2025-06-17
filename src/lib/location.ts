@@ -33,9 +33,10 @@ const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('Backg
 let watchId: string|null = null;
 let backgroundWatchId: string|null = null;
 
-appSettings.subscribe(watchPosition); // Update location watcher when settings change
-
 export async function watchPosition() {
+	const permission = (await Geolocation.checkPermissions()).location;
+	if (permission !== 'granted') return;
+
 	if (get(currentTrip) !== null && get(appSettings).backgroundLocation) {
 		if (backgroundWatchId !== null) return;
 		if (watchId !== null) {
