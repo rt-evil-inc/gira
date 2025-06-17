@@ -46,7 +46,6 @@ export async function watchPosition() {
 		backgroundWatchId = await BackgroundGeolocation.addWatcher({
 			backgroundTitle: 'Active Trip',
 			backgroundMessage: 'Tracking location in background',
-			distanceFilter: 2,
 		}, position => {
 			if (position) {
 				currentPos.set({ coords: { ...position, heading: position.bearing }, timestamp: position.time ?? Date.now() });
@@ -62,7 +61,8 @@ export async function watchPosition() {
 
 		watchId = await Geolocation.watchPosition({
 			enableHighAccuracy: true,
-			timeout: 10000,
+			timeout: 2000,
+			minimumUpdateInterval: 0,
 		}, position => {
 			if (position) {
 				currentPos.set(position);
