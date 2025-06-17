@@ -37,7 +37,9 @@
 	function onPointerMove(event: PointerEvent) {
 		if (dragging && !disabled) {
 			pos.set(event.clientX - initPos, { duration: 0 });
-			moved = true;
+			if (Math.abs(event.clientX - initPos) > 5) {
+				moved = true;
+			}
 		} else {
 			pos.set(0);
 		}
@@ -45,7 +47,7 @@
 	function onPointerUp(event: PointerEvent&{currentTarget:EventTarget&HTMLDivElement}) {
 		event.currentTarget.releasePointerCapture(event.pointerId);
 		dragging = false;
-		if ($pos == 0 && !moved && !disabled) {
+		if (!moved && !disabled) {
 			pos.set(50);
 			timeout = setTimeout(() => pos.set(0), 150);
 		} else {
