@@ -4,7 +4,7 @@ import { Preferences } from '@capacitor/preferences';
 import type { M, Q } from '$lib/gira-api/api-types';
 import type { Mutation, Query } from '$lib/gira-api/api-types';
 import { encryptedFirebaseToken, token } from '$lib/account';
-import { GIRA_API_URL } from '$lib/constants';
+import { GIRA_API_URL, GIRA_WS_URL } from '$lib/constants';
 import { httpRequestWithRetry } from '$lib/utils';
 
 export const knownErrors: Record<string, { message?: string, retry: boolean }> = {
@@ -25,15 +25,23 @@ export const knownErrors: Record<string, { message?: string, retry: boolean }> =
 };
 
 async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
+	const firebaseToken = get(encryptedFirebaseToken);
+	const baseUrl = firebaseToken ? GIRA_API_URL : GIRA_WS_URL.replace('wss', 'https');
+
+	const headers: Record<string, string> = {
+		'User-Agent': 'Gira/3.4.3 (Android 34)',
+		'content-type': 'application/json',
+		'authorization': `Bearer ${get(token)?.accessToken}`,
+	};
+
+	if (firebaseToken) {
+		headers['x-firebase-token'] = firebaseToken;
+	}
+
 	const options = {
-		url: GIRA_API_URL + '/graphql',
+		url: baseUrl + '/graphql',
 		method: 'post',
-		headers: {
-			'User-Agent': 'Gira/3.4.3 (Android 34)',
-			'content-type': 'application/json',
-			'authorization': `Bearer ${get(token)?.accessToken}`,
-			'x-firebase-token': `${get(encryptedFirebaseToken)}`,
-		},
+		headers,
 		data: body,
 	};
 	const res = await httpRequestWithRetry(options, true);
@@ -41,15 +49,23 @@ async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
 }
 
 async function query<T extends(keyof Query)[]>(body:any): Promise<Q<T>> {
+	const firebaseToken = get(encryptedFirebaseToken);
+	const baseUrl = firebaseToken ? GIRA_API_URL : GIRA_WS_URL.replace('wss', 'https');
+
+	const headers: Record<string, string> = {
+		'User-Agent': 'Gira/3.4.3 (Android 34)',
+		'content-type': 'application/json',
+		'authorization': `Bearer ${get(token)?.accessToken}`,
+	};
+
+	if (firebaseToken) {
+		headers['x-firebase-token'] = firebaseToken;
+	}
+
 	const options = {
-		url: GIRA_API_URL + '/graphql',
+		url: baseUrl + '/graphql',
 		method: 'post',
-		headers: {
-			'User-Agent': 'Gira/3.4.3 (Android 34)',
-			'content-type': 'application/json',
-			'authorization': `Bearer ${get(token)?.accessToken}`,
-			'x-firebase-token': `${get(encryptedFirebaseToken)}`,
-		},
+		headers,
 		data: body,
 	};
 	const res = await httpRequestWithRetry(options, true);

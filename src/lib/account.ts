@@ -132,28 +132,28 @@ export async function fetchFirebaseToken(userId: string, accessToken: string) {
 			},
 		});
 		if (response?.status === 404) {
-			errorMessages.add(get(t)('no_tokens_available_error'));
-			reportErrorEvent('no_tokens_available_error');
+			// errorMessages.add(get(t)('no_tokens_available_error'));
+			// reportErrorEvent('no_tokens_available_error');
 			return false;
 		} else if (!response || response.status !== 200 || !response.data) {
-			errorMessages.add(get(t)('token_fetch_error'));
-			reportErrorEvent('token_fetch_error', 'Response status: ' + response?.status);
+			// errorMessages.add(get(t)('token_fetch_error'));
+			// reportErrorEvent('token_fetch_error', 'Response status: ' + response?.status);
 			return false;
 		}
 
 		// Encrypt the token
 		const encryptedToken = await encryptToken(response.data, accessToken);
 		if (!encryptedToken) {
-			errorMessages.add(get(t)('token_encryption_error'));
-			reportErrorEvent('token_encryption_error');
+			// errorMessages.add(get(t)('token_encryption_error'));
+			// reportErrorEvent('token_encryption_error');
 			return false;
 		}
 
 		firebaseToken.set(response.data);
 		await encryptedFirebaseToken.set(encryptedToken);
 	} catch (e) {
-		errorMessages.add(get(t)('token_fetch_error'));
-		reportErrorEvent('token_fetch_error', (e as Error).message);
+		// errorMessages.add(get(t)('token_fetch_error'));
+		// reportErrorEvent('token_fetch_error', (e as Error).message);
 		return false;
 	}
 	return true;
