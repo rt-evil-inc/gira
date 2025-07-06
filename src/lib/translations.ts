@@ -360,6 +360,14 @@ const translations: Translations = {
 		en: 'Error obtaining a token',
 		pt: 'Erro ao obter um token',
 	},
+	auth_api_communication_error: {
+		en: 'Could not communicate with the authentication API. The service may be temporarily unavailable.',
+		pt: 'Não foi possível comunicar com a API de autenticação da Gira. O serviço pode estar temporariamente indisponível.',
+	},
+	gira_api_communication_error: {
+		en: 'Could not communicate with the Gira service API. The service may be temporarily unavailable.',
+		pt: 'Não foi possível comunicar com a API do serviço Gira. O serviço pode estar temporariamente indisponível.',
+	},
 	no_active_subscription_error: {
 		en: 'You don\'t have an active subscription',
 		pt: 'Não tem uma subscrição ativa',

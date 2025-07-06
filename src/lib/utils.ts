@@ -3,6 +3,10 @@ import { appSettings } from '$lib/settings';
 import { CapacitorHttp, type HttpOptions, type HttpResponse } from '@capacitor/core';
 import type { ThrownError } from './gira-api/api-types';
 import { knownErrors } from './gira-api/api';
+import { errorMessages } from './ui';
+import { GIRA_API_URL, GIRA_AUTH_URL, GIRA_WS_URL } from './constants';
+import { reportErrorEvent } from './gira-mais-api/gira-mais-api';
+import { t } from './translations';
 
 export const deg2rad = (deg:number) => deg * (Math.PI / 180);
 
@@ -61,6 +65,17 @@ export async function httpRequestWithRetry(options: HttpOptions, retryOnStatus =
 				await new Promise(resolve => setTimeout(resolve, retryDelay * attempt)); // Linear backoff
 			} else {
 				console.error('Max attempts reached. Throwing error.');
+				if (error.status === undefined) {
+					if (options.url.startsWith(GIRA_AUTH_URL)) {
+						errorMessages.add(get(t)('auth_api_communication_error'), 5000);
+						reportErrorEvent('auth_api_communication_error', JSON.stringify(e));
+						console.error('Auth API communication error:', e);
+					} else if (options.url.startsWith(GIRA_API_URL) || options.url.includes(GIRA_WS_URL.split('://')[1])) {
+						errorMessages.add(get(t)('gira_api_communication_error'), 5000);
+						reportErrorEvent('gira_api_communication_error', JSON.stringify(e));
+						console.error('Gira API communication error:', e);
+					}
+				}
 				throw error;
 			}
 		}
