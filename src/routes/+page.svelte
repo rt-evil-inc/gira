@@ -22,6 +22,7 @@
 	import { token } from '$lib/account';
 	import type { PluginListenerHandle } from '@capacitor/core';
 	import InfoDialog from '$lib/components/InfoDialog.svelte';
+	import SupportButton from '$lib/components/SupportButton.svelte';
 
 	let backListener: PluginListenerHandle;
 	let menuHeight = 0;
@@ -86,6 +87,10 @@
 
 	<Floating right={20} y={Math.max(tripStatusHeight + 16, $safeInsets.top)} offset={70}>
 		<Compass />
+	</Floating>
+
+	<Floating left={20} y={tripStatusHeight} offset={20}>
+		<SupportButton />
 	</Floating>
 
 	{#if profileOpen}
