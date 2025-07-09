@@ -23,7 +23,7 @@ export async function getTokensLogin(email: string, password: string) {
 		},
 	};
 
-	const response = await httpRequestWithRetry(options);
+	const response = await httpRequestWithRetry(options, true);
 	return response?.data as ApiResponse<TokenOpt>;
 }
 
@@ -41,7 +41,7 @@ export async function getTokensRefresh(tokens: Token) {
 		},
 	};
 
-	const response = await httpRequestWithRetry(options);
+	const response = await httpRequestWithRetry(options, true);
 	return response?.data as ApiResponse<TokenOpt>;
 }
 
@@ -56,6 +56,6 @@ export async function getUserInfo(tokens: Token) {
 		},
 	};
 
-	const response = await httpRequestWithRetry(options);
+	const response = await httpRequestWithRetry(options, true);
 	return response?.data as ApiResponse<UserInfo>;
 }

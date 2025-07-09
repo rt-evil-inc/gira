@@ -61,16 +61,25 @@ export async function httpRequestWithRetry(options: HttpOptions, retryOnStatus =
 				throw error;
 			}
 			console.error(`Attempt ${attempt}:`, error);
+			const isAuthUrl = options.url.startsWith(GIRA_AUTH_URL);
+			const isGiraApiUrl = options.url.startsWith(GIRA_API_URL) || options.url.includes(GIRA_WS_URL.split('://')[1]);
 			if (attempt < maxAttempts) {
+				if (error.status === undefined && attempt === 1) {
+					if (isAuthUrl) {
+						errorMessages.add(get(t)('auth_api_communication_error_retry'), 5000);
+					} else if (isGiraApiUrl) {
+						errorMessages.add(get(t)('gira_api_communication_error_retry'), 5000);
+					}
+				}
 				await new Promise(resolve => setTimeout(resolve, retryDelay * attempt)); // Linear backoff
 			} else {
 				console.error('Max attempts reached. Throwing error.');
 				if (error.status === undefined) {
-					if (options.url.startsWith(GIRA_AUTH_URL)) {
+					if (isAuthUrl) {
 						errorMessages.add(get(t)('auth_api_communication_error'), 5000);
 						reportErrorEvent('auth_api_communication_error', JSON.stringify(e));
 						console.error('Auth API communication error:', e);
-					} else if (options.url.startsWith(GIRA_API_URL) || options.url.includes(GIRA_WS_URL.split('://')[1])) {
+					} else if (isGiraApiUrl) {
 						errorMessages.add(get(t)('gira_api_communication_error'), 5000);
 						reportErrorEvent('gira_api_communication_error', JSON.stringify(e));
 						console.error('Gira API communication error:', e);

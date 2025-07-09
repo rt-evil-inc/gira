@@ -368,6 +368,14 @@ const translations: Translations = {
 		en: 'Could not communicate with the Gira service API. The service may be temporarily unavailable.',
 		pt: 'Não foi possível comunicar com a API do serviço Gira. O serviço pode estar temporariamente indisponível.',
 	},
+	auth_api_communication_error_retry: {
+		en: 'Could not communicate with the authentication API. Retrying...',
+		pt: 'Não foi possível comunicar com a API de autenticação da Gira. A tentar novamente...',
+	},
+	gira_api_communication_error_retry: {
+		en: 'Could not communicate with the Gira service API. Retrying...',
+		pt: 'Não foi possível comunicar com a API do serviço Gira. A tentar novamente...',
+	},
 	no_active_subscription_error: {
 		en: 'You don\'t have an active subscription',
 		pt: 'Não tem uma subscrição ativa',
