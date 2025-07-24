@@ -197,7 +197,7 @@ export async function refreshToken() {
 			continue;
 		}
 		const { accessToken, refreshToken, expiration } = response.data;
-		if (!await fetchFirebaseToken(await hash(creds.email), accessToken)) return false;
+		await fetchFirebaseToken(await hash(creds.email), accessToken);
 		token.set({ accessToken, refreshToken, expiration });
 		success = true;
 	}
