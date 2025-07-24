@@ -13,7 +13,7 @@ export const errorMessages = (() => {
 	const { subscribe, update } = writable<{ msg: string, id: number }[]>([]);
 	const add = (msg: string, delay = 3000) => {
 		const id = Math.random();
-		update(messages => [...messages, { msg, id }]);
+		update(messages => [...messages, { msg, id }].slice(-3));
 		setTimeout(() => update(messages => messages.filter(m => m.id !== id)), delay);
 	};
 	return { subscribe, add };
