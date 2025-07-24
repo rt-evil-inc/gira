@@ -428,6 +428,10 @@ const translations: Translations = {
 		en: 'This bike is in repair',
 		pt: 'Esta bicicleta está em reparação',
 	},
+	network_offline_warning: {
+		en: 'You are currently offline',
+		pt: 'Não está ligado à Internet',
+	},
 	update_warning_setting_label: {
 		en: 'Update warning',
 		pt: 'Aviso de atualização',

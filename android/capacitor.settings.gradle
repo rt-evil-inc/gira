@@ -23,6 +23,9 @@ project(':capacitor-keyboard').projectDir = new File('../node_modules/@capacitor
 include ':capacitor-local-notifications'
 project(':capacitor-local-notifications').projectDir = new File('../node_modules/@capacitor/local-notifications/android')
 
+include ':capacitor-network'
+project(':capacitor-network').projectDir = new File('../node_modules/@capacitor/network/android')
+
 include ':capacitor-preferences'
 project(':capacitor-preferences').projectDir = new File('../node_modules/@capacitor/preferences/android')
 

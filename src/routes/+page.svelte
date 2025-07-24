@@ -23,6 +23,8 @@
 	import type { PluginListenerHandle } from '@capacitor/core';
 	import InfoDialog from '$lib/components/InfoDialog.svelte';
 	import SupportButton from '$lib/components/SupportButton.svelte';
+	import NetworkWarning from '$lib/components/NetworkWarning.svelte';
+	import { Network, type ConnectionStatus } from '@capacitor/network';
 
 	let backListener: PluginListenerHandle;
 	let menuHeight = 0;
@@ -31,6 +33,7 @@
 	let tripStatusWidth:number = 0;
 	let profileOpen = false;
 	let locationPermission = false;
+	let networkStatus = true;
 
 	onMount(() => {
 		Geolocation.checkPermissions().then(({ location }) => {
@@ -58,6 +61,11 @@
 
 		return () => backListener?.remove();
 	});
+
+	Network.getStatus().then((s: ConnectionStatus) => networkStatus = s.connected);
+	Network.addListener('networkStatusChange', (status: ConnectionStatus) => {
+		networkStatus = status.connected;
+	});
 </script>
 
 <div class="h-full w-full relative overflow-hidden">
@@ -72,9 +80,13 @@
 		<TripStatus bind:height={tripStatusHeight} bind:width={tripStatusWidth} />
 	{:else}
 		<StationMenu bind:posTop={stationMenuPos} bind:bikeListHeight={menuHeight} />
-		{#if $tripRating.currentRating != null}
+		{#if $tripRating.currentRating != null && networkStatus}
 			<TripRating code={$tripRating.currentRating.code} />
 		{/if}
+	{/if}
+
+	{#if !networkStatus}
+		<NetworkWarning />
 	{/if}
 
 	<Floating right={20} y={stationMenuPos} bottom offset={20}>
