@@ -49,18 +49,25 @@ const retryDelay = 1000;
 export async function httpRequestWithRetry(options: HttpOptions, retryOnStatus = false) {
 	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
 		try {
-			const response = await CapacitorHttp.request(options);
+			const timeoutPromise = new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 5000));
+			const response = await Promise.race([
+				CapacitorHttp.request({ ...options, readTimeout: 5000, connectTimeout: 5000 }),
+				timeoutPromise,
+			]);
 			if (retryOnStatus && (response.status < 200 || response.status >= 300)) {
 				throw response;
 			}
 			return response;
 		} catch (e) {
 			const error = { ...(e as HttpResponse).data, status: (e as HttpResponse).status } as ThrownError;
-			if (error?.errors && error.errors.some(err => knownErrors[err.message]?.retry === false)) {
+			if (e instanceof Error && e.message === 'Request timed out') {
+				console.error(`Attempt ${attempt}: Request timed out`);
+			} else if (error?.errors && error.errors.some(err => knownErrors[err.message]?.retry === false)) {
 				console.error('Known error occurred:', error);
 				throw error;
+			} else {
+				console.error(`Attempt ${attempt}:`, error);
 			}
-			console.error(`Attempt ${attempt}:`, error);
 			const isAuthUrl = options.url.startsWith(GIRA_AUTH_URL);
 			const isGiraApiUrl = options.url.startsWith(GIRA_API_URL) || options.url.includes(GIRA_WS_URL.split('://')[1]);
 			if (attempt < maxAttempts) {
