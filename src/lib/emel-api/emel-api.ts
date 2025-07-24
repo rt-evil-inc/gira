@@ -1,7 +1,6 @@
-import { encryptedFirebaseToken, type Token } from '$lib/account';
+import { type Token } from '$lib/account';
 import { GIRA_AUTH_URL } from '$lib/constants';
 import type { ApiResponse, TokenOpt, UserInfo } from '$lib/emel-api/types';
-import { get } from 'svelte/store';
 import { httpRequestWithRetry } from '$lib/utils';
 
 export async function getTokensLogin(email: string, password: string) {
@@ -12,7 +11,6 @@ export async function getTokensLogin(email: string, password: string) {
 			'User-Agent': 'Gira/3.4.3 (Android 34)',
 			'Content-Type': 'application/json',
 			'Priority': 'high',
-			'x-firebase-token': `${get(encryptedFirebaseToken)}`,
 		},
 		data: {
 			Provider: 'EmailPassword',
@@ -34,7 +32,6 @@ export async function getTokensRefresh(tokens: Token) {
 		headers: {
 			'User-Agent': 'Gira/3.4.3 (Android 34)',
 			'Content-Type': 'application/json',
-			'x-firebase-token': `${get(encryptedFirebaseToken)}`,
 		},
 		data: {
 			token: tokens.refreshToken,
