@@ -75,8 +75,18 @@ jobs:
     runs-on: macos-latest
     name: Build iOS app
     steps:
+      - name: Determine ref
+        id: get-ref
+        run: |
+          input_ref="${{ inputs.ref }}"
+          github_ref="${{ github.sha }}"
+          ref="${input_ref:-$github_ref}"
+          echo "ref=$ref" >> $GITHUB_OUTPUT
+
       - name: Checkout source
         uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.get-ref.outputs.ref }}
 
       - name: Install the Apple certificate and provisioning profile
         env:
