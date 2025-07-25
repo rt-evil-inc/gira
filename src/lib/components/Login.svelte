@@ -4,10 +4,12 @@
 	import { userCredentials } from '$lib/account';
 	import { Keyboard } from '@capacitor/keyboard';
 	import { t } from '$lib/translations';
+	import { IconLoader2 } from '@tabler/icons-svelte';
 
 	let email = '';
 	let password = '';
 	let errorCode:number|null = null;
+	let loading = false;
 	const errorCodes:{[key:number]:string} = {
 		100: $t('invalid_credentials_error'),
 	};
@@ -15,9 +17,15 @@
 		errorCode = null;
 	}
 	async function loginWrapper() {
+		if (loading) return;
+		loading = true;
 		errorCode = null;
-		errorCode = await login(email, password);
-		if (errorCode === 0) userCredentials.set({ email, password });
+		try {
+			errorCode = await login(email, password);
+			if (errorCode === 0) userCredentials.set({ email, password });
+		} finally {
+			loading = false;
+		}
 	}
 
 	let keyboardHeight = 0;
@@ -44,7 +52,13 @@
 					<div class="text-sm text-red-500 pt-1">{errorCodes[errorCode] || $t('unknown_error')}</div>
 				{/if}
 			</div>
-			<button class="form-textarea border-0 w-full h-12 rounded-lg bg-primary text-background font-bold focus:ring-primary focus:border-primary">{$t('login_button')}</button>
+			<button class="form-textarea border-0 w-full h-12 rounded-lg bg-primary text-background font-bold focus:ring-primary focus:border-primary flex justify-center items-center" disabled={loading}>
+				{#if loading}
+					<IconLoader2 class="animate-spin" />
+				{:else}
+					{$t('login_button')}
+				{/if}
+			</button>
 		</form>
 	</div>
 </div>
