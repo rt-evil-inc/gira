@@ -95,8 +95,9 @@ jobs:
           tag_name: ${{ needs.bump_version.outputs.gira_version }}
           files: |
             *.apk
-          token: ${{ secrets.ORG_RELEASE_TOKEN }}
           body_path: commit_messages.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   upload_play_store:
     runs-on: ubuntu-latest
