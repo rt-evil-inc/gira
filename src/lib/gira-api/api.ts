@@ -6,8 +6,9 @@ import type { Mutation, Query } from '$lib/gira-api/api-types';
 import { encryptedFirebaseToken, token } from '$lib/account';
 import { GIRA_API_URL, GIRA_WS_URL } from '$lib/constants';
 import { httpRequestWithRetry } from '$lib/utils';
+import type { Translations } from '$lib/translations';
 
-export const knownErrors: Record<string, { message?: string, retry: boolean }> = {
+export const knownErrors = {
 	'Serviço indisponível. Horário de utilização entre as 06:00 e as 02:00.': { message: 'service_hours_error', retry: false },
 	'trip_interval_limit': { message: 'trip_interval_limit_error', retry: false },
 	'not_enough_balance': { message: 'negative_balance_error', retry: false },
@@ -22,7 +23,9 @@ export const knownErrors: Record<string, { message?: string, retry: boolean }> =
 	'no_bike_found': { message: 'no_bike_found_error', retry: false },
 	'bike_on_repair': { message: 'bike_in_repair_error', retry: false },
 	'bike_in_repair': { message: 'bike_in_repair_error', retry: false },
-};
+} as const;
+
+knownErrors satisfies Record<string, { message?: keyof Translations; retry: boolean }>;
 
 async function mutate<T extends(keyof Mutation)[]>(body:any): Promise<M<T>> {
 	const firebaseToken = get(encryptedFirebaseToken);

@@ -62,7 +62,7 @@ export async function httpRequestWithRetry(options: HttpOptions, retryOnStatus =
 			const error = { ...(e as HttpResponse).data, status: (e as HttpResponse).status } as ThrownError;
 			if (e instanceof Error && e.message === 'Request timed out') {
 				console.error(`Attempt ${attempt}: Request timed out`);
-			} else if (error?.errors && error.errors.some(err => knownErrors[err.message]?.retry === false)) {
+			} else if (error?.errors && error.errors.some(err => knownErrors[err.message as keyof typeof knownErrors]?.retry === false)) {
 				console.error('Known error occurred:', error);
 				throw error;
 			} else {

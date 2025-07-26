@@ -1,5 +1,7 @@
+import type { knownErrors } from './api';
+
 export type ThrownError = {
-	errors: {message:string}[];
+	errors: {message:keyof typeof knownErrors | (string & {})}[];
 	status: number;
 };
 export type Q<T extends (keyof Query)[]> = {[K in T[number]]:Query[K]};

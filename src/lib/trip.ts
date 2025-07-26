@@ -11,7 +11,7 @@ import type { StationInfo } from './map';
 import { ingestLastUnratedTrip, updateActiveTripInfo } from './injest-api-data';
 import { reportErrorEvent, reportTripStartEvent } from '$lib/gira-mais-api/gira-mais-api';
 import { refreshToken, token, type JWT } from './account';
-import { t } from './translations';
+import { t, type Translations } from './translations';
 
 export type ActiveTrip = {
 	code: string,
@@ -111,8 +111,9 @@ export async function tryStartTrip(id: string, serial: string, station: StationI
 		let addedError = false;
 		if (e && e.errors) {
 			for (const error of e.errors) {
-				if (knownErrors[error.message]?.message) {
-					errorMessages.add(get(t)(knownErrors[error.message].message!));
+				const knownError = knownErrors[error.message as keyof typeof knownErrors];
+				if ('message' in knownError) {
+					errorMessages.add(get(t)(knownError.message as keyof Translations));
 					addedError = true;
 				}
 				reportErrorEvent('gira_api_error', error.message);

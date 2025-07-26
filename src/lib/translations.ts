@@ -3,12 +3,6 @@ import { derived, get } from 'svelte/store';
 
 type Locale = 'en' | 'pt';
 
-type Translations = {
-  [key: string]: {
-    [locale in Locale]?: string;
-  };
-};
-
 export function getLocale() {
 	const settings = get(appSettings);
 	const locale = settings.locale === 'system' ? navigator.language.split('-')[0] : settings.locale;
@@ -16,8 +10,11 @@ export function getLocale() {
 }
 
 export const t = derived(appSettings, () => {
-	return (key: string, params: Record<string, string> = {}): string => {
+	return <K extends keyof typeof translations>(key: K | undefined, params: Record<string, string> = {}): string => {
 		const locale = getLocale();
+		if (!key) {
+			return '';
+		}
 		const template = translations[key]?.[locale];
 
 		if (!template) {
@@ -31,7 +28,7 @@ export const t = derived(appSettings, () => {
 	};
 });
 
-const translations: Translations = {
+const translations = {
 	ok_button: {
 		en: 'Ok',
 		pt: 'Ok',
@@ -440,4 +437,6 @@ const translations: Translations = {
 		en: 'Show a warning when a new version of the app is available',
 		pt: 'Mostrar um aviso quando uma nova versão da aplicação estiver disponível',
 	},
-};
+} as const;
+
+export type Translations = typeof translations;

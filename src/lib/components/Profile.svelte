@@ -20,7 +20,14 @@
 	import { user, accountInfo, logOut } from '$lib/account';
 	import { IconHeart, IconStar } from '@tabler/icons-svelte';
 	import { getLocale, t } from '$lib/translations';
+	const knownSubscriptionTypes = { // TODO: check if this is correct
+		'Passe Anual': 'annual_pass_label',
+		'Passe Mensal': 'monthly_pass_label',
+		'Passe Diário': 'daily_pass_label',
+		'Passe Diario': 'daily_pass_label',
+	} as const;
 
+	$: subscriptionName = ($accountInfo?.subscription?.name ?? '') as keyof typeof knownSubscriptionTypes;
 	let openPage: 'settings' | 'history' |'info'| null = null;
 	let backListener: PluginListenerHandle;
 	const dispatch = createEventDispatcher();
@@ -34,12 +41,6 @@
 		return () => backListener?.remove();
 	});
 
-	const knownSubscriptionTypes: Record<string, string> = { // TODO: check if this is correct
-		'Passe Anual': 'annual_pass_label',
-		'Passe Mensal': 'monthly_pass_label',
-		'Passe Diário': 'daily_pass_label',
-		'Passe Diario': 'daily_pass_label',
-	};
 </script>
 
 <div transition:fly={{ duration: 150, x: 100 }} class="absolute w-full h-full inset-0 bg-background z-30 grid" >
@@ -61,7 +62,7 @@
 				<div>
 					<div class="flex items-center gap-1 justify-center">
 						<IconTicket size={28} stroke={1.9} class="text-info -my-1" />
-						<div class="text-info font-bold text-lg">{$accountInfo?.subscription?.name ? $t(knownSubscriptionTypes[$accountInfo.subscription.name]) ?? $accountInfo.subscription.name : $t('no_subscription_label')}</div>
+						<div class="text-info font-bold text-lg">{subscriptionName ? $t(knownSubscriptionTypes[subscriptionName]) ?? $accountInfo?.subscription?.name : $t('no_subscription_label')}</div>
 					</div>
 					<div class="text-xs text-label font-medium text-center -mt-[2px]">
 						{$accountInfo?.subscription?.expirationDate ? $t('valid_until_label', { date: $accountInfo.subscription.expirationDate.toLocaleString(getLocale(), { day: 'numeric', month: 'long', year: 'numeric' }) }) : ''}

@@ -83,7 +83,7 @@ export function setSourceData(map: maplibregl.Map) {
 				geometry: {
 					type: 'LineString',
 					coordinates: [],
-				}
+				},
 			},
 		});
 	}

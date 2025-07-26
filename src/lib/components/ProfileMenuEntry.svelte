@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { IconExternalLink } from '@tabler/icons-svelte';
-	import type { SvelteComponent } from 'svelte';
+	import type { ComponentType, SvelteComponent } from 'svelte';
 
 	export let text = '';
-	export let icon: typeof SvelteComponent;
+	export let icon: ComponentType<SvelteComponent>;
 	export let subtext = '';
 	export let iconClass = '';
 	export let external = false;

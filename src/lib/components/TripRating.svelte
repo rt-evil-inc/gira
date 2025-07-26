@@ -24,9 +24,7 @@
 		return (await rateTrip(code, rating)).rateTrip;
 	}
 
-	let timeout:ReturnType<typeof setTimeout>;
 	$: if (rating !== undefined) {
-		clearTimeout(timeout);
 		rate(code, rating).then(r => {
 			$tripRating.currentRating = null;
 			if (!r) {
