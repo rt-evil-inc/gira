@@ -470,8 +470,8 @@ const translations = {
 		pt: 'Partilhar hora de chegada',
 	},
 	share_arrivals_setting_description: {
-		en: 'While navigating during a trip, show other users which bike is on its way to the station you are heading to and when it will arrive',
-		pt: 'Ao navegar durante uma viagem, mostrar aos outros utilizadores que bicicleta vai a caminho da estação para onde se dirige e quando chega',
+		en: 'While navigating during a trip, show other users when a bike will arrive at the station you are heading to, without sharing any personal data',
+		pt: 'Ao navegar durante uma viagem, mostrar aos outros utilizadores quando chega uma bicicleta à estação para onde se dirige, sem partilhar dados pessoais',
 	},
 	ui_settings_section: {
 		en: 'Interface',
