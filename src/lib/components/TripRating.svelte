@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { submitTripRating } from '$lib/gira-api/api';
 	import { reportApiError } from '$lib/error-reporting';
-	import { postBikeRating, reportErrorEvent } from '$lib/gira-mais-api/gira-mais-api';
+	import { postBikeRating } from '$lib/gira-mais-api/gira-mais-api';
 	import { currentRoute } from '$lib/routing';
 	import { t } from '$lib/translations';
 	import { markTripRated, tripRating } from '$lib/trip';
 	import { DETAILS_RATING_THRESHOLD, forwardsToEmel, markRatingDragHintSeen, ratingDragHintSeen, TRIP_RATING_REASONS, type TripRatingDetails, type TripRatingReasonCode } from '$lib/trip-rating';
 	import { safeInsets } from '$lib/ui.svelte';
 	import { Keyboard } from '@capacitor/keyboard';
-	import { VaimooApiError } from '$lib/vaimoo-api/client';
 	import IconArrowBackUp from '@tabler/icons-svelte/icons/arrow-back-up';
 	import IconArrowsMoveVertical from '@tabler/icons-svelte/icons/arrows-move-vertical';
 	import IconMoodConfuzed from '@tabler/icons-svelte/icons/mood-confuzed';
@@ -208,13 +207,10 @@
 		try {
 			await submitTripRating(tripCode, bikePlate, value, details, date);
 		} catch (error) {
-			// VAIMOO has been rejecting otherwise valid opinion feedback since the migration.
-			// Rating is optional, so the rider isn't bothered; the code is reported so the
-			// rejection can be understood from the statistics.
+			// Rating is optional, so the rider isn't bothered; the rejection is reported so it
+			// can be understood from the statistics.
 			console.warn('VAIMOO trip rating was not accepted; continuing', error);
-			let detail = error instanceof Error ? error.message : String(error);
-			if (error instanceof VaimooApiError) detail = `${error.code ?? error.status}: ${error.errors.map(item => item.message).join('; ')}`;
-			reportErrorEvent('rate_trip_error', detail);
+			void reportApiError('trip_rating_error', error, { rating: value });
 		}
 	}
 

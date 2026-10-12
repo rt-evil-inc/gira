@@ -5,6 +5,9 @@ export const MIN_TRAVEL_DISTANCE_m = 20;
 
 // VAIMOO tenant that scopes GIRA data in the shared Firestore project and API
 export const GIRA_TENANT = 'P1/EML/EML/';
+// GIRA's service-area geofence ("Gira Lisboa Operação" in the Firestore geofences collection), which the
+// official app sends as the geoFenceId of trip feedback
+export const GIRA_SERVICE_AREA_GEOFENCE_ID = 1084;
 
 export const GIRA_MAIS_API_URL = dev ? '/__dev-proxy/gira-mais/api' : 'https://gira-mais.app/api';
 

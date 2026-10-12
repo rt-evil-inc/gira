@@ -1,10 +1,10 @@
 import { currentSession, refreshToken } from '$lib/account';
+import { GIRA_SERVICE_AREA_GEOFENCE_ID } from '$lib/constants';
 import type { StationInfo } from '$lib/map.svelte';
 import type { Translations } from '$lib/translations';
 import { vaimooFeedbackComment, type TripRatingDetails } from '$lib/trip-rating';
 import {
 	getCurrentVaimooTrip,
-	getVaimooTripDetails,
 	getVaimooRemainingCredit,
 	getVaimooSubscriptionUsage,
 	getVaimooTrips,
@@ -258,20 +258,17 @@ export async function submitTripRating(tripCode: string, bikePlate: string, rati
 	if (!Number.isInteger(tripId) || tripId <= 0) throw new Error('Cannot rate a trip without a valid VAIMOO trip id');
 	if (!Number.isInteger(rating) || rating < 1 || rating > 5) throw new Error('Trip rating must be between 1 and 5');
 
-	await withSession(async currentSession => {
-		const trip = await getVaimooTripDetails(currentSession, tripId);
-		await submitVaimooTripFeedback(currentSession, {
-			createDate: vaimooLocalTimestamp(createdAt),
-			osVersion: 'Android',
-			appVersion: '1.0.0',
-			rating,
-			comment: vaimooFeedbackComment(details),
-			reportType: 'Opinion',
-			vehicleVisualId: bikePlate,
-			geoFenceId: trip.endStation?.stationId ?? null,
-			tripId,
-		});
-	});
+	await withSession(currentSession => submitVaimooTripFeedback(currentSession, {
+		createDate: vaimooLocalTimestamp(createdAt),
+		osVersion: 'Android',
+		appVersion: '1.0.0',
+		rating,
+		comment: vaimooFeedbackComment(details),
+		reportType: 'Opinion',
+		vehicleVisualId: bikePlate,
+		geoFenceId: GIRA_SERVICE_AREA_GEOFENCE_ID,
+		tripId,
+	}));
 }
 
 export async function getAccountSnapshot(): Promise<AccountSnapshot> {
