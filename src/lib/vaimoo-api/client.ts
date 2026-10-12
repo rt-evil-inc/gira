@@ -11,6 +11,7 @@ import type {
 	VaimooPagedResponse,
 	VaimooSession,
 	VaimooSubscriptionUsage,
+	VaimooTripDaySummary,
 	VaimooTripDetails,
 	VaimooTripFeedback,
 	VaimooUser,
@@ -277,6 +278,12 @@ export const getVaimooTrips = (session: VaimooSession, pageIndex: number, pageSi
 });
 
 export const getVaimooTripDetails = (session: VaimooSession, tripId: number) => vaimooRequest<VaimooTripDetails>(`trip/trip-details/${tripId}`, {
+	token: session.accessToken,
+	userId: session.userId,
+});
+
+// One entry per day with trips and no date range; the official app picks its periods client-side.
+export const getVaimooTripSummary = (session: VaimooSession) => vaimooRequest<{ tripDailySummaryList: VaimooTripDaySummary[] | null }>(`user/${session.userId}/trip-summary/daily`, {
 	token: session.accessToken,
 	userId: session.userId,
 });

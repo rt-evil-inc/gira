@@ -2,12 +2,14 @@ import { currentSession, refreshToken } from '$lib/account';
 import type { StationInfo } from '$lib/map.svelte';
 import type { Translations } from '$lib/translations';
 import { vaimooFeedbackComment, type TripRatingDetails } from '$lib/trip-rating';
+import { parseSummaryDate, type TripDaySummary } from '$lib/trip-stats';
 import {
 	getCurrentVaimooTrip,
 	getVaimooTripDetails,
 	getVaimooRemainingCredit,
 	getVaimooSubscriptionUsage,
 	getVaimooTrips,
+	getVaimooTripSummary,
 	quickStartVaimooTrip,
 	submitVaimooTripFeedback,
 } from '$lib/vaimoo-api/client';
@@ -245,6 +247,15 @@ function mapCompletedTrip(trip: VaimooTripDetails): CompletedTrip {
 export async function getTripHistory(page: number, pageSize: number): Promise<CompletedTrip[]> {
 	const trips = await withSession(currentSession => getVaimooTrips(currentSession, page, pageSize));
 	return trips.data.map(mapCompletedTrip);
+}
+
+export async function getTripSummary(): Promise<TripDaySummary[]> {
+	const summary = await withSession(getVaimooTripSummary);
+	return (summary.tripDailySummaryList ?? []).flatMap(day => {
+		const date = parseSummaryDate(day.tripDate);
+		if (!date) return [];
+		return [{ date, trips: day.tripCount ?? 0, distanceMeters: day.totalDistanceInMeters ?? 0, durationSeconds: day.totalDurationInSeconds ?? 0 }];
+	});
 }
 
 function vaimooLocalTimestamp(date: Date) {

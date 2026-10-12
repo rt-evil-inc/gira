@@ -241,6 +241,42 @@ const translations = {
 		en: 'No trips registered',
 		pt: 'Não há viagens registadas',
 	},
+	stats_period_week: {
+		en: 'Week',
+		pt: 'Semana',
+	},
+	stats_period_month: {
+		en: 'Month',
+		pt: 'Mês',
+	},
+	stats_period_year: {
+		en: 'Year',
+		pt: 'Ano',
+	},
+	stats_period_all: {
+		en: 'All time',
+		pt: 'Sempre',
+	},
+	stats_previous_label: {
+		en: 'Previous period',
+		pt: 'Período anterior',
+	},
+	stats_next_label: {
+		en: 'Next period',
+		pt: 'Período seguinte',
+	},
+	stats_trips_label: {
+		en: 'Trips',
+		pt: 'Viagens',
+	},
+	stats_distance_label: {
+		en: 'Distance',
+		pt: 'Distância',
+	},
+	stats_time_label: {
+		en: 'Time',
+		pt: 'Tempo',
+	},
 	about_label: {
 		en: 'About',
 		pt: 'Sobre',
