@@ -68,6 +68,9 @@
 				<SettingsRow label={$t('report_ratings_setting_label')} description={$t('report_ratings_setting_description')}>
 					<Toggle bind:checked={$appSettings.reportRatings} />
 				</SettingsRow>
+				<SettingsRow label={$t('share_arrivals_setting_label')} description={$t('share_arrivals_setting_description')}>
+					<Toggle bind:checked={$appSettings.shareArrivals} />
+				</SettingsRow>
 			</div>
 		</div>
 

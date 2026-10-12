@@ -29,6 +29,7 @@
 	import NetworkWarning from '$lib/components/NetworkWarning.svelte';
 	import { networkStatus } from '$lib/network';
 	import Dialog from '$lib/components/Dialog.svelte';
+	import { startArrivalSharing } from '$lib/arrival-sharing';
 
 	let backListener: PluginListenerHandle;
 	let innerHeight = $state(0);
@@ -81,7 +82,12 @@
 			}
 		}).then(l => backListener = l);
 
-		return () => backListener?.remove();
+		const stopArrivalSharing = startArrivalSharing();
+
+		return () => {
+			backListener?.remove();
+			stopArrivalSharing();
+		};
 	});
 </script>
 

@@ -1,11 +1,12 @@
 import { dev, version } from '$app/environment';
 import { GIRA_MAIS_API_URL } from '$lib/constants';
-import type { BikeRatingPostRequest, BikeRatingPostResponse, ErrorStatisticsPostRequest, ErrorStatisticsPostResponse, MessageGetResponse, StationBikeRatingsGetResponse, TripStatisticsPostRequest, TripStatisticsPostResponse, UnlockAttemptPostRequest, UnlockResultPostRequest, UnlockStatisticsPostResponse, UsageStatisticsPostRequest, UsageStatisticsPostResponse } from '$lib/gira-mais-api/types';
+import type { ArrivalPutRequest, BikeRatingPostRequest, BikeRatingPostResponse, ErrorStatisticsPostRequest, ErrorStatisticsPostResponse, MessageGetResponse, StationArrivalsGetResponse, StationBikeRatingsGetResponse, TripStatisticsPostRequest, TripStatisticsPostResponse, UnlockAttemptPostRequest, UnlockResultPostRequest, UnlockStatisticsPostResponse, UsageStatisticsPostRequest, UsageStatisticsPostResponse } from '$lib/gira-mais-api/types';
 import { appSettings } from '$lib/settings';
 import { getLocale } from '$lib/translations';
 import type { TripRatingDetails } from '$lib/trip-rating';
 import { httpRequestWithRetry } from '$lib/utils';
 import { Device } from '@capacitor/device';
+import type { HttpResponse } from '@capacitor/core';
 import { get } from 'svelte/store';
 
 export async function reportAppUsageEvent() {
@@ -166,4 +167,55 @@ export async function getStationBikeRatings(bikeIds: string[]) {
 		}));
 		throw error;
 	}
+}
+
+/** A request the server answered with an error status, which is not worth sending again as it is. */
+export class GiraMaisApiError extends Error {
+	constructor(readonly status: number) {
+		super(`Gira+ API answered ${status}`);
+	}
+}
+
+function checkStatus(response: HttpResponse | undefined): asserts response is HttpResponse {
+	if (!response || response.status >= 500) throw new Error(`Gira+ API answered ${response?.status}`);
+	if (response.status >= 400) throw new GiraMaisApiError(response.status);
+}
+
+/** Share when the rider expects to dock the bike at a station, under the trip's arrival id. */
+export async function putArrival(arrivalId: string, station: string, bike: string | null, arrivesAt: Date) {
+	const response = await httpRequestWithRetry({
+		method: 'put',
+		url: GIRA_MAIS_API_URL + `/arrivals/${encodeURIComponent(arrivalId)}`,
+		headers: {
+			'User-Agent': `Gira+/${version}`,
+			'Content-Type': 'application/json',
+		},
+		data: { station, bike, arrivesAt: arrivesAt.toISOString() } as ArrivalPutRequest,
+	});
+	checkStatus(response);
+}
+
+export async function deleteArrival(arrivalId: string) {
+	const response = await httpRequestWithRetry({
+		method: 'delete',
+		url: GIRA_MAIS_API_URL + `/arrivals/${encodeURIComponent(arrivalId)}`,
+		headers: { 'User-Agent': `Gira+/${version}` },
+	});
+	checkStatus(response);
+}
+
+export type StationArrival = { arrivesAt: Date; bike: string | null };
+
+/** The bikes riders are bringing to the station and when they are expected, soonest first. */
+export async function getStationArrivals(station: string): Promise<StationArrival[]> {
+	const response = await httpRequestWithRetry({
+		method: 'get',
+		url: GIRA_MAIS_API_URL + `/arrivals?station=${encodeURIComponent(station)}`,
+		headers: { 'User-Agent': `Gira+/${version}` },
+	});
+	checkStatus(response);
+	const arrivals = (response.data as StationArrivalsGetResponse | null)?.arrivals ?? [];
+	return arrivals
+		.map(arrival => ({ arrivesAt: new Date(arrival.arrivesAt), bike: arrival.bike ?? null }))
+		.filter(arrival => Number.isFinite(arrival.arrivesAt.getTime()));
 }

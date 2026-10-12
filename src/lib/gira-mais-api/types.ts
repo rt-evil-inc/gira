@@ -78,3 +78,15 @@ export type BikeRatingPostResponse = {
 export type StationBikeRating = 1 | 2 | 3 | 4 | 5 | null;
 
 export type StationBikeRatingsGetResponse = Record<string, StationBikeRating>;
+
+export type ArrivalPutRequest = {
+  station: string;
+  /** The plate of the bike being ridden, when known. */
+  bike: string | null;
+  /** ISO 8601. */
+  arrivesAt: string;
+}
+
+export type StationArrivalsGetResponse = {
+  arrivals: { arrivesAt: string; bike: string | null }[];
+}

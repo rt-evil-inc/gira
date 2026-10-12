@@ -49,7 +49,7 @@ Here is a summary of the steps:
     bun run build-app-dev # or npm run build-app-dev
     ```
 
-    To debug on a browser, just open the dev server URL (http://localhost:5173) in any browser. In development, requests to the EMEL, VAIMOO and Gira+ APIs go through a local proxy on the Vite dev server (the `/__dev-proxy/*` routes in [`vite.config.ts`](vite.config.ts)), so there is no need to disable CORS in your browser. If the app needs to reach another backend that doesn't allow cross-origin requests, add a matching proxy entry there.
+    To debug on a browser, just open the dev server URL (http://localhost:5173) in any browser. In development, requests to the EMEL, VAIMOO and Gira+ APIs go through a local proxy on the Vite dev server (the `/__dev-proxy/*` routes in [`vite.config.ts`](vite.config.ts)), so there is no need to disable CORS in your browser. If the app needs to reach another backend that doesn't allow cross-origin requests, add a matching proxy entry there. To use a local [gira-web](https://github.com/rt-evil-inc/gira-mais-web) instead of the production Gira+ API, set `VITE_GIRA_MAIS_DEV_SERVER` to its URL (e.g. `VITE_GIRA_MAIS_DEV_SERVER=http://localhost:5299` in `.env.development.local`); the app then also shares arrival times in development, debug trips included.
 
 ## Code Style and Linting
 
