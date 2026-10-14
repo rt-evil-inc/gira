@@ -15,6 +15,18 @@ const MAX_MONTHLY_BUCKETS = 24;
 const MIN_DAILY_BUCKETS = 7;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/**
+ * The round distance (100 m, 200 m, 500 m, 1 km, 2 km, ...) for the chart's one gridline: the largest that
+ * fits under the tallest bar, so the line sits in the top 60% of the chart. Null below 100 m.
+ */
+export function gridlineMeters(maxMeters: number): number | null {
+	let best: number | null = null;
+	for (let scale = 100; scale <= maxMeters; scale *= 10) {
+		for (const step of [1, 2, 5]) if (step * scale <= maxMeters) best = step * scale;
+	}
+	return best;
+}
+
 /** VAIMOO's summary dates are "MM/dd/yyyy"; returned as local midnight so they bucket by calendar day. */
 export function parseSummaryDate(value: string | null | undefined): Date | null {
 	const us = value?.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { oldestOffset, periodStats, type StatsBucket, type StatsPeriod, type TripDaySummary } from '$lib/trip-stats';
+	import { gridlineMeters, oldestOffset, periodStats, type StatsBucket, type StatsPeriod, type TripDaySummary } from '$lib/trip-stats';
 	import { getLocale, t } from '$lib/translations';
 	import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
 	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
@@ -33,6 +33,13 @@
 	let oldest = $derived(oldestOffset(days ?? [], period));
 	let shown = $derived(selected === null ? stats.totals : stats.buckets[selected]);
 	let maxDistance = $derived(Math.max(0, ...stats.buckets.map(bucket => bucket.distanceMeters)));
+	// One labelled line gives the bars a scale without the clutter of a full axis.
+	let gridline = $derived.by(() => {
+		const meters = gridlineMeters(maxDistance);
+		if (meters === null) return null;
+		const { value, unit } = distance(meters);
+		return { bottom: `${meters / maxDistance * 100}%`, label: `${value} ${unit}` };
+	});
 	// In the all-time chart, week labels ("15 Sept") are too wide for one under every bar, as are the labels
 	// of its longer charts.
 	let spacedLabels = $derived(period === 'all' && (stats.buckets.length > 12 || stats.buckets[0].unit === 'week'));
@@ -148,10 +155,23 @@
 {#snippet metric(parts: { value: string, unit: string }[], label: string)}
 	<div class="flex flex-col items-center min-w-0">
 		<div class="text-nowrap">
-			{#each parts as part}<span class="text-xl font-bold text-primary pr-px">{part.value}</span><span class="text-xs font-semibold text-label">{part.unit}</span>{/each}
+			<!-- pl-1 keeps "4h 16min" from reading as "4 h16 min" -->
+			{#each parts as part, i}<span class="text-xl font-bold text-primary pr-px" class:pl-1={i > 0}>{part.value}</span><span class="text-xs font-semibold text-label">{part.unit}</span>{/each}
 		</div>
 		<span class="text-2xs font-semibold text-label text-center leading-none">{label.toUpperCase()}</span>
 	</div>
+{/snippet}
+
+{#snippet gridlineLabel(visible: boolean)}
+	{#if gridline}
+		<!-- The hidden copy gives the column the label's width; the shown one sits on the line. -->
+		<div class="relative shrink-0 text-2xs font-semibold text-label leading-none text-nowrap">
+			<span class="invisible">{gridline.label}</span>
+			{#if visible}
+				<span class="absolute right-0 translate-y-1/2" style:bottom={gridline.bottom}>{gridline.label}</span>
+			{/if}
+		</div>
+	{/if}
 {/snippet}
 
 <!-- overflow-hidden keeps the bars of the next period inside the card while they slide in -->
@@ -187,25 +207,36 @@
 		</div>
 		{#key offset}
 			<div class="flex flex-col gap-1" in:fly={{ x: direction * 40, duration: 200 }}>
-				<div class="flex items-end h-20 {stats.buckets.length > 12 ? 'gap-[2px]' : 'gap-1.5'}">
-					{#each stats.buckets as bucket, i}
-						<button class="flex-1 h-full flex items-end" aria-label={longLabel(bucket)} disabled={bucket.future} onclick={() => selected = selected === i ? null : i}>
-							<div
-								class="w-full rounded-sm transition-all duration-300 {bucket.distanceMeters > 0 ? 'bg-primary' : 'bg-background-tertiary'}"
-								class:opacity-40={bucket.future || selected !== null && selected !== i}
-								style:height={bucket.distanceMeters > 0 && maxDistance > 0 ? `max(4px, ${bucket.distanceMeters / maxDistance * 100}%)` : '3px'}
-							></div>
-						</button>
-					{/each}
+				<div class="flex gap-1.5">
+					<div class="relative flex-1 flex items-end h-20 {stats.buckets.length > 12 ? 'gap-[2px]' : 'gap-1.5'}">
+						{#if gridline}
+							<div class="absolute inset-x-0 border-t border-dashed border-background-tertiary" style:bottom={gridline.bottom}></div>
+						{/if}
+						{#each stats.buckets as bucket, i}
+							<!-- relative so the bars paint over the gridline -->
+							<button class="relative flex-1 h-full flex items-end" aria-label={longLabel(bucket)} disabled={bucket.future} onclick={() => selected = selected === i ? null : i}>
+								<div
+									class="w-full rounded-sm transition-all duration-300 {bucket.distanceMeters > 0 ? 'bg-primary' : 'bg-background-tertiary'}"
+									class:opacity-40={bucket.future || selected !== null && selected !== i}
+									style:height={bucket.distanceMeters > 0 && maxDistance > 0 ? `max(4px, ${bucket.distanceMeters / maxDistance * 100}%)` : '3px'}
+								></div>
+							</button>
+						{/each}
+					</div>
+					{@render gridlineLabel(true)}
 				</div>
-				<div class="flex {stats.buckets.length > 12 ? 'gap-[2px]' : 'gap-1.5'}">
-					{#each stats.buckets as bucket, i}
-						<div class="flex-1 min-w-0 flex {spacedLabels && i === stats.buckets.length - 1 ? 'justify-end' : 'justify-center'} text-2xs font-semibold text-label leading-none overflow-visible text-nowrap"
-							class:opacity-40={bucket.future}
-						>
-							{axisLabel(bucket, i)}
-						</div>
-					{/each}
+				<div class="flex gap-1.5">
+					<div class="flex-1 min-w-0 flex {stats.buckets.length > 12 ? 'gap-[2px]' : 'gap-1.5'}">
+						{#each stats.buckets as bucket, i}
+							<div class="flex-1 min-w-0 flex {spacedLabels && i === stats.buckets.length - 1 ? 'justify-end' : 'justify-center'} text-2xs font-semibold text-label leading-none overflow-visible text-nowrap"
+								class:opacity-40={bucket.future}
+							>
+								{axisLabel(bucket, i)}
+							</div>
+						{/each}
+					</div>
+					<!-- the same column under the label, so the axis labels stay under their bars -->
+					{@render gridlineLabel(false)}
 				</div>
 			</div>
 		{/key}

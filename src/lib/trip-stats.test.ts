@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { oldestOffset, parseSummaryDate, periodStats, type TripDaySummary } from './trip-stats';
+import { gridlineMeters, oldestOffset, parseSummaryDate, periodStats, type TripDaySummary } from './trip-stats';
 
 const day = (year: number, month: number, date: number, trips = 1, distanceMeters = 1000, durationSeconds = 600): TripDaySummary => ({
 	date: new Date(year, month - 1, date), trips, distanceMeters, durationSeconds,
@@ -18,6 +18,19 @@ describe('VAIMOO summary dates', () => {
 		expect(parseSummaryDate('')).toBeNull();
 		expect(parseSummaryDate('13/01/2026')).toBeNull();
 		expect(parseSummaryDate('02/30/2026')).toBeNull();
+	});
+});
+
+describe('chart gridline', () => {
+	it('picks the largest round distance under the tallest bar', () => {
+		expect(gridlineMeters(0)).toBeNull();
+		expect(gridlineMeters(99)).toBeNull();
+		expect(gridlineMeters(100)).toBe(100);
+		expect(gridlineMeters(480)).toBe(200);
+		expect(gridlineMeters(3347)).toBe(2000);
+		expect(gridlineMeters(5000)).toBe(5000);
+		expect(gridlineMeters(9999)).toBe(5000);
+		expect(gridlineMeters(48_700)).toBe(20_000);
 	});
 });
 
