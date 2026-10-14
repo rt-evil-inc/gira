@@ -610,6 +610,10 @@ const translations = {
 		en: '{{count}} bikes on their way',
 		pt: '{{count}} bicicletas a caminho',
 	},
+	incoming_bike_minutes: {
+		en: 'in {{count}} min',
+		pt: 'em {{count}} min',
+	},
 	cancel_button: {
 		en: 'Cancel',
 		pt: 'Cancelar',

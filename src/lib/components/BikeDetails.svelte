@@ -13,6 +13,7 @@
 	import IconMoodSmile from '@tabler/icons-svelte/icons/mood-smile';
 	import IconMoodWrrr from '@tabler/icons-svelte/icons/mood-wrrr';
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
+	import type { Snippet } from 'svelte';
 	import { fly } from 'svelte/transition';
 
 	// A bike card's face: its type, plate, rating and battery, laid out as items of the card's row.
@@ -24,9 +25,11 @@
 		rating?: StationBikeRating;
 		/** Grey instead of the accent colour, for bikes that stand apart from the unlockable ones. */
 		muted?: boolean;
+		/** Shown after the plate. */
+		badge?: Snippet;
 	}
 
-	let { type = null, id = '', battery = null, rating = undefined, muted = false }: Props = $props();
+	let { type = null, id = '', battery = null, rating = undefined, muted = false, badge = undefined }: Props = $props();
 
 	function ratingLabel(rating: StationBikeRating | undefined) {
 		if (rating === 1) return $t('bike_rating_bad');
@@ -52,7 +55,7 @@
 	<div class="text-label font-bold text-xl -mr-6 w-[42px]">--</div>
 {/if}
 <div class="relative h-[42px] min-w-0 grow overflow-hidden">
-	<div class="absolute left-0 right-0 text-base font-bold {accent} leading-tight transition-all duration-150 ease-out {hasRating ? 'top-0 translate-y-[0px]' : 'top-1/2 -translate-y-1/2'}">{id}</div>
+	<div class="absolute left-0 right-0 text-base font-bold {accent} leading-tight transition-all duration-150 ease-out {hasRating ? 'top-0 translate-y-[0px]' : 'top-1/2 -translate-y-1/2'} flex items-center gap-2">{id}{@render badge?.()}</div>
 	{#if hasRating}
 		<div class="absolute bottom-0 left-0 right-0 flex h-4 items-center gap-1 text-label" transition:fly={{ y: -4, duration: 150, opacity: 0 }}>
 			{#if rating === 1}
