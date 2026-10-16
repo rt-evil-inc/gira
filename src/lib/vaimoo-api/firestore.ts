@@ -71,6 +71,16 @@ export function getFirestoreBikes(stationId: number): Promise<VaimooBike[]> {
 	return queryOnce<VaimooBike>('bikes', where('DockingStationId', '==', stationId));
 }
 
+/** Firestore takes at most 30 values in an `in` filter. */
+const MAX_IN_VALUES = 30;
+
+/** The records of the bikes with these plates, wherever they are; in no particular order. */
+export async function getFirestoreBikesByPlate(visualIds: string[]): Promise<VaimooBike[]> {
+	const batches: string[][] = [];
+	for (let i = 0; i < visualIds.length; i += MAX_IN_VALUES) batches.push(visualIds.slice(i, i + MAX_IN_VALUES));
+	return (await Promise.all(batches.map(batch => queryOnce<VaimooBike>('bikes', where('VisualId', 'in', batch))))).flat();
+}
+
 /** Subscribe to the same tenant-scoped station feed used by the official app. */
 export function subscribeFirestoreStations(
 	onData: (stations: VaimooStation[]) => void,

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Bike from '$lib/components/Bike.svelte';
 	import BikeSkeleton from '$lib/components/BikeSkeleton.svelte';
-	import { getStationBikeRatings } from '$lib/gira-mais-api/gira-mais-api';
+	import { getStationArrivals, getStationBikeRatings, type StationArrival } from '$lib/gira-mais-api/gira-mais-api';
 	import { reportApiError } from '$lib/error-reporting';
 	import type { StationBikeRating } from '$lib/gira-mais-api/types';
-	import { subscribeStationBikes } from '$lib/gira-api/api';
+	import { getBikesByPlate, subscribeStationBikes } from '$lib/gira-api/api';
 	import type { AvailableBike } from '$lib/gira-api/models';
 	import { currentPos } from '$lib/location';
 	import { selectedStation, stations } from '$lib/map.svelte';
@@ -12,6 +12,7 @@
 	import type { UnlockSubject } from '$lib/unlock-reporting';
 	import { safeInsets } from '$lib/ui.svelte';
 	import { distanceBetweenCoords, formatDistance } from '$lib/utils';
+	import IncomingBike from '$lib/components/IncomingBike.svelte';
 	import { onMount, tick } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { Tween } from 'svelte/motion';
@@ -71,6 +72,67 @@
 			console.error('Failed to get bike ratings', error);
 		}
 	}
+
+	// Bikes other riders are bringing here, from what they share while navigating, with each bike's record
+	// looked up once per plate while the menu stays on the station.
+	const ARRIVALS_REFRESH_MS = 30_000;
+	let arrivals: StationArrival[] = $state([]);
+	let arrivalsFetchedAt = $state(Date.now());
+	let incomingInfo: Record<string, AvailableBike & { rating?: StationBikeRating }> = $state({});
+
+	function minutesAway(arrival: StationArrival) {
+		return Math.max(1, Math.round((arrival.arrivesAt.getTime() - arrivalsFetchedAt) / 60_000));
+	}
+
+	async function loadIncomingBikes(stationId: string, plates: string[]) {
+		const [bikes, ratings] = await Promise.all([
+			getBikesByPlate(plates).catch(error => {
+				console.warn('Failed to get incoming bikes', error);
+				return new Map<string, AvailableBike>;
+			}),
+			getStationBikeRatings(plates).catch(error => {
+				console.warn('Failed to get incoming bike ratings', error);
+				return {} as Record<string, StationBikeRating>;
+			}),
+		]);
+		if (stationId !== $selectedStation) return;
+		for (const [plate, bike] of bikes) incomingInfo[plate] = { ...bike, rating: ratings[plate] ?? null };
+	}
+
+	$effect(() => {
+		if ($selectedStation == null) return;
+		const stationId = $selectedStation;
+		let stopped = false;
+		let loading = false;
+		const lookedUp = new Set<string>;
+		arrivals = [];
+		incomingInfo = {};
+		const load = async () => {
+			if (loading) return;
+			loading = true;
+			try {
+				const result = await getStationArrivals(stationId);
+				if (stopped) return;
+				const countChanged = result.length !== arrivals.length;
+				arrivals = result;
+				arrivalsFetchedAt = Date.now();
+				if (countChanged) void remeasureList();
+				const newPlates = [...new Set(result.map(arrival => arrival.bike).filter(bike => bike !== null))].filter(plate => !lookedUp.has(plate));
+				newPlates.forEach(plate => lookedUp.add(plate));
+				if (newPlates.length) void loadIncomingBikes(stationId, newPlates);
+			} catch (error) {
+				console.warn('Failed to get station arrivals', error);
+			} finally {
+				loading = false;
+			}
+		};
+		void load();
+		const interval = setInterval(load, ARRIVALS_REFRESH_MS);
+		return () => {
+			stopped = true;
+			clearInterval(interval);
+		};
+	});
 
 	let isScrolling = $state(false);
 	let dragging = $state(false);
@@ -145,6 +207,17 @@
 		await tick();
 		bikeListHeight = bikeList.clientHeight;
 		await tick();
+		timeout = setTimeout(() => {
+			updating = false;
+		}, 150);
+	}
+
+	/** The list changed height outside a bike update, e.g. incoming bikes came or went. */
+	async function remeasureList() {
+		updating = true;
+		clearTimeout(timeout);
+		await tick();
+		bikeListHeight = bikeList.clientHeight;
 		timeout = setTimeout(() => {
 			updating = false;
 		}, 150);
@@ -249,6 +322,13 @@
 				{/if}
 				{#if markedCount > 0}
 					<span class="text-center text-xs font-medium text-label px-2">{$t(markedCount === 1 ? 'marked_unavailable_bikes_one' : 'marked_unavailable_bikes', { count: String(markedCount) })}</span>
+				{/if}
+				{#if arrivals.length > 0}
+					<span class="text-sm font-bold text-info px-2 mt-2">{$t(arrivals.length === 1 ? 'incoming_bikes_one' : 'incoming_bikes', { count: String(arrivals.length) })}</span>
+					{#each arrivals as arrival}
+						{@const bike = arrival.bike ? incomingInfo[arrival.bike] : undefined}
+						<IncomingBike type={bike?.type ?? null} id={arrival.bike ?? ''} battery={bike?.battery ?? null} rating={bike?.rating} minutes={minutesAway(arrival)} />
+					{/each}
 				{/if}
 				<div class="fixed left-0 w-full h-4 -mt-6" style:box-shadow="0px 6px 6px 0px var(--color-background)"></div>
 			</div>

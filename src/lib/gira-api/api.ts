@@ -13,6 +13,7 @@ import {
 } from '$lib/vaimoo-api/client';
 import {
 	getFirestoreBikes,
+	getFirestoreBikesByPlate,
 	getFirestoreStations,
 	subscribeFirestoreBikes,
 	subscribeFirestoreStations,
@@ -189,6 +190,13 @@ function stationBikes(bikes: VaimooBike[]) {
 /** The station's unlockable bikes by dock; those the server flags unavailable carry `hiddenReasons`. */
 export async function getStationBikes(stationId: string): Promise<AvailableBike[]> {
 	return stationBikes(await getFirestoreBikes(Number(stationId)));
+}
+
+/** The bikes with these plates, e.g. ones riders are bringing to a station, keyed by plate. */
+export async function getBikesByPlate(plates: string[]): Promise<Map<string, AvailableBike>> {
+	if (plates.length === 0) return new Map;
+	const bikes = await getFirestoreBikesByPlate(plates);
+	return new Map(bikes.map(bike => [bike.VisualId, mapBike(bike)]));
 }
 
 export function subscribeStationBikes(

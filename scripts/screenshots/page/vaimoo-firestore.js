@@ -62,6 +62,11 @@ export function findFirestoreBike(visualId) {
 	return Promise.resolve(everyBike().filter(bike => bike.VisualId === visualId));
 }
 
+export function getFirestoreBikesByPlate(visualIds) {
+	const riding = ridingBike();
+	return Promise.resolve([...everyBike(), ...riding ? [riding] : []].filter(bike => visualIds.includes(bike.VisualId)));
+}
+
 export function subscribeFirestoreStations(onData) {
 	return subscribe(stations(), onData);
 }

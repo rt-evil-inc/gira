@@ -465,6 +465,14 @@ const translations = {
 		en: 'Share your trip ratings and comments with us so we can warn about bike conditions',
 		pt: 'Partilhar as suas avaliações e comentários de viagens connosco para que possamos avisar sobre o estado das bicicletas',
 	},
+	share_arrivals_setting_label: {
+		en: 'Share arrival time',
+		pt: 'Partilhar hora de chegada',
+	},
+	share_arrivals_setting_description: {
+		en: 'While navigating during a trip, show other users when a bike will arrive at the station you are heading to, without sharing any personal data',
+		pt: 'Ao navegar durante uma viagem, mostrar aos outros utilizadores quando chega uma bicicleta à estação para onde se dirige, sem partilhar dados pessoais',
+	},
 	ui_settings_section: {
 		en: 'Interface',
 		pt: 'Interface',
@@ -593,6 +601,18 @@ const translations = {
 	no_bikes_found: {
 		en: 'No bikes found',
 		pt: 'Nenhuma bicicleta encontrada',
+	},
+	incoming_bikes_one: {
+		en: '1 bike on its way',
+		pt: '1 bicicleta a caminho',
+	},
+	incoming_bikes: {
+		en: '{{count}} bikes on their way',
+		pt: '{{count}} bicicletas a caminho',
+	},
+	incoming_bike_minutes: {
+		en: 'in {{count}} min',
+		pt: 'em {{count}} min',
 	},
 	cancel_button: {
 		en: 'Cancel',

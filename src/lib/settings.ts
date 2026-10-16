@@ -7,6 +7,8 @@ export type AppSettings = {
 	backgroundLocation: boolean;
 	analytics: boolean;
 	reportRatings: boolean;
+	/** Share the bike being ridden, the station it's heading to and when it gets there, for others looking at it. */
+	shareArrivals: boolean;
 	theme: 'light'|'dark'|'system'|'daylight';
 	locale: 'pt'|'en'|'system';
 	updateWarning: boolean;
@@ -21,7 +23,7 @@ export async function loadSettings() {
 	// Every read is a native bridge round trip and the whole UI waits on this
 	// (the layout renders nothing until the theme is known), so issue them all
 	// at once instead of one after the other
-	const keys = ['distanceLock', 'mockUnlock', 'backgroundLocation', 'analytics', 'reportRatings', 'theme', 'locale', 'updateWarning', 'markerSmoothing'] as const;
+	const keys = ['distanceLock', 'mockUnlock', 'backgroundLocation', 'analytics', 'reportRatings', 'shareArrivals', 'theme', 'locale', 'updateWarning', 'markerSmoothing'] as const;
 	const values = await Promise.all(keys.map(key => Preferences.get({ key: `settings/${key}` }).then(r => r.value)));
 	const raw = Object.fromEntries(keys.map((key, i) => [key, values[i]])) as Record<typeof keys[number], string|null>;
 	const distanceLock = raw.distanceLock !== 'false'; // !== 'false' is so that it defaults to true if the key is not set
@@ -29,11 +31,12 @@ export async function loadSettings() {
 	const backgroundLocation = raw.backgroundLocation !== 'false';
 	const analytics = raw.analytics !== 'false';
 	const reportRatings = raw.reportRatings !== 'false';
+	const shareArrivals = raw.shareArrivals !== 'false';
 	const theme = (raw.theme || 'system') as 'light'|'dark'|'system'|'daylight';
 	const locale = (raw.locale || 'system') as 'pt'|'en'|'system';
 	const updateWarning = raw.updateWarning !== 'false';
 	const markerSmoothing = raw.markerSmoothing !== 'false';
-	appSettings.set({ distanceLock, mockUnlock, backgroundLocation, analytics, theme, locale, updateWarning, reportRatings, markerSmoothing });
+	appSettings.set({ distanceLock, mockUnlock, backgroundLocation, analytics, theme, locale, updateWarning, reportRatings, shareArrivals, markerSmoothing });
 
 	// Track previous values to only save changed settings
 	let prev: AppSettings | undefined;
@@ -48,6 +51,7 @@ export async function loadSettings() {
 		if (v.backgroundLocation !== prev.backgroundLocation) Preferences.set({ key: 'settings/backgroundLocation', value: v.backgroundLocation.toString() });
 		if (v.analytics !== prev.analytics) Preferences.set({ key: 'settings/analytics', value: v.analytics.toString() });
 		if (v.reportRatings !== prev.reportRatings) Preferences.set({ key: 'settings/reportRatings', value: v.reportRatings.toString() });
+		if (v.shareArrivals !== prev.shareArrivals) Preferences.set({ key: 'settings/shareArrivals', value: v.shareArrivals.toString() });
 		if (v.theme !== prev.theme) Preferences.set({ key: 'settings/theme', value: v.theme });
 		if (v.locale !== prev.locale) Preferences.set({ key: 'settings/locale', value: v.locale });
 		if (v.updateWarning !== prev.updateWarning) Preferences.set({ key: 'settings/updateWarning', value: v.updateWarning.toString() });
