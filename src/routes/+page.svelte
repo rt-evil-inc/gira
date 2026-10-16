@@ -10,8 +10,8 @@
 	import TripRating from '$lib/components/TripRating.svelte';
 	import { currentTrip, tripRating } from '$lib/trip';
 	import { following, selectedStation } from '$lib/map.svelte';
-	import { routeDestination } from '$lib/routing';
-	import SearchBar, { dismissSearchBar, SEARCH_BAR_EXTENT_px } from '$lib/components/SearchBar.svelte';
+	import { routeDestination, routeOrigin } from '$lib/routing';
+	import SearchBar, { dismissSearchBar, searchBarLayout } from '$lib/components/SearchBar.svelte';
 	import { get } from 'svelte/store';
 	import { safeInsets } from '$lib/ui.svelte';
 	import { Geolocation } from '@capacitor/geolocation';
@@ -39,7 +39,7 @@
 	// The search bar's anchor and, for the map's padding, the bottom edge of its
 	// UI (anchor + Floating offset + the bar's extent)
 	let searchBarY = $derived(Math.max(tripStatusHeight + 16, $safeInsets.top));
-	let searchBarBottom = $derived(searchBarY + 4 + SEARCH_BAR_EXTENT_px);
+	let searchBarBottom = $derived(searchBarY + 4 + searchBarLayout.extent);
 	let profileOpen = $state(false);
 	let locationPermission = $state(false);
 
@@ -75,6 +75,8 @@
 					$selectedStation = null;
 				} else if (get(routeDestination) != null) {
 					routeDestination.set(null);
+				} else if (get(routeOrigin) != null) {
+					routeOrigin.set(null);
 				} else {
 					App.exitApp();
 				}
