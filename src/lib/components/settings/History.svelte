@@ -2,10 +2,12 @@
 	import type { CompletedTrip } from '$lib/gira-api/models';
 	import { onMount } from 'svelte';
 	import HistoryItem from '$lib/components/settings/HistoryItem.svelte';
+	import TripStats from '$lib/components/settings/TripStats.svelte';
 	import { safeInsets } from '$lib/ui.svelte';
 	import { fly } from 'svelte/transition';
 	import MenuPage from '$lib/components/MenuPage.svelte';
-	import { getTripHistory } from '$lib/gira-api/api';
+	import { getTripHistory, getTripSummary } from '$lib/gira-api/api';
+	import type { TripDaySummary } from '$lib/trip-stats';
 	import { getLocale, t } from '$lib/translations';
 	import { errorMessages } from '$lib/ui.svelte';
 	import { reportApiError } from '$lib/error-reporting';
@@ -36,9 +38,24 @@
 		}
 	}
 
+	// undefined while loading, null if the summary could not be loaded
+	let summary:TripDaySummary[]|null|undefined = $state();
+
+	async function loadTripSummary() {
+		try {
+			summary = await getTripSummary();
+		} catch (error) {
+			// The statistics are extra; the trip list reports its own failures to the user.
+			console.error('Failed to load trip summary', error);
+			void reportApiError('trip_summary_error', error, { source: 'history-page' });
+			summary = null;
+		}
+	}
+
 	let observer:IntersectionObserver;
 	onMount(() => {
 		loadMoreTripHistory();
+		loadTripSummary();
 		const options = {
 			rootMargin: '128px',
 			threshold: 0.1,
@@ -69,6 +86,12 @@
 
 <MenuPage>
 	<div class="text-3xl font-bold text-info px-5 pt-5">{$t('trips_label')}</div>
+	<!-- Its own request, so it (or its skeleton) shows whether or not the trip list has loaded yet. -->
+	{#if !(didFirstRequest && trips.length == 0) && (summary === undefined || summary?.length)}
+		<div class="px-5 pt-5">
+			<TripStats days={summary ?? null} />
+		</div>
+	{/if}
 	{#if didFirstRequest}
 		{#if didFirstRequest && trips.length == 0}
 			<div class="flex flex-col items-center justify-center h-full" style:margin-top={-$safeInsets.top - 32 + 'px'}>

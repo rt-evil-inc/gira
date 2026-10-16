@@ -92,6 +92,15 @@ export interface VaimooTripDetails {
 	vehicle: { visualId: string; vehicleCategoryCode: string } | null;
 }
 
+/** One day of `user/{userId}/trip-summary/daily`; `tripDate` is "MM/dd/yyyy". */
+export interface VaimooTripDaySummary {
+	tripDate: string | null;
+	tripCount: number;
+	totalDistanceInMeters: number;
+	totalDurationInSeconds: number;
+	userId: number;
+}
+
 export interface VaimooTripFeedback {
 	createDate: string;
 	osVersion: string;
