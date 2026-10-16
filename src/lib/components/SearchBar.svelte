@@ -1,8 +1,9 @@
 <script lang="ts" module>
 	// The vertical space the bar claims below its anchor: the pill (h-12) plus
 	// the route summary strip (h-10) hanging from it once a route is shown, and
-	// the origin row (h-10) above the summary when it's on display
-	export const searchBarLayout = $state({ extent: 48 + 40 });
+	// the origin row (h-10) above the summary when it's on display. The visible
+	// extent only counts the strips actually out, for the cards stacked below
+	export const searchBarLayout = $state({ extent: 48 + 40, visibleExtent: 48 });
 	let dismiss: (() => boolean)|null = null;
 
 	/** Unfocus the search bar, closing its results; true if it was focused */
@@ -61,9 +62,6 @@
 	const showingResults = $derived(focused && (results != null || stationResults.length > 0 || showingHistory));
 	const showingOriginResults = $derived(originFocused);
 
-	$effect(() => {
-		searchBarLayout.extent = 48 + 40 + (showingOrigin ? 40 : 0);
-	});
 	// The offer folds away with the route, unless an origin is set
 	$effect(() => {
 		if ($routeDestination == null && $routeOrigin == null) originOpen = false;
@@ -239,6 +237,14 @@
 		if (route) lastRoute = route;
 	}));
 
+	// The origin row and summary strip under the pill, when not showing results
+	const stripsHeight = $derived((showingOrigin ? 40 : 0) + (lastRoute != null && showSummary ? 40 : 0));
+
+	$effect(() => {
+		searchBarLayout.extent = 48 + 40 + (showingOrigin ? 40 : 0);
+		searchBarLayout.visibleExtent = 48 + stripsHeight;
+	});
+
 	// Slides the summary strip rigidly out from / back behind the bar, like a
 	// drawer: translating (instead of growing height, as slide does) keeps the
 	// hidden top of the strip filling the voids beside the bar's rounded corners
@@ -322,7 +328,7 @@
 					<!-- the summary height is set synchronously with the mode switch —
 						only the variable-height results lists rely on the measured (and
 						thus one-frame-stale) contentHeight -->
-					<div class="transition-[height] duration-150 overflow-hidden" style:height={showingResults || showingOriginResults ? contentHeight != null ? contentHeight + 'px' : 'auto' : `${(showingOrigin ? 40 : 0) + (lastRoute != null && showSummary ? 40 : 0)}px`}>
+					<div class="transition-[height] duration-150 overflow-hidden" style:height={showingResults || showingOriginResults ? contentHeight != null ? contentHeight + 'px' : 'auto' : `${stripsHeight}px`}>
 						<div bind:clientHeight={contentHeight}>
 							{#if showingResults}
 								{@render resultList()}
