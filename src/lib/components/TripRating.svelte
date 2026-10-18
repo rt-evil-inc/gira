@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { submitTripRating } from '$lib/gira-api/api';
 	import { reportApiError } from '$lib/error-reporting';
+	import { selectedStation } from '$lib/map.svelte';
 	import { postBikeRating } from '$lib/gira-mais-api/gira-mais-api';
 	import { currentRoute } from '$lib/routing';
 	import { t } from '$lib/translations';
@@ -19,7 +20,7 @@
 	import IconMoodSmile from '@tabler/icons-svelte/icons/mood-smile';
 	import IconMoodSmileFilled from '@tabler/icons-svelte/icons/mood-smile-filled';
 	import IconMoodWrrr from '@tabler/icons-svelte/icons/mood-wrrr';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
 	import { cubicOut, linear } from 'svelte/easing';
 	import { Tween } from 'svelte/motion';
 	import { get } from 'svelte/store';
@@ -76,6 +77,7 @@
 	let sent = false;
 	let showHint = $state(false);
 	let undoTimeout: ReturnType<typeof setTimeout> | undefined;
+	let card: HTMLDivElement;
 
 	// Geometry: the details are always laid out at their expanded width and clipped by the
 	// card, so their measured height doesn't move while the card is widening under them
@@ -109,6 +111,22 @@
 		if (panel === 'expanded' && !dragging && !pending) position.set(detailsHeight);
 	});
 
+	// The open details and the station sheet would overlap, so only one is out at a time: the
+	// details fold away when the rider turns to anything else, and opening them closes the sheet
+	$effect(() => {
+		if ($selectedStation != null) untrack(collapse);
+	});
+
+	function onWindowPointerDown(event: PointerEvent) {
+		if (!card?.contains(event.target as Node)) collapse();
+	}
+
+	function collapse() {
+		if (panel !== 'expanded' || pending || dragging) return;
+		if (card.contains(document.activeElement)) closeKeyboard();
+		settle('compact');
+	}
+
 	onMount(() => {
 		ratingDragHintSeen().then(seen => showHint = !seen).catch(() => {});
 	});
@@ -136,8 +154,10 @@
 			setTimeout(finish, SETTLE_ms);
 		} else if (next === 'compact') {
 			position.set(0);
+		} else {
+			// Animated by the effect above, which also tracks the details' height
+			selectedStation.set(null);
 		}
-	// 'expanded' is animated by the effect above, which also tracks the details' height
 	}
 
 	async function finish() {
@@ -149,7 +169,11 @@
 	function onCommentKeydown(event: KeyboardEvent & { currentTarget: EventTarget & HTMLTextAreaElement }) {
 		if (event.key !== 'Enter') return;
 		event.preventDefault();
-		event.currentTarget.blur();
+		closeKeyboard();
+	}
+
+	function closeKeyboard() {
+		(document.activeElement as HTMLElement | null)?.blur();
 		Keyboard.hide().catch(() => {}); // not implemented on web
 	}
 
@@ -267,7 +291,7 @@
 	}
 </script>
 
-<svelte:window bind:innerWidth bind:innerHeight />
+<svelte:window bind:innerWidth bind:innerHeight onpointerdowncapture={onWindowPointerDown} />
 
 {#snippet face(value: number, filled: boolean, size: number)}
 	{@const Icon = filled ? FACES[value - 1].filled : FACES[value - 1].outline}
@@ -285,6 +309,7 @@
 <!-- sits below the search bar (64px), and below its route summary extension too when one is shown -->
 <div in:fly={{ y: -120 }} out:fade={{ duration: 150 }} class="absolute left-0 right-0 flex justify-center pointer-events-none" style:top="{top}px">
 	<div
+		bind:this={card}
 		bind:clientHeight={cardHeight}
 		class="pointer-events-auto flex flex-col items-center overflow-hidden bg-background text-info"
 		style:width="{width}px"
