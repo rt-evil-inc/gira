@@ -131,6 +131,10 @@ export function getVaimooTripDetails(_session, tripId) {
 	return answer(tripDetails(trip));
 }
 
+export function getVaimooTripSummary() {
+	return answer({ tripDailySummaryList: [] });
+}
+
 export function submitVaimooTripFeedback() {
 	return answer(null);
 }
