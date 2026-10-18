@@ -199,7 +199,9 @@ export async function deleteArrival(arrivalId: string) {
 	const response = await httpRequestWithRetry({
 		method: 'delete',
 		url: GIRA_MAIS_API_URL + `/arrivals/${encodeURIComponent(arrivalId)}`,
-		headers: { 'User-Agent': `Gira+/${version}` },
+		// Android's HttpURLConnection labels a DELETE without a content type as a form, which the server refuses
+		// as a cross-site form submission (403), so the arrival was never withdrawn
+		headers: { 'User-Agent': `Gira+/${version}`, 'Content-Type': 'application/json' },
 	});
 	checkStatus(response);
 }
