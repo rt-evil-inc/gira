@@ -19,13 +19,13 @@ Com um olhar atento ao design, à experiência do utilizador (UX) e à estabilid
 - Sistema de navegação
 - Estimativa da condição das bicicletas em função das avaliações contribuídas pelos utilizadores
 - Cálculo de métricas relevantes durante uma viagem
+- Visualização das bicicletas que estão a caminho de uma estação
 
 ### Não implementado
 - Criação de contas
 - Carregamento de saldo
 - Compra de passes
 - Histórico de passes e carregamentos
-- Submissão de descrição na avaliação de viagem
 
 ### Desenvolvimento
 A aplicação está a ser desenvolvida em **SvelteKit**, juntamente com a biblioteca **Capacitor** para compilar para Android.
