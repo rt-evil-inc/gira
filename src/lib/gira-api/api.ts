@@ -18,6 +18,7 @@ import {
 	getFirestoreBikesByPlate,
 	getFirestoreStations,
 	subscribeFirestoreBikes,
+	subscribeFirestoreBikesWithComment,
 	subscribeFirestoreStations,
 } from '$lib/vaimoo-api/firestore';
 import { VaimooApiError } from '$lib/vaimoo-api/client';
@@ -78,9 +79,14 @@ function stationDescription(station: VaimooStation) {
 	return [station.StreetBuildingIdentifier, station.Street, station.City].filter(Boolean).join(' ');
 }
 
-// The station feed's AvailableBikes counter doesn't always match what can be unlocked: it sometimes counts
-// bikes whose record names no dock. Once a station's bikes have been loaded, prefer the observed count for
-// as long as the server counter stays at the value it had then.
+// The station feed's AvailableBikes counter doesn't always match what can be unlocked. It counts every bike the
+// server marks available, docked or not, and also those it flags for their service status alone: a snapshot on
+// 22 October 2026 matched that rule exactly at 201 of 203 stations. VAIMOO has refused those since 6 October 2026
+// (see isUnlockable), so a live feed of them is taken off the counter. Once a station's bikes have been loaded,
+// prefer the observed count for as long as the server counter stays at the value it had then; that one also
+// leaves out the available bikes with no dock.
+const SERVICE_STATUS_ONLY_COMMENT = 'Service status is not OK; \t';
+const serviceStatusBikeCounts = new Map<string, number>;
 const observedBikeCounts = new Map<string, { serverBikes: number; bikes: number }>;
 let lastStations: VaimooStation[] = [];
 let stationListener: ((stations: StationInfo[]) => void) | null = null;
@@ -90,9 +96,19 @@ function serverBikeCount(station: VaimooStation) {
 }
 
 function stationBikeCount(station: VaimooStation) {
+	const stationId = String(station.DockingStationId);
 	const serverBikes = serverBikeCount(station);
-	const observed = observedBikeCounts.get(String(station.DockingStationId));
-	return observed && observed.serverBikes === serverBikes ? observed.bikes : serverBikes;
+	const observed = observedBikeCounts.get(stationId);
+	if (observed && observed.serverBikes === serverBikes) return observed.bikes;
+	return Math.max(0, serverBikes - (serviceStatusBikeCounts.get(stationId) ?? 0));
+}
+
+// Re-emitting rebuilds every map marker; skip it when no displayed count changed.
+function updateBikeCounts(update: () => void) {
+	const shownBefore = lastStations.map(stationBikeCount);
+	update();
+	if (lastStations.every((station, i) => stationBikeCount(station) === shownBefore[i])) return;
+	stationListener?.(mapStations(lastStations));
 }
 
 function recordObservedBikeCount(stationId: string, bikes: number) {
@@ -101,17 +117,32 @@ function recordObservedBikeCount(stationId: string, bikes: number) {
 	const serverBikes = serverBikeCount(station);
 	const previous = observedBikeCounts.get(stationId);
 	if (previous?.serverBikes === serverBikes && previous.bikes === bikes) return;
-	const shownBefore = stationBikeCount(station);
-	observedBikeCounts.set(stationId, { serverBikes, bikes });
-	// Re-emitting rebuilds every map marker; skip it when the displayed count is unchanged, which
-	// is the common case on the first snapshot of a station and would otherwise stutter the menu opening.
-	if (stationBikeCount(station) === shownBefore) return;
-	stationListener?.(mapStations(lastStations));
+	// The displayed count is usually unchanged on the first snapshot of a station, and re-emitting
+	// then would stutter the menu opening.
+	updateBikeCounts(() => observedBikeCounts.set(stationId, { serverBikes, bikes }));
+}
+
+function recordServiceStatusBikes(bikes: VaimooBike[]) {
+	updateBikeCounts(() => {
+		serviceStatusBikeCounts.clear();
+		for (const bike of bikes) {
+			const stationId = String(bike.DockingStationId);
+			serviceStatusBikeCounts.set(stationId, (serviceStatusBikeCounts.get(stationId) ?? 0) + 1);
+		}
+	});
 }
 
 // Mirrors the official app, which keys station availability on ServiceStatus alone (IsActive is ignored) and
 // treats IN_USE, LIMITED_USE and any status it doesn't recognise as usable.
 const UNAVAILABLE_SERVICE_STATUSES = new Set(['DISABLED', 'UNAVAILABLE_BY_SYSTEM', 'UNAVAILABLE_BY_OPERATOR', 'UNKNOWN']);
+
+// The workshop, "999 - Oficina", is listed as an available station with a counter that follows neither rule
+// above (132 bikes on 22 October 2026, none of them unlockable), so routing would send riders there for a bike.
+const WORKSHOP_STATION_ID = 4552;
+
+function isStationInService(station: VaimooStation) {
+	return station.DockingStationId !== WORKSHOP_STATION_ID && !UNAVAILABLE_SERVICE_STATUSES.has(station.ServiceStatus);
+}
 
 function mapStations(response: VaimooStation[]): StationInfo[] {
 	lastStations = response;
@@ -125,7 +156,7 @@ function mapStations(response: VaimooStation[]): StationInfo[] {
 		docks: Math.max(0, Math.trunc(station.DockLimit)),
 		freeDocks: Math.max(0, Math.trunc(station.FreeDocks)),
 		serialNumber: String(station.DockingStationId),
-		assetStatus: UNAVAILABLE_SERVICE_STATUSES.has(station.ServiceStatus) ? 'repair' : 'active',
+		assetStatus: isStationInService(station) ? 'active' : 'repair',
 	}));
 }
 
@@ -135,10 +166,13 @@ export async function getStations(): Promise<StationInfo[]> {
 
 export function subscribeStations(onData: (stations: StationInfo[]) => void, onError?: (error: Error) => void) {
 	stationListener = onData;
-	const unsubscribe = subscribeFirestoreStations(stations => onData(mapStations(stations)), onError);
+	const unsubscribeStations = subscribeFirestoreStations(stations => onData(mapStations(stations)), onError);
+	const unsubscribeServiceStatusBikes = subscribeFirestoreBikesWithComment(SERVICE_STATUS_ONLY_COMMENT, recordServiceStatusBikes, onError);
 	return () => {
 		if (stationListener === onData) stationListener = null;
-		unsubscribe();
+		unsubscribeStations();
+		unsubscribeServiceStatusBikes();
+		serviceStatusBikeCounts.clear();
 	};
 }
 

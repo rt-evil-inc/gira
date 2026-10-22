@@ -16,7 +16,7 @@
 	import { createMarkerAnimator, type MarkerState } from '$lib/marker-animation';
 	import { compassAccuracy, compassHeading } from '$lib/compass';
 	import { beamHalfAngle } from '$lib/heading-beam';
-	import { computeRoute, currentRoute, routeDestination, type PlannedRoute } from '$lib/routing';
+	import { computeRoute, currentRoute, recheckRouteStations, routeDestination, type PlannedRoute } from '$lib/routing';
 	import { clipRouteAtProjection, emptyRouteClippingState, projectPositionOntoRoute, remainingRoute, type RouteClippingState } from '$lib/route-clipping';
 	import { reverseGeocode } from '$lib/geocoding';
 	import { theme } from '$lib/theme';
@@ -774,6 +774,11 @@
 			map.setPaintProperty('route-bike', 'line-width', trip ? 8 : 5);
 			map.setPaintProperty('route-foot', 'line-width', trip ? 8 : 5);
 		}
+	});
+
+	// The live station feed can empty the route's pickup station or fill its drop-off one
+	$effect(() => {
+		if (stations.value) recheckRouteStations();
 	});
 
 	$effect(() => {
