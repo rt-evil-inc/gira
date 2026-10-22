@@ -3,6 +3,7 @@
 	import { getLocale, t } from '$lib/translations';
 	import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
 	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import { cubicOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
 
 	interface Props {
@@ -25,6 +26,8 @@
 	let offset = $state(0);
 	/** Which side the bars slide in from: older periods from the left, newer from the right. */
 	let direction = $state(0);
+	/** Set when the time window changes, which isn't a move in time: the bars grow from the baseline instead. */
+	let growing = $state(false);
 
 	// While loading, the card is laid out for an empty history and hidden behind the skeleton, so the
 	// skeleton has exactly the card's size.
@@ -49,6 +52,7 @@
 		period = next;
 		offset = 0;
 		selected = null;
+		growing = true;
 	}
 
 	/** +1 for the previous period, -1 for the next one. */
@@ -58,6 +62,12 @@
 		direction = step > 0 ? -1 : 1;
 		offset = next;
 		selected = null;
+		growing = false;
+	}
+
+	/** Global so it plays when the chart is rebuilt; without `growing` it's instant, e.g. as the page opens. */
+	function grow(_node: Element) {
+		return { duration: growing ? 300 : 0, easing: cubicOut, css: (t: number) => `transform: scaleY(${t})` };
 	}
 
 	let swipeStart: { x: number, y: number } | null = null;
@@ -205,8 +215,8 @@
 				{@render metric(duration(shown.durationSeconds), $t('stats_time_label'))}
 			</div>
 		</div>
-		{#key offset}
-			<div class="flex flex-col gap-1" in:fly={{ x: direction * 40, duration: 200 }}>
+		{#key `${period}:${offset}`}
+			<div class="flex flex-col gap-1" in:fly={{ x: direction * 40, duration: growing ? 0 : 200 }}>
 				<div class="flex gap-1.5">
 					<div class="relative flex-1 flex items-end h-20 {stats.buckets.length > 12 ? 'gap-[2px]' : 'gap-1.5'}">
 						{#if gridline}
@@ -216,9 +226,10 @@
 							<!-- relative so the bars paint over the gridline -->
 							<button class="relative flex-1 h-full flex items-end" aria-label={longLabel(bucket)} disabled={bucket.future} onclick={() => selected = selected === i ? null : i}>
 								<div
-									class="w-full rounded-sm transition-all duration-300 {bucket.distanceMeters > 0 ? 'bg-primary' : 'bg-background-tertiary'}"
+									class="w-full origin-bottom rounded-sm transition-all duration-300 {bucket.distanceMeters > 0 ? 'bg-primary' : 'bg-background-tertiary'}"
 									class:opacity-40={bucket.future || selected !== null && selected !== i}
 									style:height={bucket.distanceMeters > 0 && maxDistance > 0 ? `max(4px, ${bucket.distanceMeters / maxDistance * 100}%)` : '3px'}
+									in:grow|global
 								></div>
 							</button>
 						{/each}
