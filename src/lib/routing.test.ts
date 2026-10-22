@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
-import { computeRoute, currentRoute, routeDestination } from '$lib/routing';
+import { computeRoute, currentRoute, recheckRouteStations, routeDestination } from '$lib/routing';
 import { currentPos } from '$lib/location';
 import { selectedStation, stations } from '$lib/map.svelte';
 import { ROUTING_API_URL } from '$lib/constants';
@@ -97,5 +97,24 @@ describe.skipIf(!serverReachable)('computeRoute', () => {
 		currentPos.set({ coords: { latitude: 38.7065, longitude: -9.1449, accuracy: 5, altitude: null, altitudeAccuracy: null, speed: null, heading: null }, timestamp: Date.now() });
 		expect(get(selectedStation)).toBeNull();
 		routeDestination.set(null);
+	});
+
+	it('should re-plan once the pickup station runs out of bikes', async () => {
+		currentPos.set({ coords: { latitude: 38.7075, longitude: -9.1440, accuracy: 5, altitude: null, altitudeAccuracy: null, speed: null, heading: null }, timestamp: Date.now() });
+		routeDestination.set({ type: 'location', lat: 38.7700, lng: -9.0950, name: 'Parque das Nações' });
+		await vi.waitFor(() => expect(get(currentRoute)?.startStationSerial).toBe('sodre'), { timeout: 15000 });
+		const planned = get(currentRoute);
+
+		// A feed update elsewhere leaves the route alone
+		stations.value = testStations.map(s => s.serialNumber === 'saldanha-empty' ? { ...s, bikes: 3 } : s);
+		recheckRouteStations();
+		expect(get(currentRoute)).toBe(planned);
+
+		stations.value = testStations.map(s => s.serialNumber === 'sodre' ? { ...s, bikes: 0 } : s);
+		recheckRouteStations();
+		await vi.waitFor(() => expect(get(currentRoute)?.startStationSerial).not.toBe('sodre'), { timeout: 15000 });
+		expect(get(currentRoute)?.startStationSerial).not.toBeNull();
+		routeDestination.set(null);
+		stations.value = testStations;
 	});
 });

@@ -98,6 +98,15 @@ export function subscribeFirestoreBikes(
 	return subscribeToQuery<VaimooBike>('bikes', [where('DockingStationId', '==', stationId)], onData, onError);
 }
 
+/** Keep every bike whose server comment is exactly this one live, wherever it is. */
+export function subscribeFirestoreBikesWithComment(
+	comment: string,
+	onData: (bikes: VaimooBike[]) => void,
+	onError?: (error: Error) => void,
+) {
+	return subscribeToQuery<VaimooBike>('bikes', [where('Comment', '==', comment)], onData, onError);
+}
+
 /** Follow the physical bike during start/end transitions, regardless of station assignment. */
 export function subscribeFirestoreBike(
 	visualId: string,

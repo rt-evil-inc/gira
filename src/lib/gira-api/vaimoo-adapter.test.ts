@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
 	getFirestoreBikes: vi.fn(),
 	subscribeFirestoreStations: vi.fn(),
 	subscribeFirestoreBikes: vi.fn(),
+	subscribeFirestoreBikesWithComment: vi.fn(),
 	quickStartVaimooTrip: vi.fn(),
 	getCurrentVaimooTrip: vi.fn(),
 	getVaimooTripDetails: vi.fn(),
@@ -75,7 +76,10 @@ const bike = {
 };
 
 describe('VAIMOO app-domain adapter', () => {
-	beforeEach(() => vi.clearAllMocks());
+	beforeEach(() => {
+		vi.clearAllMocks();
+		mocks.subscribeFirestoreBikesWithComment.mockReturnValue(() => {});
+	});
 
 	it('uses authoritative station availability and real dock labels', async () => {
 		mocks.getFirestoreStations.mockResolvedValue([station]);
@@ -237,5 +241,76 @@ describe('VAIMOO app-domain adapter', () => {
 		expect(onStations).toHaveBeenCalledTimes(2);
 		expect(onStations).toHaveBeenLastCalledWith([expect.objectContaining({ serialNumber: '4551', bikes: 1 })]);
 		unsubscribe();
+	});
+
+	it('takes the bikes flagged for their service status alone off the server counter', () => {
+		let emitStations: (stations: unknown[]) => void = () => {};
+		let emitServiceStatusBikes: (bikes: unknown[]) => void = () => {};
+		mocks.subscribeFirestoreStations.mockImplementation((onData: typeof emitStations) => {
+			emitStations = onData;
+			return () => {};
+		});
+		mocks.subscribeFirestoreBikesWithComment.mockImplementation((_: string, onData: typeof emitServiceStatusBikes) => {
+			emitServiceStatusBikes = onData;
+			return () => {};
+		});
+		const onStations = vi.fn();
+		const unsubscribe = subscribeStations(onStations);
+		expect(mocks.subscribeFirestoreBikesWithComment).toHaveBeenCalledWith('Service status is not OK; \t', expect.any(Function), undefined);
+
+		const other = { ...station, DockingStationId: 4553, AvailableBikes: 1 };
+		emitStations([{ ...station, AvailableBikes: 3 }, other]);
+		const flagged = { ...bike, IsAvaliable: false, Comment: 'Service status is not OK; \t' };
+		emitServiceStatusBikes([flagged, { ...flagged, VisualId: 'E0002' }]);
+		expect(onStations).toHaveBeenLastCalledWith([
+			expect.objectContaining({ serialNumber: '4551', bikes: 1 }),
+			expect.objectContaining({ serialNumber: '4553', bikes: 1 }),
+		]);
+
+		// A flagged bike elsewhere changes no count on the map, so nothing is re-emitted.
+		emitServiceStatusBikes([flagged, { ...flagged, VisualId: 'E0002' }, { ...flagged, VisualId: 'E0005', DockingStationId: 9999 }]);
+		expect(onStations).toHaveBeenCalledTimes(2);
+
+		// The station feed keeps the correction, and the count returns once the flag clears.
+		emitStations([{ ...station, AvailableBikes: 3 }, other]);
+		expect(onStations).toHaveBeenLastCalledWith([expect.objectContaining({ bikes: 1 }), expect.objectContaining({ bikes: 1 })]);
+		emitServiceStatusBikes([flagged]);
+		expect(onStations).toHaveBeenLastCalledWith([expect.objectContaining({ serialNumber: '4551', bikes: 2 }), expect.anything()]);
+		unsubscribe();
+	});
+
+	it('prefers the observed count over the corrected server counter', () => {
+		let emitStations: (stations: unknown[]) => void = () => {};
+		let emitBikes: (bikes: unknown[]) => void = () => {};
+		let emitServiceStatusBikes: (bikes: unknown[]) => void = () => {};
+		mocks.subscribeFirestoreStations.mockImplementation((onData: typeof emitStations) => {
+			emitStations = onData;
+			return () => {};
+		});
+		mocks.subscribeFirestoreBikes.mockImplementation((_: number, onData: typeof emitBikes) => {
+			emitBikes = onData;
+			return () => {};
+		});
+		mocks.subscribeFirestoreBikesWithComment.mockImplementation((_: string, onData: typeof emitServiceStatusBikes) => {
+			emitServiceStatusBikes = onData;
+			return () => {};
+		});
+		const onStations = vi.fn();
+		const unsubscribe = subscribeStations(onStations);
+		subscribeStationBikes('4551', () => {});
+
+		emitStations([{ ...station, AvailableBikes: 3 }]);
+		emitServiceStatusBikes([{ ...bike, IsAvaliable: false, Comment: 'Service status is not OK; \t' }]);
+		expect(onStations).toHaveBeenLastCalledWith([expect.objectContaining({ bikes: 2 })]);
+
+		// The third bike sits outside a dock: only loading the station's bikes reveals it.
+		emitBikes([bike, { ...bike, VisualId: 'E0002', DockingPointVisualId: null }]);
+		expect(onStations).toHaveBeenLastCalledWith([expect.objectContaining({ bikes: 1 })]);
+		unsubscribe();
+	});
+
+	it('keeps the workshop out of service', async () => {
+		mocks.getFirestoreStations.mockResolvedValue([station, { ...station, DockingStationId: 4552, Name: '999 - Oficina', AvailableBikes: 132 }]);
+		expect((await getStations()).map(s => s.assetStatus)).toEqual(['active', 'repair']);
 	});
 });

@@ -296,6 +296,30 @@ async function recomputeRoute() {
 	}
 }
 
+/** Whether the route's pickup station still has a bike and its drop-off station a free dock */
+function routeStationsAvailable(route: PlannedRoute) {
+	const station = (serial: string) => stations.value.find(s => s.serialNumber === serial);
+	const pickup = route.startStationSerial ? station(route.startStationSerial) : null;
+	const dropoff = route.endStationSerial ? station(route.endStationSerial) : null;
+	return (!route.startStationSerial || (!!pickup && hasAvailableBike(pickup))) &&
+		(!route.endStationSerial || (!!dropoff && hasAvailableDock(dropoff)));
+}
+
+// Taken when a route is planned, so a route that starts out without them (a full
+// station the rider picked as the destination) doesn't keep re-planning to the same place
+let routeStationsWereAvailable = false;
+currentRoute.subscribe(route => routeStationsWereAvailable = route !== null && routeStationsAvailable(route));
+
+/** Re-plan when the station feed takes the last bike from the pickup station or
+  * the last free dock from the drop-off station */
+export function recheckRouteStations() {
+	const route = get(currentRoute);
+	if (!route) return;
+	const available = routeStationsAvailable(route);
+	if (routeStationsWereAvailable && !available) recomputeRoute();
+	routeStationsWereAvailable = available;
+}
+
 export function clearRouteDestination() {
 	routeDestination.set(null);
 }
