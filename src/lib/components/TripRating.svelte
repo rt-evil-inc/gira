@@ -200,7 +200,7 @@
 	}
 
 	function undo() {
-		if (!pending) return;
+		if (!pending || sent) return;
 		clearTimeout(undoTimeout);
 		({ rating, reasons, comment } = pending);
 		const previous = pending.panel;
@@ -213,7 +213,6 @@
 		clearTimeout(undoTimeout);
 		const { rating: value, details } = pending;
 		sent = true;
-		pending = null;
 		void send(value, details);
 		settle('hidden');
 	}
